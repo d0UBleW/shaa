@@ -1,0 +1,59 @@
+servers = [
+  {
+    hostname: 'almalinux8-1',
+    ip: '192.168.56.211',
+    box: 'almalinux/8',
+    ram: 1024,
+    cpu: 2,
+    provision: 'init.yaml',
+  }
+  # {
+  #   hostname: 'rhel7-2',
+  #   ip: '192.168.56.212',
+  #   box: 'generic/rhel7',
+  #   ram: 512,
+  #   cpu: 2,
+  #   provision: 'init.yaml'
+  # },
+  # {
+  #   hostname: 'rhel8-1',
+  #   ip: '192.168.56.213',
+  #   box: 'generic/rhel8',
+  #   ram: 512,
+  #   cpu: 2,
+  #   provision: 'init.yaml'
+  # },
+  # {
+  #   hostname: 'rhel8-2',
+  #   ip: '192.168.56.214',
+  #   box: 'generic/rhel8',
+  #   ram: 512,
+  #   cpu: 2,
+  #   provision: 'init.yaml'
+  # },
+]
+
+Vagrant.configure('2') do |config|
+  servers.each do |machine|
+    config.vm.define machine[:hostname] do |node|
+      node.vm.box = machine[:box]
+      node.vm.hostname = machine[:hostname]
+      node.vm.synced_folder '.', '/vargrant-data', disabled: true
+      node.vm.network 'private_network', ip: machine[:ip]
+      node.vm.provider 'virtualbox' do |vb|
+        vb.memory = machine[:ram]
+        vb.cpus = machine[:cpu]
+        vb.name = machine[:hostname]
+        vb.linked_clone = false
+        vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
+      end
+      if machine.key?(:provision)
+        node.vm.provision 'ansible' do |ansible|
+          ansible.verbose = 'v'
+          ansible.playbook = machine[:provision]
+        end
+        # puts "Provision #{machine[:hostname]}"
+      end
+    end
+  end
+end
