@@ -2,6 +2,8 @@
 - name: 1.1.1.3
   vars:
     fs: jffs2
+  when:
+    - section_1_1_1_3
   block:
     - name: |
         ---

@@ -1,7 +1,11 @@
 ---
 - name: 1.1.13-14
   tags:
-    - 1.1.13-14
+    - 1.1.13
+    - 1.1.14
+  when:
+    - section_1_1_13 or
+      section_1_1_14
   block:
     - name: |
         ---

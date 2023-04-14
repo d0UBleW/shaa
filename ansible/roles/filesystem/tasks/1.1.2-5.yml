@@ -1,7 +1,15 @@
 ---
 - name: 1.1.2-5
   tags:
-    - 1.1.2-5
+    - 1.1.2
+    - 1.1.3
+    - 1.1.4
+    - 1.1.5
+  when:
+    - section_1_1_2 or
+      section_1_1_3 or
+      section_1_1_4 or
+      section_1_1_5
   block:
     # ansible.builtin.mount handles the /tmp remount as well
     - name: |

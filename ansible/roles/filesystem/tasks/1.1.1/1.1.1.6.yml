@@ -2,6 +2,8 @@
 - name: 1.1.1.6
   vars:
     fs: squashfs
+  when:
+    - section_1_1_1_6
   block:
     - name: |
         ---

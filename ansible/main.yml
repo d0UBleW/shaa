@@ -2,8 +2,24 @@
 - name: Filesystem configuration
   become: true
   gather_facts: true
-  tags: fs-conf
   hosts:
     - alma
   roles:
     - role: filesystem
+      # vars:
+      #   section_1_1_2: false
+      #   section_1_1_3: false
+      #   section_1_1_4: false
+      #   section_1_1_5: false
+      #   section_1_1_6: false
+      #   section_1_1_7: false
+      #   section_1_1_8: false
+      #   section_1_1_9: false
+      #   section_1_1_10: false
+      #   section_1_1_11: false
+      #   section_1_1_12: false
+      #   section_1_1_13: false
+      #   section_1_1_14: false
+      #   section_1_1_15: false
+      #   section_1_1_16: false
+      #   section_1_1_17: false

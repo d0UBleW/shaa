@@ -2,6 +2,8 @@
 - name: 1.1.1.7
   vars:
     fs: udf
+  when:
+    - section_1_1_1_7
   block:
     - name: |
         ---

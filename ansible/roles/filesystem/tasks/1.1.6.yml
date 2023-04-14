@@ -2,6 +2,8 @@
 - name: 1.1.6
   tags:
     - 1.1.6
+  when:
+    - section_1_1_6
   block:
     - name: |
         ---
