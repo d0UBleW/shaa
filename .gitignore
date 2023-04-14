@@ -1,4 +1,4 @@
 .vault_pass
 *.key
 *.pub
-.vagrant/
+vagrant/.vagrant/
