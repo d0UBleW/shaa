@@ -31,4 +31,4 @@
         src: shm
         fstype: tmpfs
         state: mounted
-        opts: final_opts
+        opts: "{{ final_opts }}"
