@@ -1,0 +1,38 @@
+---
+- name: 1.1.1.4
+  vars:
+    fs: hfs
+  block:
+    - name: |
+        ---
+        1.1.1.4 Ensure mounting of {{ fs }} filesystems is disabled
+        > Configure /etc/modprobe.d/{{ fs }}.conf
+        ---
+      vars:
+        regexp: '^install\s+{{ fs }}\s+(?:(?!/bin/true).)*$'
+      ansible.builtin.lineinfile:
+        path: "/etc/modprobe.d/{{ fs }}.conf"
+        regexp: "regexp"
+        line: "install {{ fs }} /bin/true"
+        state: present
+        create: true
+        mode: 0664
+
+    - name: |
+        ---
+        1.1.1.4 Ensure mounting of {{ fs }} filesystems is disabled
+        > Unload {{ fs }} module
+        ---
+      ansible.builtin.command: rmmod {{ fs }}
+      register: rmfs
+      changed_when: rmfs.stdout_lines | length > 0
+      failed_when: >
+        rmfs.rc != 0 and
+        "is not currently loaded" not in rmfs.stderr
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      ansible.builtin.debug:
+        msg: Error in section 1.1.1.4

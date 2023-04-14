@@ -1,0 +1,19 @@
+---
+- name: Ensure kmod package is installed
+  tags:
+    - always
+  ansible.builtin.package:
+    name: kmod
+    state: present
+
+- name: 1.1.1 Disable unused filesystems
+  tags:
+    - 1.1.1
+  ansible.builtin.import_tasks:
+    file: ./1.1.1/main.yml
+
+- name: 1.1.2 Ensure /tmp is configured
+  tags:
+    - 1.1.2
+  ansible.builtin.import_tasks:
+    file: ./1.1.2/main.yml

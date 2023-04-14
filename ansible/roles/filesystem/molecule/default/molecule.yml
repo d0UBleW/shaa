@@ -1,0 +1,34 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: rhel8
+    image: localhost/ubi8-init
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+    command: "/usr/sbin/init"
+    privileged: true
+    pre_build_image: true
+  - name: rhel9
+    image: localhost/ubi9-init
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+    command: "/usr/sbin/init"
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
+# lint: |
+#   set -e
+#   yamllint .
+#   ansible-lint .

@@ -1,0 +1,9 @@
+---
+- name: Filesystem configuration
+  become: true
+  gather_facts: true
+  tags: fs-conf
+  hosts:
+    - alma
+  roles:
+    - role: filesystem

@@ -1,0 +1,47 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify Filesystem Configuration
+  hosts: all
+  tasks:
+    - name: 1.1.1
+      vars:
+        filesystems:
+          - cramfs
+          - freevxfs
+          - jffs2
+          - hfs
+          - hfsplus
+          - squashfs
+          - udf
+          - vfat
+      tags: test
+      block:
+        - name: Get modprobe output
+          ansible.builtin.command: modprobe -n -v {{ item }}
+          register: modprobe_out
+          changed_when: false
+          loop: "{{ filesystems }}"
+
+        - name: Assert modprobe output
+          ansible.builtin.assert:
+            that: "'install /bin/true' in item.stdout"
+            quiet: true
+          loop: "{{ modprobe_out.results }}"
+          loop_control:
+            label: "{{ item.cmd }}"
+
+        - name: Get lsmod output
+          ansible.builtin.shell: "lsmod | grep {{ item }} | wc -l"
+          register: lsmod_out
+          changed_when: false
+          ignore_errors: true
+          loop: "{{ filesystems }}"
+
+        - name: Assert lsmod output
+          ansible.builtin.assert:
+            that: "item.stdout | int == 0"
+            quiet: true
+          loop: "{{ lsmod_out.results }}"
+          loop_control:
+            label: "{{ item.cmd }}"

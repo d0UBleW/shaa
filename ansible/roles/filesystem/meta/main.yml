@@ -1,0 +1,22 @@
+galaxy_info:
+  author: William Wijaya
+  namespace: d0ublew
+  description: Filesystem hardening based on CIS Independent Linux v2.0.0 - 07-16-2019
+  company: None
+
+  license: MIT
+
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: rhel
+      versions:
+        - 8
+        - 9
+    - name: ubuntu
+      versions:
+        - 20.04
+
+  galaxy_tags: []
+
+dependencies: []

@@ -1,0 +1,4 @@
+---
+- name: Pass
+  ansible.builtin.debug:
+    msg: Hi
