@@ -5,7 +5,7 @@
   block:
     - name: |
         ---
-        1.1.1.8 Ensure mounting of FAT filesystems is disabled
+        1.1.1.8 Ensure mounting of FAT filesystems is limited
         > Configure /etc/modprobe.d/{{ fs }}.conf
         ---
       vars:
@@ -20,7 +20,7 @@
 
     - name: |
         ---
-        1.1.1.8 Ensure mounting of FAT filesystems is disabled
+        1.1.1.8 Ensure mounting of FAT filesystems is limited
         > Unload {{ fs }} module
         ---
       ansible.builtin.command: rmmod {{ fs }}
