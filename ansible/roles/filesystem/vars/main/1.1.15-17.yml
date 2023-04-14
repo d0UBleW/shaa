@@ -1,0 +1,4 @@
+---
+dev_shm_nodev: true
+dev_shm_nosuid: true
+dev_shm_noexec: true

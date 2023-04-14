@@ -31,15 +31,54 @@
   ansible.builtin.import_tasks:
     file: ./1.1.6.yml
 
-# - name: |
-#     1.1.7 Ensure separate partition exists for /var/tmp
-#     1.1.8 Ensure nodev option set on /var/tmp partition
-#     1.1.9 Ensure nosuid option set on /var/tmp partition
-#     1.1.10 Ensure noexec option set on /var/tmp partition
-#   tags:
-#     - 1.1.7-10
-#   ansible.builtin.import_tasks:
-#     file: ./1.1.7-10.yml
+- name: |
+    1.1.7 Ensure separate partition exists for /var/tmp
+    1.1.8 Ensure nodev option set on /var/tmp partition
+    1.1.9 Ensure nosuid option set on /var/tmp partition
+    1.1.10 Ensure noexec option set on /var/tmp partition
+  tags:
+    - 1.1.7-10
+  ansible.builtin.import_tasks:
+    file: ./1.1.7-10.yml
+
+- name: |
+    1.1.11 Ensure separate partition exists for /var/log
+  tags:
+    - 1.1.11
+  ansible.builtin.import_tasks:
+    file: ./1.1.11.yml
+
+- name: |
+    1.1.12 Ensure separate partition exists for /var/log/audit
+  tags:
+    - 1.1.12
+  ansible.builtin.import_tasks:
+    file: ./1.1.12.yml
+
+- name: |
+    1.1.13 Ensure separate partition exists for /home
+    1.1.14 Ensure nodev option set on /home partition
+  tags:
+    - 1.1.13-14
+  ansible.builtin.import_tasks:
+    file: ./1.1.13-14.yml
+
+- name: |
+    1.1.15 Ensure nodev option set on /dev/shm partition
+    1.1.16 Ensure nosuid option set on /dev/shm partition
+    1.1.17 Ensure noexec option set on /dev/shm partition
+  tags:
+    - 1.1.15-17
+  ansible.builtin.import_tasks:
+    file: ./1.1.15-17.yml
+
+- name: Info logging summary
+  tags:
+    - always
+  ansible.builtin.debug:
+    msg: |
+      Count: {{ info_count }}
+      Affected: {{ info_list }}
 
 - name: Caught errors summary
   tags:

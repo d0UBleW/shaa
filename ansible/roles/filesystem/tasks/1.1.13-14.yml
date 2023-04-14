@@ -1,0 +1,44 @@
+---
+- name: 1.1.13-14
+  tags:
+    - 1.1.13-14
+  block:
+    - name: |
+        ---
+        1.1.13 Ensure separate partition exists for /home
+        ---
+      vars:
+        section_id: 1.1.13
+        info_details: |-
+          Ensure separate partition exists for /home
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+      when: >
+        '/home' not in (ansible_mounts | map(attribute='mount') | list)
+
+    - name: |
+        ---
+        1.1.14 Ensure nodev option set on /home partition
+        > Configure /home mount point via /etc/fstab
+        ---
+      vars:
+        default_opts:
+          - defaults
+          - rw
+          - relatime
+        custom_opts: >-
+          {% if home_nodev %}nodev{% endif %}
+        final_opts: "{{ ','.join(default_opts + (custom_opts | split)) }}"
+      ansible.builtin.mount:
+        path: /home
+        src: "{{ mnt.device }}"
+        fstype: "{{ mnt.fstype }}"
+        state: present
+        opts: final_opts
+      loop: "{{ ansible_mounts }}"
+      loop_control:
+        loop_var: mnt
+        label: "{{ mnt.mount }}"
+      when: >
+        '/home' in (ansible_mounts | map(attribute='mount') | list) and
+        '/home' == mnt.mount

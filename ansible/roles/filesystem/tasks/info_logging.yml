@@ -1,0 +1,9 @@
+---
+- name: |
+    ---
+    INFO: Require manual intervention for {{ section_id }}
+    {{ info_details | default('') }}
+    ---
+  ansible.builtin.set_fact:
+    info_list: "{{ info_list + [section_id] }}"
+    info_count: "{{ (info_count | int) + 1 }}"

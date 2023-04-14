@@ -1,0 +1,17 @@
+---
+- name: 1.1.12
+  tags:
+    - 1.1.12
+  block:
+    - name: |
+        ---
+        1.1.12 Ensure separate partition exists for /var/log/audit
+        ---
+      vars:
+        section_id: 1.1.12
+        info_details: |-
+          Ensure separate partition exists for /var/log/audit
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+      when: >
+        '/var/log/audit' not in (ansible_mounts | map(attribute='mount') | list)

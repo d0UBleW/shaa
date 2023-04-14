@@ -1,0 +1,28 @@
+---
+- name: 1.1.15-17
+  tags:
+    - 1.1.15-17
+  block:
+    - name: |
+        ---
+        1.1.15 Ensure nodev option set on /dev/shm partition
+        1.1.16 Ensure nosuid option set on /dev/shm partition
+        1.1.17 Ensure noexec option set on /dev/shm partition
+        > Configure /dev/shm mount point via /etc/fstab
+        ---
+      vars:
+        default_opts:
+          - defaults
+          - rw
+          - relatime
+        custom_opts: >-
+          {% if dev_shm_nodev %}nodev{% endif %}
+          {% if dev_shm_nosuid %}nosuid{% endif %}
+          {% if dev_shm_noexec %}noexec{% endif %}
+        final_opts: "{{ ','.join(default_opts + (custom_opts | split)) }}"
+      ansible.builtin.mount:
+        path: /dev/shm
+        src: shm
+        fstype: tmpfs
+        state: mounted
+        opts: final_opts

@@ -1,0 +1,48 @@
+---
+- name: 1.1.7-10
+  tags:
+    - 1.1.7-10
+  block:
+    - name: |
+        ---
+        1.1.7 Ensure separate partition exists for /var/tmp
+        ---
+      vars:
+        section_id: 1.1.7
+        info_details: |-
+          Ensure separate partition exists for /var/tmp
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+      when: >
+        '/var/tmp' not in (ansible_mounts | map(attribute='mount') | list)
+
+    - name: |
+        ---
+        1.1.8 Ensure nodev option set on /var/tmp partition
+        1.1.9 Ensure nosuid option set on /var/tmp partition
+        1.1.10 Ensure noexec option set on /var/tmp partition
+        > Configure /var/tmp mount point via /etc/fstab
+        ---
+      vars:
+        default_opts:
+          - defaults
+          - rw
+          - relatime
+        custom_opts: >-
+          {% if var_tmp_nodev %}nodev{% endif %}
+          {% if var_tmp_nosuid %}nosuid{% endif %}
+          {% if var_tmp_noexec %}noexec{% endif %}
+        final_opts: "{{ ','.join(default_opts + (custom_opts | split)) }}"
+      ansible.builtin.mount:
+        path: /var/tmp
+        src: "{{ mnt.device }}"
+        fstype: "{{ mnt.fstype }}"
+        state: present
+        opts: final_opts
+      loop: "{{ ansible_mounts }}"
+      loop_control:
+        loop_var: mnt
+        label: "{{ mnt.mount }}"
+      when: >
+        '/var/tmp' in (ansible_mounts | map(attribute='mount') | list) and
+        '/var/tmp' == mnt.mount

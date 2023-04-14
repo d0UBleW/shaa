@@ -1,0 +1,17 @@
+---
+- name: 1.1.6
+  tags:
+    - 1.1.6
+  block:
+    - name: |
+        ---
+        1.1.6 Ensure separate partition exists for /var
+        ---
+      vars:
+        section_id: 1.1.6
+        info_details: |-
+          Ensure separate partition exists for /var
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+      when: >
+        '/var' not in (ansible_mounts | map(attribute='mount') | list)
