@@ -1,5 +1,5 @@
 ---
-- name: "Caught error in: {{ error_section_id }}"
+- name: "ERROR: Caught in {{ error_section_id }}"
   ansible.builtin.set_fact:
     error_list: "{{ error_list + [error_section_id]}}"
     error_count: "{{ error_count | int + 1}}"
