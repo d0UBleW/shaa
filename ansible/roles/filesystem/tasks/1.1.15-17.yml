@@ -28,7 +28,7 @@
         final_opts: "{{ ','.join(default_opts + (custom_opts | split)) }}"
       ansible.builtin.mount:
         path: /dev/shm
-        src: shm
+        src: tmpfs
         fstype: tmpfs
         state: mounted
         opts: "{{ final_opts }}"
