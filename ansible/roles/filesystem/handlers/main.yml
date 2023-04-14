@@ -1,2 +1,9 @@
 ---
-# handlers file for filesystem
+- name: Reload tmp.mount via systemd
+  ansible.builtin.systemd:
+    name: tmp.mount
+    masked: false
+    enabled: true
+    state: reloaded
+    daemon_reload: true
+  listen: "systemctl reload tmp.mount"
