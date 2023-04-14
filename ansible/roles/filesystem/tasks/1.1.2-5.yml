@@ -1,7 +1,7 @@
 ---
-- name: 1.1.2
+- name: 1.1.2-5
   tags:
-    - 1.1.2
+    - 1.1.2-5
   block:
     # ansible.builtin.mount handles the /tmp remount as well
     - name: |
