@@ -34,5 +34,7 @@
       ansible.builtin.meta: flush_handlers
 
     - name: Error backtrace
-      ansible.builtin.debug:
-        msg: Error in section 1.1.1.3
+      vars:
+        error_section_id: 1.1.1.3
+      ansible.builtin.import_tasks:
+        file: error_stats.yml
