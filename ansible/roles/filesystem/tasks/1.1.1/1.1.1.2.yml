@@ -3,7 +3,7 @@
   vars:
     fs: freevxfs
   when:
-    - section_1_1_1_2
+    - disable_freevxfs | bool
   block:
     - name: |
         ---

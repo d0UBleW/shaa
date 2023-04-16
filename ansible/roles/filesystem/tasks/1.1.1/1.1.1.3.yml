@@ -3,7 +3,7 @@
   vars:
     fs: jffs2
   when:
-    - section_1_1_1_3
+    - disable_jffs2 | bool
   block:
     - name: |
         ---

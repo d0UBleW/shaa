@@ -3,7 +3,7 @@
   vars:
     fs: cramfs
   when:
-    - section_1_1_1_1
+    - disable_cramfs | bool
   block:
     - name: |
         ---

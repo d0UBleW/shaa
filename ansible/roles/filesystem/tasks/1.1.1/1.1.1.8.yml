@@ -3,7 +3,7 @@
   vars:
     fs: vfat
   when:
-    - section_1_1_1_8
+    - limit_vfat | bool
   block:
     - name: |
         ---

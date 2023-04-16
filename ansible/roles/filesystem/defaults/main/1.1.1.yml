@@ -1,0 +1,9 @@
+---
+disable_cramfs: "{{ section_1_1_1_1 }}"
+disable_freevxfs: "{{ section_1_1_1_2 }}"
+disable_jffs2: "{{ section_1_1_1_3 }}"
+disable_hfs: "{{ section_1_1_1_4 }}"
+disable_hfsplus: "{{ section_1_1_1_5 }}"
+disable_squashfs: "{{ section_1_1_1_6 }}"
+disable_udf: "{{ section_1_1_1_7 }}"
+limit_vfat: "{{ section_1_1_1_8 }}"
