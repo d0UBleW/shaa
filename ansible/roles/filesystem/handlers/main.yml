@@ -7,3 +7,8 @@
     state: reloaded
     daemon_reload: true
   listen: "systemctl reload tmp.mount"
+
+- name: Set reboot flag
+  ansible.builtin.set_fact:
+    reboot: true
+  listen: "reboot"

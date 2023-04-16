@@ -32,3 +32,4 @@
         fstype: tmpfs
         state: mounted
         opts: "{{ final_opts }}"
+      notify: reboot

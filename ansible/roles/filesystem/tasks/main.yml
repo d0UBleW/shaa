@@ -87,3 +87,9 @@
     msg: |
       Count: {{ error_count }}
       Affected: {{ error_list }}
+
+- name: Reboot
+  when:
+    - reboot | default(false)
+  ansible.builtin.reboot:
+    reboot_timeout: 600

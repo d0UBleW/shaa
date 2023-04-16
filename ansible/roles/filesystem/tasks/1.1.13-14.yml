@@ -46,3 +46,4 @@
       when: >
         '/home' in (ansible_mounts | map(attribute='mount') | list) and
         '/home' == mnt.mount
+      notify: reboot

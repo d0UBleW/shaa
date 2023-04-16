@@ -54,3 +54,4 @@
       when: >
         '/var/tmp' in (ansible_mounts | map(attribute='mount') | list) and
         '/var/tmp' == mnt.mount
+      notify: reboot
