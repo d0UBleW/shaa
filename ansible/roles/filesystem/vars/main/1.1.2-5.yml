@@ -1,4 +1,4 @@
 ---
-tmp_nodev: true
-tmp_nosuid: true
-tmp_noexec: true
+tmp_nodev: "{{ section_1_1_3 }}"
+tmp_nosuid: "{{ section_1_1_4 }}"
+tmp_noexec: "{{ section_1_1_5 }}"
