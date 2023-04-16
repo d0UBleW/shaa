@@ -1,0 +1,15 @@
+---
+- name: Gather the package facts
+  tags:
+    - always
+  ansible.builtin.package_facts:
+    manager: auto
+  when:
+    - ansible_facts.packages is not defined
+
+- name: Ensure kmod package is installed
+  tags:
+    - always
+  ansible.builtin.package:
+    name: kmod
+    state: present

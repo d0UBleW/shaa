@@ -1,10 +1,7 @@
 ---
-- name: Ensure kmod package is installed
-  tags:
-    - always
-  ansible.builtin.package:
-    name: kmod
-    state: present
+- name: Bootstrap
+  ansible.builtin.import_tasks:
+    file: bootstrap.yml
 
 - name: 1.1.1 Disable unused filesystems
   tags:
