@@ -5,7 +5,7 @@ servers = [
     box: 'almalinux/8',
     ram: 1024,
     cpu: 2,
-    provision: 'init.yaml',
+    provision: 'init.yml'
   }
   # {
   #   hostname: 'rhel7-2',
