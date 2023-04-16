@@ -58,6 +58,13 @@
   ansible.builtin.import_tasks:
     file: ./1.1.15-17.yml
 
+- name: |
+    1.1.18 Ensure nodev option set on removable media partition
+    1.1.19 Ensure nosuid option set on removable media partition
+    1.1.20 Ensure noexec option set on removable media partition
+  ansible.builtin.import_tasks:
+    file: ./1.1.18-20.yml
+
 - name: Flushing all handlers
   ansible.builtin.meta: flush_handlers
 

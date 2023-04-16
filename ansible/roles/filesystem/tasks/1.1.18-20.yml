@@ -1,0 +1,88 @@
+---
+- name: 1.1.18-20
+  when:
+    - section_1_1_18 or
+      section_1_1_19 or
+      section_1_1_20
+  block:
+    - name: |
+        ---
+        1.1.18 Ensure nodev option set on removable media partition
+        ---
+      tags:
+        - 1.1.18
+      vars:
+        section_id: 1.1.18
+        info_details: |-
+          Ensure nodev option set on removable media partition
+
+          Edit the `/etc/fstab` file and add `nodev` to the fourth field (mounting
+          options) for all removable media partitions. Look for entries that have mount
+          points that contain words such as floppy or cdrom.
+
+          Example:
+          /etc/fstab:
+          ```
+          # first_field     second_field      third_field     fourth_field      fifth_field     sixth_field
+          none              /path/to/file     ext4            defaults,nodev    0               0
+          ```
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+
+    - name: |
+        ---
+        1.1.19 Ensure nosuid option set on removable media partition
+        ---
+      tags:
+        - 1.1.19
+      vars:
+        section_id: 1.1.19
+        info_details: |-
+          Ensure nosuid option set on removable media partition
+
+          Edit the `/etc/fstab` file and add `nosuid` to the fourth field (mounting
+          options) for all removable media partitions. Look for entries that have mount
+          points that contain words such as floppy or cdrom.
+
+          Example:
+          /etc/fstab:
+          ```
+          # first_field     second_field      third_field     fourth_field      fifth_field     sixth_field
+          none              /path/to/file     ext4            defaults,nosuid   0               0
+          ```
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+
+    - name: |
+        ---
+        1.1.20 Ensure noexec option set on removable media partition
+        ---
+      tags:
+        - 1.1.20
+      vars:
+        section_id: 1.1.20
+        info_details: |-
+          Ensure noexec option set on removable media partition
+
+          Edit the `/etc/fstab` file and add `noexec` to the fourth field (mounting
+          options) for all removable media partitions. Look for entries that have mount
+          points that contain words such as floppy or cdrom.
+
+          Example:
+          /etc/fstab:
+          ```
+          # first_field     second_field      third_field     fourth_field      fifth_field     sixth_field
+          none              /path/to/file     ext4            defaults,noexec   0               0
+          ```
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.1.18-20
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
