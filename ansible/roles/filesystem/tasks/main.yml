@@ -84,5 +84,6 @@
 - name: Reboot
   when:
     - reboot | default(false)
+    - not (is_container | default(false))
   ansible.builtin.reboot:
     reboot_timeout: 600

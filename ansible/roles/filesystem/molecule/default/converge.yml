@@ -2,6 +2,8 @@
 - name: Converge
   hosts: all
   gather_facts: true
+  vars:
+    is_container: true
   tasks:
     - name: "Include d0ublew.filesystem"
       tags:
