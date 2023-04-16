@@ -1,0 +1,2 @@
+---
+disable_autofs: "{{ section_1_1_22 }}"

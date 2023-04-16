@@ -1,0 +1,27 @@
+---
+- name: 1.1.22
+  tags:
+    - 1.1.22
+  when:
+    - disable_autofs | bool
+  block:
+    - name: |
+        ---
+        1.1.22 Disable automounting
+        > Disabling via systemctl
+        ---
+      when:
+        - "'autofs' in ansible_facts.packages"
+      ansible.builtin.systemd:
+        name: "autofs"
+        enabled: false
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.1.22
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

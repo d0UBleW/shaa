@@ -4,7 +4,7 @@
 - name: Verify Filesystem Configuration
   hosts: all
   tasks:
-    - name: 1.1.1
+    - name: 1.1.1 and 1.1.23 (usb-storage)
       vars:
         filesystems:
           - cramfs
@@ -15,6 +15,7 @@
           - squashfs
           - udf
           - vfat
+          - usb-storage
       tags: notest
       block:
         - name: Get modprobe output
@@ -48,7 +49,7 @@
             label: "{{ item.cmd }}"
 
     - name: 1.1.2
-      tags: test
+      tags: notest
       vars:
         opts:
           - nodev
@@ -72,3 +73,21 @@
           loop: "{{ mount_out.results }}"
           loop_control:
             label: "{{ item.cmd }}"
+
+    - name: 1.1.21
+      tags: test
+      block:
+        - name: Running check script
+          ansible.builtin.shell: >
+            df --local -P |
+            awk '{if (NR!=1) print $6}' |
+            xargs -I '{}' find '{}' -xdev -type d
+            \( -perm -0002 -a ! -perm -1000 \) 2>/dev/null
+          changed_when: false
+          failed_when: false
+          register: cmd_out
+
+        - name: Assert check script output
+          ansible.builtin.assert:
+            that: cmd_out.stdout_lines | length == 0
+            quiet: true

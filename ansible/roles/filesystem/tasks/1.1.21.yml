@@ -1,0 +1,41 @@
+---
+- name: 1.1.21
+  tags:
+    - 1.1.21
+  when:
+    - section_1_1_21
+  block:
+    - name: |
+        ---
+        1.1.21 Ensure sticky bit is set on all world-writables directories
+        ---
+      ansible.builtin.shell: >
+        df --local -P |
+        awk '{if (NR!=1) print $6}' |
+        xargs -I '{}' find '{}' -xdev -type d \( -perm -0002 -a
+        ! -perm -1000 \) 2>/dev/null |
+        tee /tmp/cmd_out |
+        xargs -I '{}' chmod a+t '{}' &&
+        cat /tmp/cmd_out && rm /tmp/cmd_out
+      register: cmd_out
+      changed_when: cmd_out.stdout_lines | length > 0
+
+    - name: |
+        ---
+        1.1.21 Ensure sticky bit is set on all world-writables directories
+        > Affected directories (verbose)
+        ---
+      ansible.builtin.debug:
+        msg: "{{ cmd_out.stdout_lines }}"
+      when:
+        - verbose | bool
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.1.21
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

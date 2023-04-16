@@ -62,6 +62,18 @@
   ansible.builtin.import_tasks:
     file: ./1.1.18-20.yml
 
+- name: 1.1.21 Ensure sticky bit is set on all world-writable directories
+  ansible.builtin.import_tasks:
+    file: ./1.1.21.yml
+
+- name: 1.1.22 Disable automounting
+  ansible.builtin.import_tasks:
+    file: ./1.1.22.yml
+
+- name: 1.1.23 Disable USB Storage
+  ansible.builtin.import_tasks:
+    file: ./1.1.23.yml
+
 - name: Flushing all handlers
   ansible.builtin.meta: flush_handlers
 

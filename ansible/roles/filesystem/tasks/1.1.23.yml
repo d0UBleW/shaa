@@ -1,0 +1,41 @@
+---
+- name: 1.1.23
+  tags:
+    - 1.1.23
+  when:
+    - disable_usb_storage_fs | bool
+  block:
+    - name: |
+        ---
+        1.1.23 Disable USB Storage
+        > Configure /etc/modprobe.d/usb-storage.conf
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/modprobe.d/usb-storage.conf
+        regexp: '^install\s+usb-storage\s+(?:(?!/bin/true).)*$'
+        line: "install usb-storage /bin/true"
+        state: present
+        create: true
+        mode: 0664
+
+    - name: |
+        ---
+        1.1.23 Disable USB Storage
+        > Unload usb-storage module
+        ---
+      ansible.builtin.command: rmmod usb-storage
+      register: rmfs
+      changed_when: rmfs.stdout_lines | length > 0
+      failed_when: >
+        rmfs.rc != 0 and
+        "is not currently loaded" not in rmfs.stderr
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.1.22
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
