@@ -1,25 +1,29 @@
 ---
-section_1_1_1_1: true
-section_1_1_1_2: true
-section_1_1_1_3: true
-section_1_1_1_4: true
-section_1_1_1_5: true
-section_1_1_1_6: true
-section_1_1_1_7: true
-section_1_1_1_8: true
-section_1_1_2: true
-section_1_1_3: true
-section_1_1_4: true
-section_1_1_5: true
-section_1_1_6: true
-section_1_1_7: true
-section_1_1_8: true
-section_1_1_9: true
-section_1_1_10: true
-section_1_1_11: true
-section_1_1_12: true
-section_1_1_13: true
-section_1_1_14: true
-section_1_1_15: true
-section_1_1_16: true
-section_1_1_17: true
+default_all_sections: true
+section_1_1_1_1: "{{ default_all_sections }}"
+section_1_1_1_2: "{{ default_all_sections }}"
+section_1_1_1_3: "{{ default_all_sections }}"
+section_1_1_1_4: "{{ default_all_sections }}"
+section_1_1_1_5: "{{ default_all_sections }}"
+section_1_1_1_6: "{{ default_all_sections }}"
+section_1_1_1_7: "{{ default_all_sections }}"
+section_1_1_1_8: "{{ default_all_sections }}"
+section_1_1_2: "{{ default_all_sections }}"
+section_1_1_3: "{{ default_all_sections }}"
+section_1_1_4: "{{ default_all_sections }}"
+section_1_1_5: "{{ default_all_sections }}"
+section_1_1_6: "{{ default_all_sections }}"
+section_1_1_7: "{{ default_all_sections }}"
+section_1_1_8: "{{ default_all_sections }}"
+section_1_1_9: "{{ default_all_sections }}"
+section_1_1_10: "{{ default_all_sections }}"
+section_1_1_11: "{{ default_all_sections }}"
+section_1_1_12: "{{ default_all_sections }}"
+section_1_1_13: "{{ default_all_sections }}"
+section_1_1_14: "{{ default_all_sections }}"
+section_1_1_15: "{{ default_all_sections }}"
+section_1_1_16: "{{ default_all_sections }}"
+section_1_1_17: "{{ default_all_sections }}"
+section_1_1_18: "{{ default_all_sections }}"
+section_1_1_19: "{{ default_all_sections }}"
+section_1_1_20: "{{ default_all_sections }}"
