@@ -47,3 +47,13 @@
         '/home' in (ansible_mounts | map(attribute='mount') | list) and
         '/home' == mnt.mount
       notify: reboot
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.1.13-14
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -33,3 +33,13 @@
         state: mounted
         opts: "{{ final_opts }}"
       notify: reboot
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.1.15-17
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

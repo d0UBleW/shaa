@@ -17,3 +17,13 @@
         file: info_logging.yml
       when: >
         '/var/log' not in (ansible_mounts | map(attribute='mount') | list)
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.1.11
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
