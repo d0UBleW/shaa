@@ -58,6 +58,9 @@
   ansible.builtin.import_tasks:
     file: ./1.1.15-17.yml
 
+- name: Flushing all handlers
+  ansible.builtin.meta: flush_handlers
+
 - name: Info logging summary
   tags:
     - always
