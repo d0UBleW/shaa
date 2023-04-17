@@ -5,8 +5,8 @@
   vars:
     is_container: true
   tasks:
-    - name: "Include d0ublew.CIS-independent-linux"
+    - name: "Include d0ublew.cis_independent_linux"
       tags:
         - always
       ansible.builtin.include_role:
-        name: "d0ublew.CIS-independent-linux"
+        name: "d0ublew.cis_independent_linux"
