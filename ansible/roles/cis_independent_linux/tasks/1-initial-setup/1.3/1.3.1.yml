@@ -1,0 +1,49 @@
+---
+- name: 1.3.1
+  tags:
+    - 1.3.1
+  when:
+    - section_1_3_1
+  block:
+    - name: |
+        ---
+        1.3.1 Ensure AIDE is installed
+        > Install AIDE via package manager
+        ---
+      ansible.builtin.package:
+        name: aide
+        state: present
+
+    - name: |
+        ---
+        1.3.1 Ensure AIDE is installed
+        > Ensure AIDE is initialized
+        ---
+      ansible.builtin.find:
+        path: /var/lib/aide
+        file_type: file
+        use_regex: true
+        patterns: '^aide.db(\.new)?(\.gz)?$'
+        size: 200k
+        recurse: false
+      register: aide_db_out
+      changed_when: aide_db_out.matched == 0
+
+    - name: |
+        ---
+        1.3.1 Ensure AIDE is installed
+        > Initialize AIDE
+        ---
+      when: aide_db_out.matched == 0
+      ansible.builtin.command: "{{ aide_init_cmd }}"
+      changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.3.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,34 @@
+---
+- name: 1.2.1
+  tags:
+    - 1.2.1
+  when:
+    - section_1_2_1
+  block:
+    - name: |
+        ---
+        1.2.1 Ensure package manager repositories are configured
+        > Retrieve the list of configured repositories
+        ---
+      ansible.builtin.command: "{{ list_repo }}"
+      register: repolist
+      changed_when: false
+      failed_when: repolist.rc != 0
+
+    - name: |
+        ---
+        1.2.1 Ensure package manager repositories are configured
+        > List out the repositories
+        ---
+      ansible.builtin.debug:
+        var: repolist.stdout_lines
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.2.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

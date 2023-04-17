@@ -1,0 +1,34 @@
+---
+- name: 1.2.2
+  tags:
+    - 1.2.2
+  when:
+    - section_1_2_2
+  block:
+    - name: |
+        ---
+        1.2.2 Ensure GPG keys are configured
+        > Retrieve the list of GPG keys
+        ---
+      ansible.builtin.command: "{{ list_gpg_keys }}"
+      register: gpgkeys
+      changed_when: false
+      failed_when: gpgkeys.rc != 0
+
+    - name: |
+        ---
+        1.2.2 Ensure GPG keys are configured
+        > List out the GPG keys
+        ---
+      ansible.builtin.debug:
+        var: gpgkeys.stdout_lines
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.2.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

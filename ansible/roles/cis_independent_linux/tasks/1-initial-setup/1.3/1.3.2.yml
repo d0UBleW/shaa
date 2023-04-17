@@ -1,0 +1,27 @@
+---
+- name: 1.3.2
+  tags:
+    - 1.3.2
+  when:
+    - section_1_3_2
+  block:
+    - name: |
+        ---
+        1.3.2 Ensure filesystem integrity is regularly checked
+        > Create a cron job
+        ---
+      ansible.builtin.cron:
+        name: "AIDE filesystem integrity check"
+        minute: 0
+        hour: 5
+        job: $(command -v aide) --check
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.3.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
