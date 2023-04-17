@@ -4,8 +4,30 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: rhel8
-    image: localhost/ubi8-init
+  # - name: rhel8
+  #   image: localhost/ubi8-init
+  #   tmpfs:
+  #     - /tmp
+  #     - /run
+  #   capabilities:
+  #     - SYS_ADMIN
+  #   command: "/usr/sbin/init"
+  #   privileged: true
+  #   pre_build_image: true
+  #
+  # - name: rhel9
+  #   image: localhost/ubi9-init
+  #   tmpfs:
+  #     - /tmp
+  #     - /run
+  #   capabilities:
+  #     - SYS_ADMIN
+  #   command: "/usr/sbin/init"
+  #   privileged: true
+  #   pre_build_image: true
+
+  - name: almalinux8
+    image: localhost/almalinux8-init
     tmpfs:
       - /tmp
       - /run
@@ -14,8 +36,9 @@ platforms:
     command: "/usr/sbin/init"
     privileged: true
     pre_build_image: true
-  - name: rhel9
-    image: localhost/ubi9-init
+
+  - name: almalinux9
+    image: localhost/almalinux9-init
     tmpfs:
       - /tmp
       - /run
@@ -24,6 +47,7 @@ platforms:
     command: "/usr/sbin/init"
     privileged: true
     pre_build_image: true
+
   - name: debian
     image: localhost/debian-bullseye-systemd
     tmpfs:
@@ -34,6 +58,7 @@ platforms:
     command: "/lib/systemd/systemd"
     privileged: true
     pre_build_image: true
+
   - name: ubuntu-2004
     image: localhost/ubuntu-20.04-systemd
     tmpfs:
@@ -44,6 +69,7 @@ platforms:
     command: "/lib/systemd/systemd"
     privileged: true
     pre_build_image: true
+
   - name: opensuse-tumbleweed
     image: localhost/opensuse-tumbleweed-systemd
     tmpfs:
@@ -54,6 +80,7 @@ platforms:
     command: "/lib/systemd/systemd"
     privileged: true
     pre_build_image: true
+
 provisioner:
   name: ansible
 verifier:

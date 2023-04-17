@@ -11,11 +11,13 @@
       failed_when: '"4 packets transmitted, 4 received, 0% packet loss" not in ping_out.stdout'
 
     - name: Bootstrap python3
-      ansible.builtin.raw: dnf install -y python3
+      vars:
+        pkg_mgr:
+          opensuse-tumbleweed-1: zypper
+          almalinux8-1: dnf
+      ansible.builtin.raw: >
+        "{{ pkg_mgr[inventory_hostname] }}" install -y python3 python3-pip
       register: install_py3_out
-      changed_when:
-        - install_py3_out.stdout_lines[-1] == 'Complete!'
-        - install_py3_out.stdout_lines[-2] != 'Nothing to do.'
 
     - name: Install ssh pubkey file
       ansible.builtin.lineinfile:

@@ -4,4 +4,11 @@ all:
     alma:
       ansible_host: 192.168.56.211
       ansible_user: vagrant
-      ansible_ssh_private_key_file: /home/doublew/projects/shaa/ansible/alma.key
+      ansible_ssh_private_key_file: >-
+        /home/doublew/projects/shaa/ansible/ansible.key
+
+    opensuse:
+      ansible_host: 192.168.56.212
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: >-
+        /home/doublew/projects/shaa/ansible/ansible.key

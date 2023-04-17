@@ -6,31 +6,15 @@ servers = [
     ram: 1024,
     cpu: 2,
     provision: 'init.yml'
+  },
+  {
+    hostname: 'opensuse-tumbleweed-1',
+    ip: '192.168.56.212',
+    box: 'opensuse/Tumbleweed.x86_64',
+    ram: 1024,
+    cpu: 2,
+    provision: 'init.yml'
   }
-  # {
-  #   hostname: 'rhel7-2',
-  #   ip: '192.168.56.212',
-  #   box: 'generic/rhel7',
-  #   ram: 512,
-  #   cpu: 2,
-  #   provision: 'init.yaml'
-  # },
-  # {
-  #   hostname: 'rhel8-1',
-  #   ip: '192.168.56.213',
-  #   box: 'generic/rhel8',
-  #   ram: 512,
-  #   cpu: 2,
-  #   provision: 'init.yaml'
-  # },
-  # {
-  #   hostname: 'rhel8-2',
-  #   ip: '192.168.56.214',
-  #   box: 'generic/rhel8',
-  #   ram: 512,
-  #   cpu: 2,
-  #   provision: 'init.yaml'
-  # },
 ]
 
 Vagrant.configure('2') do |config|
