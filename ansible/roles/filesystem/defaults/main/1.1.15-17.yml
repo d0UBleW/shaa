@@ -1,4 +1,0 @@
----
-dev_shm_nodev: "{{ section_1_1_15 }}"
-dev_shm_nosuid: "{{ section_1_1_16 }}"
-dev_shm_noexec: "{{ section_1_1_17 }}"

@@ -1,4 +1,0 @@
----
-tmp_nodev: "{{ section_1_1_3 }}"
-tmp_nosuid: "{{ section_1_1_4 }}"
-tmp_noexec: "{{ section_1_1_5 }}"

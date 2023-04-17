@@ -1,0 +1,6 @@
+---
+- name: 1.1 Filesystem Configuration
+  tags:
+    - 1.1.
+  ansible.builtin.import_tasks:
+    file: ./1.1/main.yml

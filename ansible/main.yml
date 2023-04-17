@@ -7,6 +7,5 @@
   roles:
     - role: filesystem
       vars:
-        default_bool: false
-        section_1_1_16: true
         default_all_sections: false
+        section_1_1_21: true

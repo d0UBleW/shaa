@@ -1,0 +1,40 @@
+---
+##########
+#
+# 1.1
+#
+##########
+
+# 1.1.1
+disable_cramfs: "{{ section_1_1_1_1 }}"
+disable_freevxfs: "{{ section_1_1_1_2 }}"
+disable_jffs2: "{{ section_1_1_1_3 }}"
+disable_hfs: "{{ section_1_1_1_4 }}"
+disable_hfsplus: "{{ section_1_1_1_5 }}"
+disable_squashfs: "{{ section_1_1_1_6 }}"
+disable_udf: "{{ section_1_1_1_7 }}"
+limit_vfat: "{{ section_1_1_1_8 }}"
+
+# 1.1.2-5
+tmp_nodev: "{{ section_1_1_3 }}"
+tmp_nosuid: "{{ section_1_1_4 }}"
+tmp_noexec: "{{ section_1_1_5 }}"
+
+# 1.1.7-10
+var_tmp_nodev: "{{ section_1_1_8 }}"
+var_tmp_nosuid: "{{ section_1_1_9 }}"
+var_tmp_noexec: "{{ section_1_1_10 }}"
+
+# 1.1.13-14
+home_nodev: "{{ section_1_1_14 }}"
+
+# 1.1.15-17
+dev_shm_nodev: "{{ section_1_1_15 }}"
+dev_shm_nosuid: "{{ section_1_1_16 }}"
+dev_shm_noexec: "{{ section_1_1_17 }}"
+
+# 1.1.22
+disable_autofs: "{{ section_1_1_22 }}"
+
+# 1.1.23
+disable_usb_storage_fs: "{{ section_1_1_23 }}"

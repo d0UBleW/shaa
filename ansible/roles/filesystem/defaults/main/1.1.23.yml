@@ -1,2 +1,0 @@
----
-disable_usb_storage_fs: "{{ section_1_1_23 }}"
