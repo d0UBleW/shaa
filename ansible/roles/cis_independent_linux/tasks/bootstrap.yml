@@ -7,9 +7,22 @@
   when:
     - ansible_facts.packages is not defined
 
-- name: Ensure kmod package is installed
+- name: Include OS family specific variables
+  tags:
+    - always
+  ansible.builtin.include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Ensure necessary packages is installed
+  vars:
+    pkgs:
+      - kmod
+      - "{{ cron_pkg_name }}"
   tags:
     - always
   ansible.builtin.package:
-    name: kmod
+    name: "{{ pkg }}"
     state: present
+  loop: "{{ pkgs }}"
+  loop_control:
+    loop_var: pkg

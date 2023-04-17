@@ -1,0 +1,7 @@
+---
+cron_pkg_name: cron
+
+list_repo: apt-cache policy
+list_gpg_keys: apt-key list
+
+aide_init_cmd: aideinit

@@ -1,0 +1,8 @@
+---
+cron_pkg_name: cronie
+
+list_repo: dnf repolist
+list_gpg_keys: >
+  rpm -q gpg-pubkey --qf '%{name}-%{version}-%{release} --> %{summary}\n'
+
+aide_init_cmd: aide --init

@@ -1,0 +1,7 @@
+---
+cron_pkg_name: cronie
+
+list_repo: zypper repos
+list_gpg_keys: zypper repos
+
+aide_init_cmd: aide --init
