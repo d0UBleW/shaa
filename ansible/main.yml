@@ -5,7 +5,7 @@
   hosts:
     - alma
   roles:
-    - role: filesystem
+    - role: CIS-independent-linux
       vars:
         default_all_sections: false
         section_1_1_21: true
