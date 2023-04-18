@@ -14,7 +14,7 @@
         regexp: '^install\s+{{ fs }}\s+(?:(?!/bin/true).)*$'
       ansible.builtin.lineinfile:
         path: "/etc/modprobe.d/{{ fs }}.conf"
-        regexp: "regexp"
+        regexp: "{{ regexp }}"
         line: "install {{ fs }} /bin/true"
         state: present
         create: true
