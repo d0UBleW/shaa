@@ -12,8 +12,12 @@
         ---
       ansible.builtin.cron:
         name: "AIDE filesystem integrity check"
-        minute: 0
-        hour: 5
+        user: "{{ aide_cron_user }}"
+        weekday: "{{ aide_cron_weekday }}"
+        month: "{{ aide_cron_month }}"
+        day: "{{ aide_cron_day }}"
+        hour: "{{ aide_cron_hour }}"
+        minute: "{{ aide_cron_minute }}"
         job: $(command -v aide) --check
 
   rescue:

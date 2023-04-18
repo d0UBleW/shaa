@@ -38,3 +38,17 @@ disable_autofs: "{{ section_1_1_22 }}"
 
 # 1.1.23
 disable_usb_storage_fs: "{{ section_1_1_23 }}"
+
+##########
+#
+# 1.3
+#
+##########
+
+# 1.3.2
+aide_cron_user: root
+aide_cron_weekday: "*"
+aide_cron_month: "*"
+aide_cron_day: "*"
+aide_cron_hour: "*"
+aide_cron_minute: "*"
