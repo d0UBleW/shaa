@@ -26,3 +26,7 @@
   loop: "{{ pkgs }}"
   loop_control:
     loop_var: pkg
+
+- name: Ensure pexpect python3 library is installed
+  ansible.builtin.pip:
+    name: pexpect

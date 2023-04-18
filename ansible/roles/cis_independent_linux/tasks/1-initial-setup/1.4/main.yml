@@ -1,0 +1,16 @@
+---
+- name: 1.4.1 Ensure permissions on bootloader config are configured
+  ansible.builtin.import_tasks:
+    file: ./1.4.1.yml
+
+- name: 1.4.2 Ensure bootloader password is set
+  ansible.builtin.import_tasks:
+    file: ./1.4.2.yml
+
+- name: 1.4.3 Ensure bootloader password is set
+  ansible.builtin.import_tasks:
+    file: ./1.4.3.yml
+
+- name: 1.4.4 Ensure bootloader password is set
+  ansible.builtin.import_tasks:
+    file: ./1.4.4.yml

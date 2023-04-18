@@ -1,0 +1,25 @@
+---
+- name: 1.4.2
+  tags:
+    - 1.4.2
+  when:
+    - section_1_4_2
+  block:
+    # TODO
+    - name: |
+        ---
+        1.4.2 Ensure bootloader password is set
+        > Set password
+        ---
+      ansible.builtin.debug:
+        msg: "Not yet implemented"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.4.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

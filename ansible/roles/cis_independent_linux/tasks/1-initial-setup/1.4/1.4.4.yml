@@ -1,0 +1,39 @@
+---
+- name: 1.4.4
+  tags:
+    - 1.4.4
+  when:
+    - section_1_4_4
+  block:
+    - name: |
+        ---
+        1.4.4 Ensure interactive boot is not enabled
+        > Check if {{ etc_sysconfig_boot }} exists
+        ---
+      ansible.builtin.stat:
+        path: "{{ etc_sysconfig_boot }}"
+      register: boot_stat
+
+    - name: |
+        ---
+        1.4.4 Ensure interactive boot is not enabled
+        > Edit {{ etc_sysconfig_boot }}
+        ---
+      when:
+        - boot_stat.stat.exists
+      ansible.builtin.lineinfile:
+        path: "{{ etc_sysconfig_boot }}"
+        regexp: '^PROMPT_FOR_CONFIRM=(?:(?!"no").)*$'
+        line: 'PROMPT_FOR_CONFIRM="no"'
+        state: present
+        create: false
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.4.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

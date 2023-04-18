@@ -1,0 +1,28 @@
+---
+- name: 1.4.1
+  tags:
+    - 1.4.1
+  when:
+    - section_1_4_1
+  block:
+    - name: |
+        ---
+        1.4.1 Ensure permissions on bootloader config are configured
+        > Change permissions on {{ grub_conf_file }}
+        ---
+      ansible.builtin.file:
+        path: "{{ grub_conf_file }}"
+        state: file
+        owner: root
+        group: root
+        mode: g-rwx,o-rwx
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.4.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -52,3 +52,18 @@ aide_cron_month: "*"
 aide_cron_day: "*"
 aide_cron_hour: "*"
 aide_cron_minute: "*"
+
+##########
+#
+# 1.4
+#
+##########
+
+# 1.4.1
+grub_conf_file: /boot/grub2/grub.cfg
+
+# 1.4.3
+root_password: "changeme"
+
+# 1.4.4
+etc_sysconfig_boot: /etc/sysconfig/boot

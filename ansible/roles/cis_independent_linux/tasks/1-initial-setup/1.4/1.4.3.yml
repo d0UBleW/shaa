@@ -1,0 +1,40 @@
+---
+- name: 1.4.3
+  tags:
+    - 1.4.3
+  when:
+    - section_1_4_3
+  block:
+    - name: |
+        ---
+        1.4.3 Ensure authentication required for single user mode
+        > Check if a password is set for the root user
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/shadow
+        regexp: '^root:([*\!]|!locked):'
+        state: absent
+      check_mode: true
+      register: check_passwd_out
+
+    - name: |
+        ---
+        1.4.3 Ensure authentication required for single user mode
+        > Set a password for the root user
+        ---
+      when: check_passwd_out.found != 0
+      ansible.builtin.expect:
+        command: "passwd root"
+        responses:
+          "New password:": "{{ root_password }}"
+          "Retype new password:": "{{ root_password }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.4.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
