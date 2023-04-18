@@ -1,5 +1,6 @@
 ---
 cron_pkg_name: cron
+sysctl_pkg_name: procps
 
 list_repo: apt-cache policy
 list_gpg_keys: apt-key list

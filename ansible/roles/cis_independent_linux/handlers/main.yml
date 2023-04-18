@@ -12,3 +12,13 @@
   ansible.builtin.set_fact:
     reboot: true
   listen: "reboot"
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: "systemd daemon-reload"
+
+- name: Reload sysctl
+  ansible.builtin.command: sysctl --system
+  failed_when: false
+  listen: "sysctl reload"

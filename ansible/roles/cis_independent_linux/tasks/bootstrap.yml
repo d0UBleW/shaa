@@ -18,6 +18,7 @@
     pkgs:
       - kmod
       - "{{ cron_pkg_name }}"
+      - "{{ sysctl_pkg_name }}"
   tags:
     - always
   ansible.builtin.package:

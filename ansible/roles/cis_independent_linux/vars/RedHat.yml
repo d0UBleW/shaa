@@ -1,5 +1,6 @@
 ---
 cron_pkg_name: cronie
+sysctl_pkg_name: procps-ng
 
 list_repo: dnf repolist
 list_gpg_keys: >

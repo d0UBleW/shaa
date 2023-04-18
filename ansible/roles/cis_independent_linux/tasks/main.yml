@@ -5,7 +5,7 @@
 
 - name: "1 Initial Setup"
   tags:
-    - section-1
+    - 1.x
   ansible.builtin.import_tasks:
     file: ./1-initial-setup/main.yml
 

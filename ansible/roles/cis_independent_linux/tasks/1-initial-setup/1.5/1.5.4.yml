@@ -1,0 +1,70 @@
+---
+- name: 1.5.1
+  tags:
+    - 1.5.1
+  when:
+    - section_1_5_1
+  block:
+    - name: |
+        ---
+        1.5.1 Ensure core dumps are restricted
+        > Edit /etc/security/limits.d/00-coredump.conf
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/security/limits.d/00-coredump.conf
+        regexp: '^\*\s+hard\s+core\s+(?:(?!0).)*$'
+        line: "* hard core 0"
+        create: true
+        mode: 0644
+        state: present
+
+    - name: |
+        ---
+        1.5.1 Ensure core dumps are restricted
+        > Check if systemd-coredump is installed
+        ---
+      ansible.builtin.stat:
+        path: /etc/systemd/coredump.conf
+      register: systemd_coredump_stat
+
+    - name: |
+        ---
+        1.5.1 Ensure core dumps are restricted
+        > Edit /etc/systemd/coredump.conf
+        ---
+      when:
+        - systemd_coredump_stat.stat.exists
+      vars:
+        coredump_conf:
+          - key: Storage
+            value: none
+            sep: "="
+          - key: ProcessSizeMax
+            value: "0"
+            sep: "="
+        esc_key: "{{ item.key | regex_escape() }}"
+        esc_value: "{{ item.value | regex_escape() }}"
+        esc_sep: "{{ item.sep | regex_escape() }}"
+        regexp: '^{{ esc_key }}\s*{{ esc_sep }}\s*(?:(?!{{ esc_value }}).)*$'
+        line: "{{ item.key }}{{ item.sep }}{{ item.value }}"
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/coredump.conf
+        regexp: "{{ regexp }}"
+        line: "{{ line }}"
+        state: present
+        insertafter: '^\[Coredump\]'
+      loop: "{{ coredump_conf }}"
+      loop_control:
+        label: "{{ line }}"
+      register: systemd_coredump_conf_out
+      notify: "systemd daemon-reload"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.5.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

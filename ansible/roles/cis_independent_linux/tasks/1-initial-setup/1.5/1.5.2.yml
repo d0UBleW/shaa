@@ -1,0 +1,30 @@
+---
+- name: 1.5.2
+  tags:
+    - 1.5.2
+  when:
+    - section_1_5_2
+    - not is_container
+  block:
+    - name: |
+        ---
+        1.5.2 Ensure XD/NX support is enabled
+        > Check if NX is active
+        ---
+      ansible.builtin.shell: >
+        dmesg | grep '\sNX\s.*\sprotection:\s' | grep -v active
+      register: nx_out
+      changed_when: false
+      failed_when: false
+
+      # TODO: edit /etc/default/grub GRUB_CMDLINE_LINUX_DEFAULT
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.5.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

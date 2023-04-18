@@ -1,5 +1,6 @@
 ---
 cron_pkg_name: cronie
+sysctl_pkg_name: procps
 
 list_repo: zypper repos
 list_gpg_keys: zypper repos
