@@ -1,6 +1,10 @@
 ---
-cron_pkg_name: cron
-sysctl_pkg_name: procps
+bootstrap_pkgs:
+  - kmod
+  - cron
+  - procps
+
+grub_prefix: grub
 
 list_repo: apt-cache policy
 list_gpg_keys: apt-key list

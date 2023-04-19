@@ -1,63 +1,38 @@
 ---
-- name: 1.5.1
+- name: 1.5.4
   tags:
-    - 1.5.1
+    - 1.5.4
   when:
-    - section_1_5_1
+    - section_1_5_4
   block:
     - name: |
         ---
-        1.5.1 Ensure core dumps are restricted
-        > Edit /etc/security/limits.d/00-coredump.conf
+        1.5.4 Ensure prelink is disabled
+        > Check if prelink is installed
         ---
-      ansible.builtin.lineinfile:
-        path: /etc/security/limits.d/00-coredump.conf
-        regexp: '^\*\s+hard\s+core\s+(?:(?!0).)*$'
-        line: "* hard core 0"
-        create: true
-        mode: 0644
-        state: present
-
-    - name: |
-        ---
-        1.5.1 Ensure core dumps are restricted
-        > Check if systemd-coredump is installed
-        ---
-      ansible.builtin.stat:
-        path: /etc/systemd/coredump.conf
-      register: systemd_coredump_stat
-
-    - name: |
-        ---
-        1.5.1 Ensure core dumps are restricted
-        > Edit /etc/systemd/coredump.conf
-        ---
-      when:
-        - systemd_coredump_stat.stat.exists
       vars:
-        coredump_conf:
-          - key: Storage
-            value: none
-            sep: "="
-          - key: ProcessSizeMax
-            value: "0"
-            sep: "="
-        esc_key: "{{ item.key | regex_escape() }}"
-        esc_value: "{{ item.value | regex_escape() }}"
-        esc_sep: "{{ item.sep | regex_escape() }}"
-        regexp: '^{{ esc_key }}\s*{{ esc_sep }}\s*(?:(?!{{ esc_value }}).)*$'
-        line: "{{ item.key }}{{ item.sep }}{{ item.value }}"
-      ansible.builtin.lineinfile:
-        path: /etc/systemd/coredump.conf
-        regexp: "{{ regexp }}"
-        line: "{{ line }}"
-        state: present
-        insertafter: '^\[Coredump\]'
-      loop: "{{ coredump_conf }}"
-      loop_control:
-        label: "{{ line }}"
-      register: systemd_coredump_conf_out
-      notify: "systemd daemon-reload"
+        prelink_match: >
+          {{ ansible_facts.packages | dict2items |
+             selectattr('key', 'match', '^prelink') | length }}
+      when:
+        - prelink_match | int > 0
+      block:
+        - name: |
+            ---
+            1.5.4 Ensure prelink is disabled
+            > Restore binaries to normal if prelink is installed
+            ---
+          ansible.builtin.command: "prelink -ua"
+          changed_when: false
+
+        - name: |
+            ---
+            1.5.4 Ensure prelink is disabled
+            > Uninstall prelink
+            ---
+          ansible.builtin.package:
+            name: prelink
+            state: absent
 
   rescue:
     - name: Flushing all handlers
@@ -65,6 +40,6 @@
 
     - name: Error backtrace
       vars:
-        section_id: 1.5.1
+        section_id: 1.5.4
       ansible.builtin.import_tasks:
         file: error_logging.yml

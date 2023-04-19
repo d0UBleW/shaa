@@ -4,15 +4,46 @@
     - 1.4.2
   when:
     - section_1_4_2
+    - grub_v2
   block:
-    # TODO
     - name: |
         ---
         1.4.2 Ensure bootloader password is set
-        > Set password
+        > Check if a password has been set
         ---
-      ansible.builtin.debug:
-        msg: "Not yet implemented"
+      ansible.builtin.command: >
+        grep "password_pbkdf2\s+.+\s+grub\.pbkdf2\.sha512"
+        {{ boot_loader_conf }}
+      changed_when: false
+
+    - name: |
+        ---
+        1.4.2 Ensure bootloader password is set
+        > Generate PBKDF2 password
+        ---
+      ansible.builtin.expect:
+        command: "{{ grub_prefix }}-mkpasswd-pbkdf2"
+        responses:
+          "Enter password:": "{{ bootloader_password }}"
+          "Reenter password": "{{ bootloader_password }}"
+      register: pbkdf2_out
+      changed_when: false
+
+    - name: |
+        ---
+        1.4.2 Ensure bootloader password is set
+        > Edit /etc/grub.d/99_ansible_bootloader_password
+        ---
+      vars:
+        bootloader_pw_hash: >-
+          {{ pbkdf2_out.stdout_lines[-1].split(" ")[-1] }}
+      ansible.builtin.template:
+        src: etc/grub.d/99_ansible_bootloader_password.j2
+        dest: /etc/grub.d/99_ansible_bootloader_password
+        mode: "0755"
+        owner: root
+        group: root
+      notify: "grub mkconfig"
 
   rescue:
     - name: Flushing all handlers

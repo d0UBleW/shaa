@@ -6,11 +6,11 @@
 - name: 1.5.2 Ensure XD/NX support is enabled
   ansible.builtin.import_tasks:
     file: ./1.5.2.yml
-#
-# - name: 1.5.3 Ensure Address Space Layout Randomization (ASLR) is enabled
-#   ansible.builtin.import_tasks:
-#     file: ./1.5.3.yml
-#
-# - name: 1.5.4 Ensure prelink is disabled
-#   ansible.builtin.import_tasks:
-#     file: ./1.5.4.yml
+
+- name: 1.5.3 Ensure Address Space Layout Randomization (ASLR) is enabled
+  ansible.builtin.import_tasks:
+    file: ./1.5.3.yml
+
+- name: 1.5.4 Ensure prelink is disabled
+  ansible.builtin.import_tasks:
+    file: ./1.5.4.yml

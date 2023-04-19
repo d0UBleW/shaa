@@ -12,12 +12,39 @@
         > Check if NX is active
         ---
       ansible.builtin.shell: >
-        dmesg | grep '\sNX\s.*\sprotection:\s' | grep -v active
+        dmesg | grep '\sNX\s.*\sprotection:\s' | grep -q active
       register: nx_out
       changed_when: false
       failed_when: false
 
-      # TODO: edit /etc/default/grub GRUB_CMDLINE_LINUX_DEFAULT
+    - name: |
+        ---
+        1.5.2 Ensure XD/NX support is enabled
+        > Add boot parameter 'noexec=on' (RedHat|Suse)
+        ---
+      when:
+        - nx_out.rc == 1
+        - ansible_os_family == 'RedHat' or
+          ansible_os_family == 'Suse'
+      ansible.builtin.command: >
+        grubby --update-kernel=ALL --args="noexec=on"
+      notify: "reboot"
+
+    - name: |
+        ---
+        1.5.2 Ensure XD/NX support is enabled
+        > Add boot parameter 'noexec=on' (Debian)
+        ---
+      when:
+        - nx_out.rc == 1
+        - ansible_os_family == 'Debian'
+      ansible.builtin.lineinfile:
+        path: "/etc/default/grub"
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!noexec=on).)*)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 noexec=on"'
+        backrefs: true
+        backup: true
+      notify: "grub mkconfig"
 
   rescue:
     - name: Flushing all handlers

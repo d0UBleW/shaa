@@ -59,8 +59,9 @@ aide_cron_minute: "*"
 #
 ##########
 
-# 1.4.1
-grub_conf_file: /boot/grub2/grub.cfg
+# 1.4.2
+bootloader_superuser: "root"
+bootloader_password: "changeme"
 
 # 1.4.3
 root_password: "changeme"

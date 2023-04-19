@@ -22,3 +22,8 @@
   ansible.builtin.command: sysctl --system
   failed_when: false
   listen: "sysctl reload"
+
+- name: Update grub2 configuration
+  ansible.builtin.include_tasks:
+    file: grub.yml
+  listen: "grub mkconfig"

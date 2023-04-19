@@ -1,33 +1,69 @@
 ---
-- name: Gather the package facts
+- name: Bootstrap
   tags:
     - always
-  ansible.builtin.package_facts:
-    manager: auto
-  when:
-    - ansible_facts.packages is not defined
+  block:
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+      when:
+        - ansible_facts.packages is not defined
 
-- name: Include OS family specific variables
-  tags:
-    - always
-  ansible.builtin.include_vars:
-    file: "{{ ansible_os_family }}.yml"
+    - name: Include OS family specific variables
+      ansible.builtin.include_vars:
+        file: "{{ ansible_os_family }}.yml"
 
-- name: Ensure necessary packages is installed
-  vars:
-    pkgs:
-      - kmod
-      - "{{ cron_pkg_name }}"
-      - "{{ sysctl_pkg_name }}"
-  tags:
-    - always
-  ansible.builtin.package:
-    name: "{{ pkg }}"
-    state: present
-  loop: "{{ pkgs }}"
-  loop_control:
-    loop_var: pkg
+    - name: Ensure necessary packages are installed
+      ansible.builtin.package:
+        name: "{{ pkg }}"
+        state: present
+      loop: "{{ bootstrap_pkgs }}"
+      loop_control:
+        loop_var: pkg
 
-- name: Ensure pexpect python3 library is installed
-  ansible.builtin.pip:
-    name: pexpect
+    - name: Ensure pexpect python3 library is installed
+      ansible.builtin.pip:
+        name: pexpect
+
+    - name: Check for BIOS vs UEFI boot option
+      ansible.builtin.shell: >
+        [ -d /sys/firmware/efi ] && echo -n UEFI || echo -n BIOS
+      register: boot_opt
+      failed_when: false
+      changed_when: false
+
+    # grub2 on RedHat and Suse
+    # grub on Debian
+    # grub-install -V or grub2-install -V to get the grub version
+    # grub 0.97 config file is /boot/grub/menu.lst
+    - name: Check if the boot loader is GRUB version 2
+      vars:
+        match: >
+          {{ ansible_facts.packages | dict2items |
+             selectattr('key', 'match', '^grub2') | length }}
+      ansible.builtin.set_fact:
+        grub_v2: match | int > 0
+
+    - name: Set boot option fact
+      ansible.builtin.set_fact:
+        boot_option: "{{ boot_opt.stdout }}"
+
+    - name: Set BIOS boot loader config file fact
+      when:
+        - boot_option == 'BIOS'
+      ansible.builtin.set_fact:
+        boot_loader_conf: "/boot/{{ grub_prefix }}/grub.cfg"
+
+    - name: GRUB2 UEFI
+      when:
+        - grub_v2
+        - boot_option == 'UEFI'
+      block:
+        - name: Resolve EFI boot loader config file symlink
+          ansible.builtin.stat:
+            path: /etc/grub2-efi.cfg
+          register: grub2_efi_symlink
+
+        - name: Set EFI boot loader config file fact
+          ansible.builtin.set_fact:
+            boot_loader_conf: "{{ grub2_efi_symlink.stat.lnk_source }}"

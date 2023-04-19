@@ -8,10 +8,12 @@
     - name: |
         ---
         1.4.1 Ensure permissions on bootloader config are configured
-        > Change permissions on {{ grub_conf_file }}
+        > Change permissions on {{ boot_loader_conf }}
         ---
+      when:
+        - grub_v2
       ansible.builtin.file:
-        path: "{{ grub_conf_file }}"
+        path: "{{ boot_loader_conf }}"
         state: file
         owner: root
         group: root

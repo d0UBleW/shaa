@@ -1,6 +1,11 @@
 ---
-cron_pkg_name: cronie
-sysctl_pkg_name: procps-ng
+bootstrap_pkgs:
+  - kmod
+  - cronie
+  - procps-ng
+  - grubby
+
+grub_prefix: grub2
 
 list_repo: dnf repolist
 list_gpg_keys: >
