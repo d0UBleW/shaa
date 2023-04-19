@@ -14,6 +14,14 @@ servers = [
     ram: 1024,
     cpu: 2,
     provision: 'init.yml'
+  },
+  {
+    hostname: 'ubuntu2004',
+    ip: '192.168.56.213',
+    box: 'generic/ubuntu2004',
+    ram: 1024,
+    cpu: 2,
+    provision: 'init.yml'
   }
 ]
 

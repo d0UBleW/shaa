@@ -4,8 +4,9 @@
   gather_facts: true
   hosts:
     - alma
+    - opensuse
+    - ubuntu
   roles:
     - role: cis_independent_linux
       vars:
-        default_all_sections: false
-        section_1_1_21: true
+        default_all_sections: true
