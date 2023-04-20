@@ -3,7 +3,8 @@
   tags:
     - 1.2.1
   when:
-    - section_1_2_1
+    # section_1_2_1
+    - audit_repos | bool
   block:
     - name: |
         ---

@@ -1,0 +1,29 @@
+---
+- name: 1.6.2.2
+  when:
+    # section_1_6_2_2
+    - enforce_selinux_state | bool
+    - mac == 'selinux'
+  block:
+    - name: |
+        ---
+        1.6.2.2 Ensure the SELinux state is enforcing
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/selinux/config
+        regexp: "^SELINUX=(?:(?!enforcing).)*$"
+        line: "SELINUX=enforcing"
+        create: true
+        owner: root
+        group: root
+        mode: 0644
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.6.2.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

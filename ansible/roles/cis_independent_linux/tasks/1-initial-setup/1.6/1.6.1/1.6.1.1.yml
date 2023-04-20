@@ -1,0 +1,29 @@
+---
+- name: 1.6.1.1
+  when:
+    # section_1_6_1_1
+    - install_mandatory_access_control | bool
+    - mac in valid_mandatory_access_controls.keys()
+  block:
+    - name: |
+        ---
+        1.6.1.1 Ensure SELinux or AppArmor are installed
+        > Install {{ mac }}
+        ---
+      ansible.builtin.package:
+        name: "{{ pkg }}"
+        state: present
+      loop: "{{ valid_mandatory_access_controls[mac] }}"
+      loop_control:
+        label: "{{ pkg }}"
+        loop_var: pkg
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.6.1.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -3,7 +3,8 @@
   tags:
     - 1.4.2
   when:
-    - section_1_4_2
+    # section_1_4_2
+    - bootloader_auth | bool
     - grub_v2
   block:
     - name: |

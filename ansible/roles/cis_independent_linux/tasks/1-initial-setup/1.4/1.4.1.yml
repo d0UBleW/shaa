@@ -3,7 +3,8 @@
   tags:
     - 1.4.1
   when:
-    - section_1_4_1
+    # section_1_4_1
+    - bootloader_conf_perm | bool
   block:
     - name: |
         ---

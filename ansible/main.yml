@@ -3,10 +3,13 @@
   become: true
   gather_facts: true
   hosts:
-    - alma
-    - opensuse
-    - ubuntu
+    - testing
+    # - alma
+    # - opensuse
+    # - ubuntu
   roles:
     - role: cis_independent_linux
       vars:
         default_all_sections: true
+        mandatory_access_control:
+          Suse: selinux

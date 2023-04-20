@@ -3,7 +3,8 @@
   tags:
     - 1.5.1
   when:
-    - section_1_5_1
+    # section_1_5_1
+    - restrict_coredump | bool
   block:
     - name: |
         ---

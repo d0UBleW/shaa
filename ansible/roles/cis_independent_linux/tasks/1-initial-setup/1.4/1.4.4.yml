@@ -3,7 +3,8 @@
   tags:
     - 1.4.4
   when:
-    - section_1_4_4
+    # section_1_4_4
+    - disable_interactive_boot | bool
   block:
     - name: |
         ---

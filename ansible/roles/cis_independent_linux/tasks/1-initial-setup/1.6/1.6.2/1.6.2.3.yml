@@ -1,0 +1,30 @@
+---
+- name: 1.6.2.3
+  when:
+    # section_1_6_2_3
+    - enable_selinux_policy | bool
+    - mac == 'selinux'
+  block:
+    - name: |
+        ---
+        1.6.2.3 Ensure SELinux policy is configured
+        > Edit /etc/selinux/config
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/selinux/config
+        regexp: "^SELINUXTYPE=(?:(?!{{ selinuxtype }}).)*$"
+        line: "SELINUXTYPE={{ selinuxtype }}"
+        create: true
+        owner: root
+        group: root
+        mode: 0644
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.6.2.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

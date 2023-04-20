@@ -1,0 +1,5 @@
+---
+- name: 1.6.1.1 Ensure mounting of cramfs filesystems is disabled
+  tags: 1.6.1.1
+  ansible.builtin.import_tasks:
+    file: ./1.6.1.1.yml

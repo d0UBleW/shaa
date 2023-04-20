@@ -1,0 +1,84 @@
+---
+- name: 1.6.3.1
+  vars:
+    blacklist:
+      - "apparmor=0"
+  when:
+    # section_1_6_3_1
+    - configure_bootloader_apparmor | bool
+    - not is_container
+    - mac == 'apparmor'
+    - grub_v2
+    - ansible_os_family != 'RedHat'
+  block:
+    - name: |
+        ---
+        1.6.3.1 Ensure AppArmor is not disabled in bootloader configuration
+        > Get GRUB_CMDLINE_LINUX value from /etc/default/grub
+        ---
+      ansible.builtin.shell: >
+        grep -oP '(?<=^GRUB_CMDLINE_LINUX=").*(?="$)' /etc/default/grub
+      register: raw_args
+      changed_when: false
+      failed_when: false
+
+    - name: |
+        ---
+        1.6.3.1 Ensure AppArmor is not disabled in bootloader configuration
+        > Edit GRUB_CMDLINE_LINUX in /etc/default/grub
+        ---
+      when:
+        - raw_args.rc == 0
+        - "'apparmor=0' not in raw_args"
+      vars:
+        new_args: >-
+          {{ raw_args.stdout.split() |
+             difference(blacklist) |
+             join(' ') }}
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX=".*"$'
+        line: 'GRUB_CMDLINE_LINUX="{{ new_args }}"'
+        backup: true
+      notify: "grub mkconfig"
+
+    - name: |
+        ---
+        1.6.3.1 Ensure AppArmor is not disabled in bootloader configuration
+        > Get GRUB_CMDLINE_LINUX_DEFAULT value from /etc/default/grub
+        ---
+      ansible.builtin.shell: >
+        grep -oP '(?<=^GRUB_CMDLINE_LINUX_DEFAULT=").*(?="$)' /etc/default/grub
+      register: raw_args
+      changed_when: false
+      failed_when: false
+
+    - name: |
+        ---
+        1.6.3.1 Ensure AppArmor is not disabled in bootloader configuration
+        > Edit GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub
+        ---
+      when:
+        - raw_args.rc == 0
+        - "'apparmor=0' not in raw_args"
+      vars:
+        new_args: >-
+          {{ raw_args.stdout.split() |
+             difference(blacklist) |
+             join(' ') }}
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=".*"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ new_args }}"'
+        backup: true
+      notify: "grub mkconfig"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.6.3.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

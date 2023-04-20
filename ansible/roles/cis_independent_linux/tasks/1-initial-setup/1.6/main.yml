@@ -1,0 +1,18 @@
+---
+- name: 1.6.1 Ensure Mandatory Access Control Software is installed
+  tags:
+    - 1.6.1
+  ansible.builtin.import_tasks:
+    file: ./1.6.1/main.yml
+
+- name: 1.6.2 Configure SELinux
+  tags:
+    - 1.6.2
+  ansible.builtin.import_tasks:
+    file: ./1.6.2/main.yml
+
+- name: 1.6.3 Configure AppArmor
+  tags:
+    - 1.6.3
+  ansible.builtin.import_tasks:
+    file: ./1.6.3/main.yml

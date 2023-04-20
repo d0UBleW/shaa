@@ -3,7 +3,8 @@
   tags:
     - 1.5.3
   when:
-    - section_1_5_3
+    # section_1_5_3
+    - enable_aslr | bool
   block:
     - name: |
         ---

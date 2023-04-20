@@ -41,11 +41,27 @@ disable_usb_storage_fs: "{{ section_1_1_23 }}"
 
 ##########
 #
+# 1.2
+#
+##########
+
+# 1.2.1
+audit_repos: "{{ section_1_2_1 }}"
+
+# 1.2.2
+audit_gpg: "{{ section_1_2_2 }}"
+
+##########
+#
 # 1.3
 #
 ##########
 
+# 1.3.1
+install_aide: "{{ section_1_3_1 }}"
+
 # 1.3.2
+aide_cronjob: "{{ section_1_3_2 }}"
 aide_cron_user: root
 aide_cron_weekday: "*"
 aide_cron_month: "*"
@@ -59,12 +75,84 @@ aide_cron_minute: "*"
 #
 ##########
 
+# 1.4.1
+bootloader_conf_perm: "{{ section_1_4_1 }}"
+
 # 1.4.2
+bootloader_auth: "{{ section_1_4_2 }}"
 bootloader_superuser: "root"
 bootloader_password: "changeme"
 
 # 1.4.3
+system_auth: "{{ section_1_4_3 }}"
 root_password: "changeme"
 
 # 1.4.4
+disable_interactive_boot: "{{ section_1_4_4 }}"
 etc_sysconfig_boot: /etc/sysconfig/boot
+
+##########
+#
+# 1.5
+#
+##########
+
+# 1.5.1
+restrict_coredump: "{{ section_1_5_1 }}"
+
+# 1.5.2
+enable_nx: "{{ section_1_5_2 }}"
+
+# 1.5.3
+enable_aslr: "{{ section_1_5_3 }}"
+
+# 1.5.4
+disable_prelink: "{{ section_1_5_4 }}"
+
+##########
+#
+# 1.6
+#
+##########
+
+mandatory_access_control:
+  Debian: apparmor
+  Suse: selinux
+  RedHat: selinux
+
+# 1.6.1.1
+install_mandatory_access_control: "{{ section_1_6_1_1 }}"
+
+# 1.6.2.1
+configure_bootloader_selinux: "{{ section_1_6_2_1 }}"
+
+# 1.6.2.2
+enforce_selinux_state: "{{ section_1_6_2_2 }}"
+
+# 1.6.2.3
+enable_selinux_policy: "{{ section_1_6_2_3 }}"
+selinuxtype: targeted
+
+# 1.6.2.4
+uninstall_setroubleshoot: "{{ section_1_6_2_4 }}"
+
+# 1.6.2.5
+uninstall_mcstrans: "{{ section_1_6_2_5 }}"
+
+# 1.6.2.6
+audit_unconfined_daemons: "{{ section_1_6_2_6 }}"
+
+# 1.6.3.1
+configure_bootloader_apparmor: "{{ section_1_6_3_1 }}"
+
+# 1.6.3.2
+enforce_apparmor: "{{ section_1_6_3_2 }}"
+
+##########
+#
+# 1.7
+#
+##########
+
+audit_motd: "{{ section_1_7_1_1 }}"
+etc_motd: "Hello"

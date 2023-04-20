@@ -3,7 +3,8 @@
   tags:
     - 1.5.2
   when:
-    - section_1_5_2
+    # section_1_5_2
+    - enable_nx | bool
     - not is_container
   block:
     - name: |
@@ -38,6 +39,7 @@
       when:
         - nx_out.rc == 1
         - ansible_os_family == 'Debian'
+        - grub_v2
       ansible.builtin.lineinfile:
         path: "/etc/default/grub"
         regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!noexec=on).)*)"$'

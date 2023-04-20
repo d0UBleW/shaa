@@ -12,3 +12,8 @@ list_gpg_keys: >
   rpm -q gpg-pubkey --qf '%{name}-%{version}-%{release} --> %{summary}\n'
 
 aide_init_cmd: aide --init
+
+valid_mandatory_access_controls:
+  selinux:
+    - libselinux
+    - policycoreutils

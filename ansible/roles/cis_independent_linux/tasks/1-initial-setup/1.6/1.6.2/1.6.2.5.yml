@@ -1,0 +1,25 @@
+---
+- name: 1.6.2.5
+  when:
+    # section_1_6_2_5
+    - uninstall_mcstrans | bool
+    - mac == 'selinux'
+  block:
+    - name: |
+        ---
+        1.6.2.5 Ensure the MCS Translation Service (mcstrans) is not installed
+        > Uninstall mcstrans via package manager
+        ---
+      ansible.builtin.package:
+        name: mcstrans
+        state: absent
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.6.2.5
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -3,7 +3,8 @@
   tags:
     - 1.5.4
   when:
-    - section_1_5_4
+    # section_1_5_4
+    - disable_prelink | bool
   block:
     - name: |
         ---

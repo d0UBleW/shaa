@@ -1,0 +1,30 @@
+---
+- name: 1.6.2.1 Ensure SELinux is not disabled in bootloader configuration
+  tags: 1.6.2.1
+  ansible.builtin.import_tasks:
+    file: ./1.6.2.1.yml
+
+- name: 1.6.2.2 Ensure the SELinux state is enforcing
+  tags: 1.6.2.2
+  ansible.builtin.import_tasks:
+    file: ./1.6.2.2.yml
+
+- name: 1.6.2.3 Ensure the SELinux state is enforcing
+  tags: 1.6.2.3
+  ansible.builtin.import_tasks:
+    file: ./1.6.2.3.yml
+
+- name: 1.6.2.4 Ensure SETroubleshoot is not installed
+  tags: 1.6.2.4
+  ansible.builtin.import_tasks:
+    file: ./1.6.2.4.yml
+
+- name: 1.6.2.5 Ensure the MCS Translation Service (mcstrans) is not installed
+  tags: 1.6.2.5
+  ansible.builtin.import_tasks:
+    file: ./1.6.2.5.yml
+
+- name: 1.6.2.6 Ensure no unconfined daemons exist
+  tags: 1.6.2.6
+  ansible.builtin.import_tasks:
+    file: ./1.6.2.6.yml

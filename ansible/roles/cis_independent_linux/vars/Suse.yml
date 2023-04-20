@@ -11,3 +11,13 @@ list_repo: zypper repos
 list_gpg_keys: zypper repos
 
 aide_init_cmd: aide --init
+
+valid_mandatory_access_controls:
+  selinux:
+    - libselinux1
+    - policycoreutils
+  apparmor:
+    - apparmor-parser
+    - apparmor-utils
+
+apparmor_enforce: enforce

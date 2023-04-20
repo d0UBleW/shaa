@@ -3,7 +3,8 @@
   tags:
     - 1.2.2
   when:
-    - section_1_2_2
+    # section_1_2_2
+    - audit_gpg | bool
   block:
     - name: |
         ---

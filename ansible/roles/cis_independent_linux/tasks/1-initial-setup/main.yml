@@ -28,3 +28,17 @@
     - 1.5.x
   ansible.builtin.import_tasks:
     file: ./1.5/main.yml
+
+- name: 1.6 Mandatory Access Control
+  tags:
+    - 1.6.x
+  vars:
+    default_mac:
+      Debian: apparmor
+      Suse: apparmor
+      RedHat: selinux
+    final_mac: >
+      {{ default_mac | combine(mandatory_access_control, recursive=True) }}
+    mac: "{{ final_mac[ansible_os_family] }}"
+  ansible.builtin.import_tasks:
+    file: ./1.6/main.yml

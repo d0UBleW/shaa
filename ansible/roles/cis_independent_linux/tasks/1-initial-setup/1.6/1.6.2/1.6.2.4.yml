@@ -1,0 +1,26 @@
+---
+- name: 1.6.2.4
+  when:
+    # section_1_6_2_4
+    - uninstall_setroubleshoot | bool
+    - mac == 'selinux'
+    - ansible_os_family != 'Debian'
+  block:
+    - name: |
+        ---
+        1.6.2.4 Ensure SETroubleshoot is not installed
+        > Uninstall SETroubleshoot via package manager
+        ---
+      ansible.builtin.package:
+        name: setroubleshoot
+        state: absent
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.6.2.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

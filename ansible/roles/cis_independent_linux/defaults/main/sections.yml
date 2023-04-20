@@ -64,3 +64,21 @@ section_1_5_1: "{{ section_1_5 }}"
 section_1_5_2: "{{ section_1_5 }}"
 section_1_5_3: "{{ section_1_5 }}"
 section_1_5_4: "{{ section_1_5 }}"
+
+section_1_6_1: "{{ section_1_6 }}"
+section_1_6_1_1: "{{ section_1_6_1 }}"
+
+section_1_6_2: "{{ section_1_6 }}"
+section_1_6_2_1: "{{ section_1_6_2 }}"
+section_1_6_2_2: "{{ section_1_6_2 }}"
+section_1_6_2_3: "{{ section_1_6_2 }}"
+section_1_6_2_4: "{{ section_1_6_2 }}"
+section_1_6_2_5: "{{ section_1_6_2 }}"
+section_1_6_2_6: "{{ section_1_6_2 }}"
+
+section_1_6_3: "{{ section_1_6 }}"
+section_1_6_3_1: "{{ section_1_6_3 }}"
+section_1_6_3_2: "{{ section_1_6_3 }}"
+
+section_1_7_1: "{{ section_1_7 }}"
+section_1_7_1_1: "{{ section_1_7_1 }}"

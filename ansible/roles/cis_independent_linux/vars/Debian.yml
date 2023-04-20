@@ -10,3 +10,12 @@ list_repo: apt-cache policy
 list_gpg_keys: apt-key list
 
 aide_init_cmd: aideinit
+
+valid_mandatory_access_controls:
+  selinux:
+    - libselinux1
+  apparmor:
+    - apparmor
+    - apparmor-utils
+
+apparmor_enforce: aa-enforce

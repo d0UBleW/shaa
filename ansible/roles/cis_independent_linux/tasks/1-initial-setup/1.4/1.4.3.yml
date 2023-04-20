@@ -3,7 +3,8 @@
   tags:
     - 1.4.3
   when:
-    - section_1_4_3
+    # section_1_4_3
+    - system_auth | bool
   block:
     - name: |
         ---

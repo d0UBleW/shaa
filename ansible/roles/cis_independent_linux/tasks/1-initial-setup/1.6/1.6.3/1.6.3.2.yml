@@ -1,0 +1,39 @@
+---
+- name: 1.6.3.2
+  when:
+    # section_1_6_3_2
+    - enforce_apparmor | bool
+    - mac == 'apparmor'
+    - ansible_os_family != 'RedHat'
+  block:
+    - name: |
+        ---
+        1.6.3.2 Ensure all AppArmor Profiles are enforcing
+        > Check if apparmor module is loaded
+        ---
+      ansible.builtin.shell: >
+        apparmor_status | head -1 | grep -q '^apparmor module is loaded.$'
+      register: apparmor_loaded
+      changed_when: false
+      failed_when: false
+
+    - name: |
+        ---
+        1.6.3.2 Ensure all AppArmor Profiles are enforcing
+        > Enforce apparmor profile on /etc/apparmod.d/*
+        ---
+      when:
+        - apparmor_loaded.rc == 1
+      ansible.builtin.shell: >
+        {{ apparmor_enforce }} /etc/apparmor.d/*
+      changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.6.3.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
