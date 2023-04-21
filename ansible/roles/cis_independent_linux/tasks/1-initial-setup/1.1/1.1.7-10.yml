@@ -7,9 +7,9 @@
     - 1.1.10
   when:
     - section_1_1_7 or
-      section_1_1_8 or
-      section_1_1_9 or
-      section_1_1_10
+      var_tmp_nodev or
+      var_tmp_nosuid or
+      var_tmp_noexec
   block:
     - name: |
         ---

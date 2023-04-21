@@ -9,9 +9,9 @@
     - 1.1.5
   when:
     - section_1_1_2 or
-      section_1_1_3 or
-      section_1_1_4 or
-      section_1_1_5
+      tmp_nodev or
+      tmp_nosuid or
+      tmp_noexec
   block:
     # ansible.builtin.mount handles the /tmp remount as well
     - name: |
