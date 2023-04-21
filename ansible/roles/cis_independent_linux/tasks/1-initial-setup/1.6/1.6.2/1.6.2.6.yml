@@ -1,5 +1,8 @@
 ---
 - name: 1.6.2.6
+  tags:
+    - level_2_server
+    - level_2_workstation
   when:
     # section_1_6_2_6
     - audit_unconfined_daemons | bool

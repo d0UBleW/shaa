@@ -1,5 +1,8 @@
 ---
 - name: 1.1.18-20
+  tags:
+    - level_1_server
+    - level_1_workstation
   when:
     - section_1_1_18 or
       section_1_1_19 or

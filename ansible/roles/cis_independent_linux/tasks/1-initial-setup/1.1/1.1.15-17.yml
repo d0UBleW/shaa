@@ -1,6 +1,8 @@
 ---
 - name: 1.1.15-17
   tags:
+    - level_1_server
+    - level_1_workstation
     - 1.1.15
     - 1.1.16
     - 1.1.17

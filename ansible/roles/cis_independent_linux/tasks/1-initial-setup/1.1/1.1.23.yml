@@ -1,6 +1,8 @@
 ---
 - name: 1.1.23
   tags:
+    - level_1_server
+    - level_2_workstation
     - 1.1.23
   when:
     - disable_usb_storage_fs | bool

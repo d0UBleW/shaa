@@ -2,6 +2,8 @@
 - name: 1.5.2
   tags:
     - 1.5.2
+    - level_1_server
+    - level_1_workstation
   when:
     # section_1_5_2
     - enable_nx | bool

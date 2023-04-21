@@ -1,5 +1,8 @@
 ---
 - name: 1.6.1.1
+  tags:
+    - level_2_server
+    - level_2_workstation
   when:
     # section_1_6_1_1
     - install_mandatory_access_control | bool

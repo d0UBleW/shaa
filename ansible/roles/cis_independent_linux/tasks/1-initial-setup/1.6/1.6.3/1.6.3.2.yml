@@ -1,5 +1,8 @@
 ---
 - name: 1.6.3.2
+  tags:
+    - level_2_server
+    - level_2_workstation
   when:
     # section_1_6_3_2
     - enforce_apparmor | bool

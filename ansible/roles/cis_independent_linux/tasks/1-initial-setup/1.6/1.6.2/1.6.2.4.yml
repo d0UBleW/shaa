@@ -1,5 +1,7 @@
 ---
 - name: 1.6.2.4
+  tags:
+    - level_2_server
   when:
     # section_1_6_2_4
     - uninstall_setroubleshoot | bool

@@ -1,6 +1,8 @@
 ---
 - name: 1.3.2
   tags:
+    - level_1_server
+    - level_1_workstation
     - 1.3.2
   when:
     # section_1_3_2
