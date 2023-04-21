@@ -1,0 +1,6 @@
+---
+disable_inetd_service_chargen: "{{ section_2_1_1 }}"
+disable_inetd_service_daytime: "{{ section_2_1_2 }}"
+disable_inetd_service_discard: "{{ section_2_1_3 }}"
+disable_inetd_service_echo: "{{ section_2_1_4 }}"
+disable_inetd_service_time: "{{ section_2_1_5 }}"

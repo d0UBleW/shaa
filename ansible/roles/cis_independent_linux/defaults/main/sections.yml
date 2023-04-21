@@ -90,3 +90,10 @@ section_1_7_1_5: "{{ section_1_7_1 }}"
 section_1_7_1_6: "{{ section_1_7_1 }}"
 
 section_1_7_2: "{{ section_1_7 }}"
+
+section_2_1: "{{ section_2 }}"
+section_2_1_1: "{{ section_2_1 }}"
+section_2_1_2: "{{ section_2_1 }}"
+section_2_1_3: "{{ section_2_1 }}"
+section_2_1_4: "{{ section_2_1 }}"
+section_2_1_5: "{{ section_2_1 }}"

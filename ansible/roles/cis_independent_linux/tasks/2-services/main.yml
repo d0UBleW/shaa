@@ -1,0 +1,6 @@
+---
+- name: 2.1 inetd Services
+  tags:
+    - 2.1.x
+  ansible.builtin.import_tasks:
+    file: ./2.1/main.yml
