@@ -42,3 +42,16 @@
     mac: "{{ final_mac[ansible_os_family] }}"
   ansible.builtin.import_tasks:
     file: ./1.6/main.yml
+
+- name: 1.7 Warning Banners
+  tags:
+    - 1.7.x
+  ansible.builtin.import_tasks:
+    file: ./1.7/main.yml
+
+- name: |
+    1.8 Ensure update, patches, and additional security software are installed
+  tags:
+    - 1.8.x
+  ansible.builtin.import_tasks:
+    file: ./1.8.yml

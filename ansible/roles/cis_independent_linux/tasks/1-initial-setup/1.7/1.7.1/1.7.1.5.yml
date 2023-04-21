@@ -1,0 +1,39 @@
+---
+- name: 1.7.1.5
+  vars:
+    file_name: /etc/issue
+  when:
+    # section_1_7_1_5
+    - etc_issue_perms | bool
+  block:
+    - name: |
+        ---
+        1.7.1.5 Ensure permissions on {{ file_name }} are configured
+        > Check if {{ file_name }} is present
+        ---
+      ansible.builtin.stat:
+        path: "{{ file_name }}"
+      register: file_stat
+
+    - name: |
+        ---
+        1.7.1.5 Ensure permissions on {{ file_name }} are configured
+        > Set permissions to root:root 0644
+        ---
+      when:
+        - file_stat.stat.exists
+      ansible.builtin.file:
+        path: "{{ file_name }}"
+        owner: root
+        group: root
+        mode: "0644"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.7.1.5
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

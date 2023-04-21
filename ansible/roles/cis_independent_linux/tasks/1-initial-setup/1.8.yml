@@ -1,0 +1,25 @@
+---
+- name: 1.8
+  when:
+    # section_1_8
+    - update_all_packages| bool
+  block:
+    - name: |
+        ---
+        1.8 Ensure update, patches, and additional security software are
+        installed
+        ---
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+      notify: "reboot"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "1.8"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

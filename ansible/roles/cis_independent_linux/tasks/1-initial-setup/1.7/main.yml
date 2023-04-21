@@ -1,0 +1,12 @@
+---
+- name: 1.7.1 Command Line Warning Banners
+  tags:
+    - 1.7.1
+  ansible.builtin.import_tasks:
+    file: ./1.7.1/main.yml
+
+- name: 1.7.2 Ensure GDM login banner is configured
+  tags:
+    - 1.7.2
+  ansible.builtin.import_tasks:
+    file: ./1.7.2.yml

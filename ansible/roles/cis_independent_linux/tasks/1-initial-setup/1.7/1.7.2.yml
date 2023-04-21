@@ -1,0 +1,28 @@
+---
+- name: 1.7.2
+  when:
+    # section_1_7_2
+    - gdm_login_banner | bool
+    - '"gdm" in ansible_facts.packages'
+  block:
+    - name: |
+        ---
+        1.7.2 Ensure GDM login banner is configured
+        > Edit /etc/gdm3/greeter.dconf-defaults
+        ---
+      ansible.builtin.template:
+        src: etc/gdm3/greeter.dconf-defaults.j2
+        dest: /etc/gdm3/greeter.dconf-defaults
+        owner: root
+        group: root
+        mode: "0644"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.7.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

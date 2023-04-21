@@ -9,6 +9,22 @@
       when:
         - ansible_facts.packages is not defined
 
+    - name: Get OS information
+      ansible.builtin.shell: >
+        grep -oP '^(NAME|VERSION_ID)=.*$' /etc/os-release |
+        awk -F '=' '{print $2}' | tr -d '"'
+      register: os_info
+      changed_when: false
+
+    - name: Set OS information fact
+      vars:
+        tmp_os_info_rg: >-
+          {{ os_info.stdout_lines | map('regex_escape') | join('|') }}
+      ansible.builtin.set_fact:
+        os_info_rg: "{{ tmp_os_info_rg }}"
+        sensitive_rg: >-
+          ([\\%]v|[\\%]r|[\\%]m|[\\%]s|{{ tmp_os_info_rg }})
+
     - name: Include OS family specific variables
       ansible.builtin.include_vars:
         file: "{{ ansible_os_family }}.yml"

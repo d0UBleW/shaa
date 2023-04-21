@@ -154,5 +154,34 @@ enforce_apparmor: "{{ section_1_6_3_2 }}"
 #
 ##########
 
+# 1.7.1.1
 audit_motd: "{{ section_1_7_1_1 }}"
 etc_motd: "Hello"
+
+# 1.7.1.2
+audit_etc_issue: "{{ section_1_7_1_2 }}"
+
+# 1.7.1.3
+audit_etc_issue_net: "{{ section_1_7_1_3 }}"
+
+# 1.7.1.4
+etc_motd_perms: "{{ section_1_7_1_4 }}"
+
+# 1.7.1.5
+etc_issue_perms: "{{ section_1_7_1_5 }}"
+
+# 1.7.1.6
+etc_issue_net_perms: "{{ section_1_7_1_6 }}"
+
+# 1.7.2
+gdm_login_banner: "{{ section_1_7_2 }}"
+gdm_banner_message: >-
+  Authorized uses only. All activity may be monitored and reported.
+
+##########
+#
+# 1.8
+#
+##########
+
+update_all_packages: "{{ section_1_8 }}"

@@ -1,0 +1,69 @@
+---
+- name: 1.7.1.2
+  vars:
+    file_name: /etc/issue
+  when:
+    # section_1_7_1_2
+    - audit_etc_issue | bool
+  block:
+    - name: |
+        ---
+        1.7.1.2 Ensure local login warning banner is configured properly
+        > Check if {{ file_name }} exists
+        ---
+      ansible.builtin.shell: >
+        [ -f {{ file_name }} ] && cat {{ file_name }}
+      failed_when: false
+      changed_when: false
+      register: content
+
+    - name: |
+        ---
+        1.7.1.2 Ensure local login warning banner is configured properly
+        > Display content of {{ file_name }}
+        ---
+      when:
+        - content.rc == 0
+      ansible.builtin.debug:
+        msg: "{{ content.stdout_lines }}"
+
+    - name: |
+        ---
+        1.7.1.2 Ensure local login warning banner is configured properly
+        > Audit {{ file_name }}
+        ---
+      when:
+        - content.rc == 0
+      block:
+        - name: |
+            ---
+            1.7.1.2 Ensure local login warning banner is configured properly
+            > Check if {{ file_name }} contains OS sensitive information
+            ---
+          ansible.builtin.shell: >
+            grep -oE -i '{{ sensitive_rg }}' {{ file_name }} | grep -v '\\S'
+          register: out
+          failed_when: false
+          changed_when: out.stdout_lines | length > 0
+
+        - name: |
+            ---
+            1.7.1.2 Ensure local login warning banner is configured properly
+            > Strip out OS sensitive information if exists
+            ---
+          when:
+            - out.changed
+          ansible.builtin.shell: >
+            sed -E -i 's#{{ sensitive_rg }}#ANSIBLE_STRIP#g' {{ file_name }} &&
+            sed -E -i 's#{{ os_info_rg }}#ANSIBLE_STRIP#gi' {{ file_name }}
+          changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 1.7.1.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -22,7 +22,15 @@
         > List out the repositories
         ---
       ansible.builtin.debug:
-        var: repolist.stdout_lines
+        msg: "{{ repolist.stdout_lines }}"
+
+    - name: Info logging
+      vars:
+        section_id: 1.2.1
+        info_details: |-
+          Ensure package manager repositories are configured
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
 
   rescue:
     - name: Flushing all handlers

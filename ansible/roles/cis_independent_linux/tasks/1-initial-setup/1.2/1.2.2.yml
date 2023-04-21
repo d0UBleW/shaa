@@ -24,6 +24,14 @@
       ansible.builtin.debug:
         var: gpgkeys.stdout_lines
 
+    - name: Info logging
+      vars:
+        section_id: 1.2.2
+        info_details: |-
+          Ensure GPG keys are configured
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+
   rescue:
     - name: Flushing all handlers
       ansible.builtin.meta: flush_handlers
