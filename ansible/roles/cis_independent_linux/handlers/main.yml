@@ -1,5 +1,6 @@
 ---
 - name: Reload tmp.mount via systemd
+  when: has_systemd
   ansible.builtin.systemd:
     name: tmp.mount
     masked: false
@@ -14,6 +15,7 @@
   listen: "reboot"
 
 - name: Reload systemd
+  when: has_systemd
   ansible.builtin.systemd:
     daemon_reload: true
   listen: "systemd daemon-reload"
