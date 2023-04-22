@@ -18,10 +18,6 @@
         state: stopped
         enabled: false
 
-    - name: Debug
-      ansible.builtin.debug:
-        var: has_update_rc_d
-
     - name: |
         ---
         2.1.10 Ensure xinetd is not enabled
