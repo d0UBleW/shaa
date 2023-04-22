@@ -58,7 +58,7 @@
           {{ ansible_facts.packages | dict2items |
              selectattr('key', 'match', '^grub2') | length }}
       ansible.builtin.set_fact:
-        grub_v2: match | int > 0
+        grub_v2: "{{ match | int > 0 }}"
 
     - name: Set boot option fact
       ansible.builtin.set_fact:
