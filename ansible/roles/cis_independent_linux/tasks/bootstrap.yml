@@ -83,3 +83,19 @@
         - name: Set EFI boot loader config file fact
           ansible.builtin.set_fact:
             boot_loader_conf: "{{ grub2_efi_symlink.stat.lnk_source }}"
+
+    - name: Check if systemd exists
+      vars:
+        match: >
+          {{ ansible_facts.packages | dict2items |
+             selectattr('key', 'match', '^systemd') | length }}
+      ansible.builtin.set_fact:
+        has_systemd: "{{ match | int > 0 }}"
+
+    - name: Check if systemd exists
+      vars:
+        match: >
+          {{ ansible_facts.packages | dict2items |
+             selectattr('key', 'match', 'init-system-helpers') | length }}
+      ansible.builtin.set_fact:
+        has_update_rc_d: "{{ match | int > 0 }}"

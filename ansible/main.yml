@@ -13,3 +13,5 @@
         default_all_sections: true
         mandatory_access_control:
           Suse: selinux
+        disable_inetd_services:
+          daytime: false

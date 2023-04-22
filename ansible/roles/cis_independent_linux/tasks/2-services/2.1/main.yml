@@ -1,4 +1,89 @@
 ---
-- name: 2.1.1 Ensure chargen services are not enabled
+- name: 2.1.x Ensure inetd services are not enabled
+  vars:
+    inetd_services:
+      - name:
+          xinetd: chargen
+          inetd: chargen
+        desc: "2.1.1 Ensure chargen services are not enabled"
+        section_id: 2.1.1
+
+      - name:
+          xinetd: chargen
+          inetd: chargen
+        desc: "2.1.2 Ensure daytime services are not enabled"
+        section_id: 2.1.2
+
+      - name:
+          xinetd: chargen
+          inetd: chargen
+        desc: "2.1.3 Ensure discard services are not enabled"
+        section_id: 2.1.3
+
+      - name:
+          xinetd: chargen
+          inetd: chargen
+        desc: "2.1.4 Ensure echo services are not enabled"
+        section_id: 2.1.4
+
+      - name:
+          xinetd: chargen
+          inetd: chargen
+        desc: "2.1.5 Ensure time services are not enabled"
+        section_id: 2.1.5
+
+      - name:
+          xinetd: rsh
+          inetd: shell
+        desc: "2.1.6 Ensure rsh server is not enabled"
+        section_id: 2.1.6
+
+      - name:
+          xinetd: rlogin
+          inetd: login
+        desc: "2.1.6 Ensure rsh server is not enabled"
+        section_id: 2.1.6
+
+      - name:
+          xinetd: rexec
+          inetd: exec
+        desc: "2.1.6 Ensure rsh server is not enabled"
+        section_id: 2.1.6
+
+      - name:
+          xinetd: talk
+          inetd: talk
+        desc: "2.1.7 Ensure talk server is not enabled"
+        section_id: 2.1.7
+
+      - name:
+          xinetd: ntalk
+          inetd: ntalk
+        desc: "2.1.7 Ensure talk server is not enabled"
+        section_id: 2.1.7
+
+      - name:
+          xinetd: telnet
+          inetd: telnet
+        desc: "2.1.8 Ensure telnet server is not enabled"
+        section_id: 2.1.8
+
+      - name:
+          xinetd: tftp
+          inetd: tftp
+        desc: "2.1.9 Ensure tftp server is not enabled"
+        section_id: 2.1.9
+
+  ansible.builtin.include_tasks:
+    file: ./2.1.x.yml
+  loop: "{{ inetd_services }}"
+  loop_control:
+    loop_var: svc
+    label: "{{ svc.desc }}"
+  when:
+    - svc.name not in disable_inetd_services.keys() or
+      (disable_inetd_services[svc.name] | bool)
+
+- name: 2.1.10 Ensure xinetd is not enabled
   ansible.builtin.import_tasks:
-    file: ./2.1.1.yml
+    file: ./2.1.10.yml

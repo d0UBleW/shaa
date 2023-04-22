@@ -1,0 +1,63 @@
+---
+- name: 2.1.10
+  tags:
+    - level_1_server
+    - level_1_workstation
+    - 2.1.10
+  block:
+    - name: |
+        ---
+        2.1.10 Ensure xinetd is not enabled
+        > Disable xinetd (systemd)
+        ---
+      when:
+        - disable_xinetd_systemd | bool
+        - has_systemd
+      ansible.builtin.systemd:
+        name: xinetd
+        state: stopped
+        enabled: false
+
+    - name: Debug
+      ansible.builtin.debug:
+        var: has_update_rc_d
+
+    - name: |
+        ---
+        2.1.10 Ensure xinetd is not enabled
+        > update-rc.d
+        ---
+      when:
+        - disable_xinetd_update_rc_d | bool
+        - has_update_rc_d
+      block:
+        - name: |
+            ---
+            2.1.10 Ensure xinetd is not enabled
+            > Check if xinetd is enabled (update-rc.d)
+            ---
+          ansible.builtin.shell: >
+            ls /etc/rc*.d | grep xinetd | grep '^S.*'
+          register: xinetd_update_rc
+          changed_when: xinetd_update_rc.stdout_lines | length > 0
+          failed_when: false
+
+        - name: |
+            ---
+            2.1.10 Ensure xinetd is not enabled
+            > Disable xinetd (update-rc.d)
+            ---
+          ansible.builtin.shell: >
+            update-rc.d xinetd disable
+          when: xinetd_update_rc.changed
+          changed_when: false
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 2.1.10
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

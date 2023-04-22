@@ -1,6 +1,25 @@
 ---
-disable_inetd_service_chargen: "{{ section_2_1_1 }}"
-disable_inetd_service_daytime: "{{ section_2_1_2 }}"
-disable_inetd_service_discard: "{{ section_2_1_3 }}"
-disable_inetd_service_echo: "{{ section_2_1_4 }}"
-disable_inetd_service_time: "{{ section_2_1_5 }}"
+##########
+#
+# 2.1
+#
+##########
+
+# 2.1.1-9
+disable_inetd_services:
+  chargen: "{{ section_2_1_1 }}"
+  daytime: "{{ section_2_1_2 }}"
+  discard: "{{ section_2_1_3 }}"
+  echo: "{{ section_2_1_4 }}"
+  time: "{{ section_2_1_5 }}"
+  rsh: "{{ section_2_1_6_rsh }}"
+  rlogin: "{{ section_2_1_6_rlogin }}"
+  rexec: "{{ section_2_1_6_rexec }}"
+  talk: "{{ section_2_1_7_talk }}"
+  ntalk: "{{ section_2_1_7_ntalk }}"
+  telnet: "{{ section_2_1_8 }}"
+  tftp: "{{ section_2_1_9 }}"
+
+# 2.1.10
+disable_xinetd_systemd: "{{ section_2_1_10 }}"
+disable_xinetd_update_rc_d: "{{ section_2_1_10 }}"

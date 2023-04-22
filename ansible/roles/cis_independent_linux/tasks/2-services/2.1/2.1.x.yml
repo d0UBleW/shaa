@@ -1,21 +1,16 @@
 ---
-- name: 2.1.4
+- name: 2.1.x
   tags:
-    - 2.1.4
     - level_1_server
     - level_1_workstation
-  when:
-    - disable_inetd_service_echo | bool
-  vars:
-    svc_name: echo
   block:
     - name: |
         ---
-        2.1.4 Ensure {{ svc_name }} services are not enabled
-        > Get config file(s) with {{ svc_name }} service (xinetd)
+        {{ svc.desc }}
+        > Get config file(s) with {{ svc.name.xinetd }} service (xinetd)
         ---
       ansible.builtin.shell: >
-        grep -lRP '^service\s+{{ svc_name }}\b'
+        grep -lRP '^service\s+{{ svc.name.xinetd }}\b'
         /etc/xinetd.d/* /etc/xinetd.conf
       register: matched_file
       changed_when: false
@@ -23,13 +18,13 @@
 
     - name: |
         ---
-        2.1.4 Ensure {{ svc_name }} services are not enabled
+        {{ svc.desc }}
         > Set `disable = yes` where necessary (xinetd)
         ---
       when:
         - matched_file.rc != 2
       vars:
-        part_1_rg: '^service\s+{{ svc_name }}(?:{|\b[.\s]*?{)[^}]*?'
+        part_1_rg: '^service\s+{{ svc.name.xinetd }}(?:{|\b[.\s]*?{)[^}]*?'
       ansible.builtin.replace:
         path: "{{ file }}"
         regexp: >-
@@ -42,11 +37,11 @@
 
     - name: |
         ---
-        2.1.4 Ensure {{ svc_name }} services are not enabled
-        > Get config file(s) with {{ svc_name }} service (inetd)
+        {{ svc.desc }}
+        > Get config file(s) with {{ svc.name.inetd }} service (inetd)
         ---
       ansible.builtin.shell: >
-        grep -lRP '^{{ svc_name }}\b'
+        grep -lRP '^{{ svc.name.inetd }}\b'
         /etc/inetd.d/* /etc/inetd.conf
       register: matched_file
       changed_when: false
@@ -54,14 +49,14 @@
 
     - name: |
         ---
-        2.1.4 Ensure {{ svc_name }} services are not enabled
-        > Comment out any lines starting with {{ svc_name }} (inetd)
+        {{ svc.desc }}
+        > Comment out any lines starting with {{ svc.name.inetd }} (inetd)
         ---
       when:
         - matched_file.rc != 2
       ansible.builtin.replace:
         path: "{{ file }}"
-        regexp: '^({{ svc_name }}\b.+)'
+        regexp: '^({{ svc.name.inetd }}\b.+)'
         replace: '# \1'
       loop: "{{ matched_file.stdout_lines }}"
       loop_control:
@@ -74,6 +69,6 @@
 
     - name: Error backtrace
       vars:
-        section_id: 2.1.4
+        section_id: "{{ svc.section_id }}"
       ansible.builtin.import_tasks:
         file: error_logging.yml
