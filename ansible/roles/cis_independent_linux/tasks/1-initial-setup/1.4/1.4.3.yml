@@ -17,6 +17,7 @@
         path: /etc/shadow
         regexp: '^root:([*\!]|!locked):'
         state: absent
+        backup: true
       check_mode: true
       register: check_passwd_out
 

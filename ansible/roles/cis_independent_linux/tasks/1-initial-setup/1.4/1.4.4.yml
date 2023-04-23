@@ -30,6 +30,7 @@
         line: 'PROMPT_FOR_CONFIRM="no"'
         state: present
         create: false
+        backup: true
 
   rescue:
     - name: Flushing all handlers

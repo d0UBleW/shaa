@@ -20,6 +20,7 @@
         create: true
         mode: 0644
         state: present
+        backup: true
       notify: "sysctl reload"
 
   rescue:

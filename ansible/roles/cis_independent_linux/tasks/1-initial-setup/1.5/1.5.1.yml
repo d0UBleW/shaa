@@ -20,6 +20,7 @@
         create: true
         mode: 0644
         state: present
+        backup: true
 
     - name: |
         ---
@@ -33,6 +34,7 @@
         create: true
         mode: 0644
         state: present
+        backup: true
       notify: "sysctl reload"
 
     - name: |
@@ -70,6 +72,7 @@
         line: "{{ line }}"
         state: present
         insertafter: '^\[Coredump\]'
+        backup: true
       loop: "{{ coredump_conf }}"
       loop_control:
         label: "{{ line }}"
