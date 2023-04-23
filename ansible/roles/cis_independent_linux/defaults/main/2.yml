@@ -23,3 +23,45 @@ disable_inetd_services:
 # 2.1.10
 disable_xinetd_systemd: "{{ section_2_1_10 }}"
 disable_xinetd_update_rc_d: "{{ section_2_1_10 }}"
+
+##########
+#
+# 2.2
+#
+##########
+
+# 2.2.1.1
+configure_time_synchronization: "{{ section_2_2_1_1 }}"
+
+# ntp, chrony, systemd-timesyncd
+# NOTE:
+# AlmaLinux does not have both ntp and systemd-timesyncd
+# systemd-timesyncd does not work in container
+time_synchronization: systemd-timesyncd
+
+# 2.2.1.2
+configure_ntp: "{{ section_2_2_1_2 }}"
+
+time_sync_remote_server: time1.google.com
+
+ntp_options:
+  - kod
+  - nomodify
+  - notrap
+  - nopeer
+  - noquery
+
+# 2.2.1.3
+configure_chrony: "{{ section_2_2_1_3 }}"
+
+# 2.2.1.4
+configure_systemd_timesyncd: "{{ section_2_2_1_4 }}"
+
+systemd_timesyncd:
+  main_ntp:
+    - time1.google.com
+    - time2.google.com
+  fallback_ntp:
+    - time3.google.com
+    - time4.google.com
+  root_distance_max: 1

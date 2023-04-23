@@ -1,0 +1,143 @@
+---
+- name: 2.2.1.2
+  when:
+    # section_2_2_1_2
+    - configure_ntp | bool
+    - 'time_synchronization == "ntp"'
+    - 'ansible_os_family != "RedHat"'
+  block:
+    - name: |
+        ---
+        2.2.1.2 Ensure ntp is configured
+        > Check if restriction is in place for restrict -4
+        ---
+      ansible.builtin.shell: >
+        grep -P '^restrict\s+-4\s+' /etc/ntp.conf |
+        grep -oP '(kod|notrap|nomodify|nopeer|noquery)' | wc -l
+      register: check_restrict_4
+      changed_when: check_restrict_4.stdout.strip() != "5"
+
+    - name: |
+        ---
+        2.2.1.2 Ensure ntp is configured
+        > Configure restriction for restrict -4
+        ---
+      when:
+        - check_restrict_4.changed
+      ansible.builtin.lineinfile:
+        path: /etc/ntp.conf
+        regexp: >-
+          ^restrict\s+-4\s+default(?:(?!\s+{{ "\s+".join(ntp_options) }}).)*$
+        line: 'restrict -4 default {{ " ".join(ntp_options) }}'
+        state: present
+        backup: true
+        create: true
+      diff: true
+
+    - name: |
+        ---
+        2.2.1.2 Ensure ntp is configured
+        > Check if restriction is in place for restrict -6
+        ---
+      ansible.builtin.shell: >
+        grep -P '^restrict\s+-6\s+' /etc/ntp.conf |
+        grep -oP '(kod|notrap|nomodify|nopeer|noquery)' | wc -l
+      register: check_restrict_6
+      changed_when: check_restrict_6.stdout.strip() != "5"
+
+    - name: |
+        ---
+        2.2.1.2 Ensure ntp is configured
+        > Add restriction for -6
+        ---
+      when:
+        - check_restrict_6.changed
+      diff: true
+      ansible.builtin.lineinfile:
+        path: /etc/ntp.conf
+        regexp: >-
+          ^restrict\s+-6\s+default(?:(?!\s+{{ "\s+".join(ntp_options) }}).)*$
+        line: 'restrict -6 default {{ " ".join(ntp_options) }}'
+        state: present
+        backup: true
+
+    - name: |
+        ---
+        2.2.1.2 Ensure ntp is configured
+        > Set remote server
+        ---
+      diff: true
+      ansible.builtin.lineinfile:
+        path: /etc/ntp.conf
+        regexp: '^server\s+(?:(?!{{ time_sync_remote_server }}).)*$'
+        line: "server {{ time_sync_remote_server }}"
+        state: present
+        backup: true
+
+    - name: |
+        ---
+        2.2.1.2 Ensure ntp is configured
+        > Set ntp service to run as ntp user (/etc/sysconfig)
+        ---
+      when:
+        - 'ansible_os_family != "Debian"'
+      block:
+        - name: |
+            ---
+            2.2.1.2 Ensure ntp is configured
+            > Check for ntp config file under /etc/sysconfig
+            ---
+          ansible.builtin.shell: >
+            ls /etc/sysconfig | grep '^ntp.*'
+          register: ntp_sysconfig
+          changed_when: false
+          failed_when: false
+
+        - name: |
+            ---
+            2.2.1.2 Ensure ntp is configured
+            > Set ntp service to run as ntp user (/etc/sysconfig)
+            ---
+          vars:
+            ntp_sysconfig_basename: >-
+              {{ ntp_sysconfig.stdout_lines[0].strip() }}
+            ntp_sysconfig_path: >-
+              /etc/sysconfig/{{ ntp_sysconfig_basename }}
+            opt_key: >-
+              {%- if ntp_sysconfig_basename == 'ntp' -%}
+                NTPD_OPTIONS
+              {%- else -%}
+                OPTIONS
+              {%- endif -%}
+          diff: true
+          ansible.builtin.lineinfile:
+            path: "{{ ntp_sysconfig_path }}"
+            regexp: '^{{ opt_key }}="(?:(?!-g\s+-u\s+ntp:ntp).)*"'
+            line: '{{ opt_key }}="-g -u ntp:ntp"'
+            state: present
+            backup: true
+
+    - name: |
+        ---
+        2.2.1.2 Ensure ntp is configured
+        > Set ntp service to run as ntp user (/etc/init.d)
+        ---
+      when:
+        - has_update_rc_d
+      diff: true
+      ansible.builtin.lineinfile:
+        path: /etc/init.d/ntp
+        regexp: "^RUNASUSER=(?:(?!ntp).)*$"
+        line: "RUNASUSER=ntp"
+        state: present
+        backup: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 2.2.1.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

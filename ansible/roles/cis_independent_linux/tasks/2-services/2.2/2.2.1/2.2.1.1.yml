@@ -1,0 +1,40 @@
+---
+- name: 2.2.1.1
+  when:
+    # section_2_2_1_1
+    - configure_time_synchronization | bool
+  block:
+    - name: |
+        ---
+        2.2.1.1 Ensure time synchronization is in use
+        > Install ntp package if does not exists and is chosen as the time
+          synchronization
+        ---
+      when:
+        - 'time_synchronization == "ntp"'
+        - 'ansible_os_family != "RedHat"'
+      ansible.builtin.package:
+        name: ntp
+        state: present
+
+    - name: |
+        ---
+        2.2.1.1 Ensure time synchronization is in use
+        > Install chrony package if does not exists and is chosen as the time
+          synchronization
+        ---
+      when:
+        - 'time_synchronization == "chrony"'
+      ansible.builtin.package:
+        name: chrony
+        state: present
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 2.2.1.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

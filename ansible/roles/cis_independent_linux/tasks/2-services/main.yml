@@ -4,3 +4,9 @@
     - 2.1.x
   ansible.builtin.import_tasks:
     file: ./2.1/main.yml
+
+- name: 2.2 Special Purpose Services
+  tags:
+    - 2.2.x
+  ansible.builtin.import_tasks:
+    file: ./2.2/main.yml

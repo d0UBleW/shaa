@@ -1,0 +1,5 @@
+---
+supported_os_families:
+  - Debian
+  - Suse
+  - RedHat

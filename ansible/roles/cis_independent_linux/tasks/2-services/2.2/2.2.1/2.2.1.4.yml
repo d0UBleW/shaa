@@ -1,0 +1,110 @@
+---
+- name: 2.2.1.4
+  when:
+    # section_2_2_1_4
+    - configure_systemd_timesyncd | bool
+    - 'time_synchronization == "systemd-timesyncd"'
+    - 'ansible_os_family != "RedHat"'
+    - has_systemd
+    - not is_container
+  block:
+    - name: |
+        ---
+        2.2.1.4 Ensure systemd-timesyncd is configured
+        > Check if /etc/systemd/timesyncd.conf exists
+        ---
+      ansible.builtin.stat:
+        path: /etc/systemd/timesyncd.conf
+      register: timesyncd_stat
+
+    - name: |
+        ---
+        2.2.1.4 Ensure systemd-timesyncd is configured
+        ---
+      when:
+        - timesyncd_stat.stat.exists
+      block:
+        - name: |
+            ---
+            2.2.1.4 Ensure systemd-timesyncd is configured
+            > Set main and fallback NTP remote server
+            ---
+          vars:
+            confs:
+              - key: NTP
+                value: "{{ systemd_timesyncd.main_ntp }}"
+              - key: FallbackNTP
+                value: "{{ systemd_timesyncd.fallback_ntp }}"
+          ansible.builtin.lineinfile:
+            path: /etc/systemd/timesyncd.conf
+            regexp: >-
+              ^{{ conf.key }}=(?:(?!{{ '\s+'.join(conf.value) }}).)*$
+            line: "{{ conf.key }}={{ ' '.join(conf.value) }}"
+            state: present
+            backup: true
+          loop: "{{ confs }}"
+          loop_control:
+            loop_var: conf
+            label: "{{ conf.key }}={{ ' '.join(conf.value) }}"
+
+        - name: |
+            ---
+            2.2.1.4 Ensure systemd-timesyncd is configured
+            > Set RootDistanceMax to 1
+            ---
+          vars:
+            confs:
+              - key: RootDistanceMax
+                value: "{{ systemd_timesyncd.root_distance_max }}"
+          ansible.builtin.lineinfile:
+            path: /etc/systemd/timesyncd.conf
+            regexp: >-
+              ^{{ conf.key }}=(?:(?!{{ conf.value }}).)*$
+            line: "{{ conf.key }}={{ conf.value }}"
+            state: present
+            backup: true
+          loop: "{{ confs }}"
+          loop_control:
+            loop_var: conf
+            label: "{{ conf.key }}={{ conf.value }}"
+          notify: "systemd daemon-reload"
+
+    - name: |
+        ---
+        2.2.1.4 Ensure systemd-timesyncd is configured
+        > Enable systemd-timesyncd
+        ---
+      ansible.builtin.systemd:
+        name: systemd-timesyncd
+        state: started
+        enabled: true
+
+    - name: |
+        ---
+        2.2.1.4 Ensure systemd-timesyncd is configured
+        > Check if timedatectl ntp is active
+        ---
+      ansible.builtin.shell: >
+        timedatectl status | grep -q 'NTP service: active'
+      register: timedatectl_ntp
+      changed_when: timedatectl_ntp.rc == 1
+
+    - name: |
+        ---
+        2.2.1.4 Ensure systemd-timesyncd is configured
+        > timedatectl set-ntp true
+        ---
+      when:
+        - timedatectl_ntp.changed
+      ansible.builtin.shell: timedatectl set-ntp true
+      changed_when: false
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 2.2.1.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,46 @@
+---
+- name: 2.2.1.3
+  when:
+    # section_2_2_1_3
+    - configure_chrony | bool
+    - 'time_synchronization == "chrony"'
+  block:
+    - name: |
+        ---
+        2.2.1.3 Ensure chrony is configured
+        > Set remote server
+        ---
+      diff: true
+      ansible.builtin.lineinfile:
+        path: "{{ chrony_conf }}"
+        regexp: '^server\s+(?:(?!{{ time_sync_remote_server }}).)*$'
+        line: "server {{ time_sync_remote_server }}"
+        state: present
+        backup: true
+
+    - name: |
+        ---
+        2.2.1.3 Ensure chrony is configured
+        > Set chrony service to run as chrony user (/etc/systemd)
+        ---
+      when:
+        - has_systemd
+      diff: true
+      ansible.builtin.lineinfile:
+        path: "{{ chrony_systemd_service_file }}"
+        regexp: "^User=(?:(?!chrony).)*"
+        line: "User=chrony"
+        insertafter: "^[Service]"
+        state: present
+        backup: true
+      notify: "systemd daemon-reload"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 2.2.1.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

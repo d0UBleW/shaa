@@ -17,3 +17,9 @@ valid_mandatory_access_controls:
   selinux:
     - libselinux
     - policycoreutils
+
+chrony_systemd: chronyd
+chrony_systemd_service_file: >-
+  /usr/lib/systemd/system/{{ chrony_systemd }}.service
+
+chrony_conf: "/etc/chrony.conf"

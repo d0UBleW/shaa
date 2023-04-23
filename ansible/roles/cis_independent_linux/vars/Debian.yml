@@ -19,3 +19,10 @@ valid_mandatory_access_controls:
     - apparmor-utils
 
 apparmor_enforce: aa-enforce
+
+ntp_systemd: ntp
+chrony_systemd: chrony
+
+chrony_systemd_service_file: "/lib/systemd/system/{{ chrony_systemd }}.service"
+
+chrony_conf: "/etc/chrony/chrony.conf"

@@ -25,6 +25,14 @@
         sensitive_rg: >-
           ([\\%]v|[\\%]r|[\\%]m|[\\%]s|{{ tmp_os_info_rg }})
 
+    - name: Check for OS family compatibility (skip if ok, fail if not)
+      ansible.builtin.fail:
+        msg: |
+          The OS family ({{ ansible_os_family }}) is currently not supported
+          yet.
+      when:
+        - ansible_os_family not in supported_os_families
+
     - name: Include OS family specific variables
       ansible.builtin.include_vars:
         file: "{{ ansible_os_family }}.yml"

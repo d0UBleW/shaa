@@ -8,6 +8,7 @@ all:
           ansible_user: vagrant
           ansible_ssh_private_key_file: >-
             /home/doublew/projects/shaa/ansible/ansible.key
+          time_synchronization: chrony
 
         opensuse:
           ansible_host: 192.168.56.212
@@ -15,9 +16,11 @@ all:
           ansible_ssh_private_key_file: >-
             /home/doublew/projects/shaa/ansible/ansible.key
           selinuxtype: mls
+          time_synchronization: systemd-timesyncd
 
         ubuntu:
           ansible_host: 192.168.56.213
           ansible_user: vagrant
           ansible_ssh_private_key_file: >-
             /home/doublew/projects/shaa/ansible/ansible.key
+          time_synchronization: chrony

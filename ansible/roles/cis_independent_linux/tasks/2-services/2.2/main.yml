@@ -1,0 +1,6 @@
+---
+- name: 2.2.1 Time Synchronization
+  tags:
+    - 2.2.1
+  ansible.builtin.import_tasks:
+    file: ./2.2.1/main.yml
