@@ -4,3 +4,160 @@
     - 2.2.1
   ansible.builtin.import_tasks:
     file: ./2.2.1/main.yml
+
+- name: 2.2.2 Ensure X Window System is not installed
+  tags:
+    - 2.2.2
+  ansible.builtin.import_tasks:
+    file: ./2.2.2.yml
+
+- name: 2.2.3-14,16-17 Ensure <service> is not enabled
+  tags:
+    - 2.2.3-14_16-17
+    - 2.2.3
+    - 2.2.3_avahi-daemon
+    - 2.2.4
+    - 2.2.4_cups
+    - 2.2.5
+    - 2.2.5_dhcpd
+    - 2.2.6
+    - 2.2.6_slapd
+    - 2.2.7
+    - 2.2.7_nfs
+    - 2.2.7_rpcbind
+    - 2.2.8
+    - 2.2.8_named
+    - 2.2.9
+    - 2.2.9_vsftpd
+    - 2.2.10
+    - 2.2.10_httpd
+    - 2.2.10_lighttpd
+    - 2.2.10_nginx
+    - 2.2.10_apache
+    - 2.2.10_apache2
+    - 2.2.11
+    - 2.2.11_dovecot
+    - 2.2.11_courier-imap
+    - 2.2.11_cyrus-imap
+    - 2.2.12
+    - 2.2.12_smb
+    - 2.2.12_samba
+    - 2.2.13
+    - 2.2.14
+    - 2.2.16
+    - 2.2.17
+    - 2.2.17_ypserv
+    - 2.2.17_nis
+    - 2.2.17_nis-domainname
+  vars:
+    special_purpose_services:
+      - name: avahi-daemon
+        section_id: 2.2.3
+        desc: Avahi Server
+
+      - name: cups
+        section_id: 2.2.4
+        desc: CUPS
+
+      - name: dhcpd
+        section_id: 2.2.5
+        desc: DHCP Server
+
+      - name: slapd
+        section_id: 2.2.6
+        desc: LDAP Server
+
+      - name: nfs
+        section_id: 2.2.7
+        desc: NFS
+
+      - name: rpc-bind
+        section_id: 2.2.7
+        desc: RPC
+
+      - name: named
+        section_id: 2.2.8
+        desc: DNS Server
+
+      - name: vsftpd
+        section_id: 2.2.9
+        desc: FTP Server
+
+      - name: httpd
+        section_id: 2.2.10
+        desc: HTTP Server (httpd)
+
+      - name: nginx
+        section_id: 2.2.10
+        desc: HTTP Server (nginx)
+
+      - name: apache
+        section_id: 2.2.10
+        desc: HTTP Server (apache)
+
+      - name: apache2
+        section_id: 2.2.10
+        desc: HTTP Server (apache2)
+
+      - name: lighttpd
+        section_id: 2.2.10
+        desc: HTTP Server (lighttpd)
+
+      - name: dovecot
+        section_id: 2.2.11
+        desc: IMAP and POP3 Server (dovecot)
+
+      - name: courier-imap
+        section_id: 2.2.11
+        desc: IMAP and POP3 Server (courier-imap)
+
+      - name: cyrus-imap
+        section_id: 2.2.11
+        desc: IMAP and POP3 Server (cyrus-imap)
+
+      - name: smb
+        section_id: 2.2.12
+        desc: Samba
+
+      - name: samba
+        section_id: 2.2.12
+        desc: Samba
+
+      - name: squid
+        section_id: 2.2.13
+        desc: HTTP Proxy Server
+
+      - name: snmpd
+        section_id: 2.2.14
+        desc: SNMP Server
+
+      - name: rsyncd
+        section_id: 2.2.16
+        desc: rsync service
+
+      - name: ypserv
+        section_id: 2.2.17
+        desc: NIS Server
+
+      - name: nis
+        section_id: 2.2.17
+        desc: NIS Server
+
+      - name: nis-domainname
+        section_id: 2.2.17
+        desc: NIS Server
+
+  ansible.builtin.include_tasks:
+    file: ./2.2.3-14,16-17.yml
+    apply:
+      tags:
+        - 2.2.3-14_16-17
+        - "{{ svc.section_id }}"
+        - "{{ svc.section_id }}_{{ svc.name }}"
+  loop: "{{ special_purpose_services }}"
+  loop_control:
+    loop_var: svc
+    label: "{{ svc.section_id }} Ensure {{ svc.desc }} is not enabled"
+  when:
+    - svc.name not in disable_special_purpose_services.keys() or
+      (disable_special_purpose_services[svc.name] | bool)

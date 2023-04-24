@@ -1,0 +1,69 @@
+---
+- name: 2.2.3-14,16-17
+  tags:
+    - level_1_server
+    - level_1_workstation
+  block:
+    - name: systemd
+      when:
+        - has_systemd
+      block:
+        - name: |
+            ---
+            {{ svc.section_id }} Ensure {{ svc.desc }} is not enabled
+            > Check if {{ svc.name }} exists via systemd
+            ---
+          ansible.builtin.shell: >
+            systemctl list-unit-files | grep -qiP "^{{ svc.name }}"
+          register: svc_check
+          changed_when: false
+          failed_when:
+            - svc_check.rc != 0
+            - svc_check.rc != 1
+
+        - name: |
+            ---
+            {{ svc.section_id }} Ensure {{ svc.desc }} is not enabled
+            > Disable {{ svc.name }} via systemd
+            ---
+          when:
+            - svc_check.rc == 0
+          ansible.builtin.systemd:
+            name: "{{ svc.name }}"
+            state: stopped
+            enabled: false
+
+    - name: update-rc.d
+      when:
+        - has_update_rc_d
+      block:
+        - name: |
+            ---
+            {{ svc.section_id }} Ensure {{ svc.desc }} is not enabled
+            > Check if {{ svc.name }} exists or is enabled under /etc/rc*.d
+            ---
+          ansible.builtin.shell: >
+            ls -al /etc/rc*.d | grep {{ svc.name }} | grep '^S.*'
+          register: svc_check
+          changed_when: svc_check.stdout_lines | length > 0
+          failed_when: false
+
+        - name: |
+            ---
+            {{ svc.section_id }} Ensure {{ svc.desc }} is not enabled
+            > Disable {{ svc.name }} via update-rc.d
+            ---
+          when: svc_check.changed
+          ansible.builtin.shell: >
+            update-rc.d {{ svc.name }} disable
+          changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "{{ svc.section_id }}"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,55 @@
+---
+- name: 2.2.15
+  when:
+    # section_2_2_15
+    - local_only_mta | bool
+  block:
+    - name: Postfix
+      when:
+        - '"postfix" in ansible_facts.packages'
+      block:
+        - name: |
+            ---
+            2.2.15 Ensure mail transfer agent is configured for local-only mode
+            > Check if /etc/postfix/main.cf file exists
+            ---
+          ansible.builtin.stat:
+            path: /etc/postfix/main.cf
+          register: postfix_conf_stat
+
+        - name: |
+            ---
+            2.2.15 Ensure mail transfer agent is configured for local-only mode
+            > Edit /etc/postfix/main.cf
+            ---
+          when:
+            - postfix_conf_stat.stat.exists
+          diff: true
+          ansible.builtin.lineinfile:
+            path: /etc/postfix/main.cf
+            regexp: '^inet_interfaces\s*=\s*(?:(?!loopback-only).)*$'
+            line: "inet_interfaces = loopback-only"
+            state: present
+            backup: true
+          register: postfix_conf_edit
+
+        - name: |
+            ---
+            2.2.15 Ensure mail transfer agent is configured for local-only mode
+            > Restart postfix
+            ---
+          when:
+            - postfix_conf_edit.changed
+          ansible.builtin.service:
+            name: postfix
+            state: restarted
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 2.2.15
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

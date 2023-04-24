@@ -26,3 +26,5 @@ chrony_systemd: chrony
 chrony_systemd_service_file: "/lib/systemd/system/{{ chrony_systemd }}.service"
 
 chrony_conf: "/etc/chrony/chrony.conf"
+
+xorg_pkgs: "xserver-xorg*"

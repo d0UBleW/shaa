@@ -65,3 +65,35 @@ systemd_timesyncd:
     - time3.google.com
     - time4.google.com
   root_distance_max: 1
+
+# 2.2.2
+uninstall_x_window_system: "{{ section_2_2_2 }}"
+
+# 2.2.3-14,16-17
+disable_special_purpose_services:
+  avahi-daemon: "{{ section_2_2_3 }}"
+  cups: "{{ section_2_2_4 }}"
+  dhcpd: "{{ section_2_2_5 }}"
+  slapd: "{{ section_2_2_6 }}"
+  nfs: "{{ section_2_2_7_nfs }}"
+  rpcbind: "{{ section_2_2_7_rpcbind }}"
+  named: "{{ section_2_2_8 }}"
+  vsfptd: "{{ section_2_2_9 }}"
+  httpd: "{{ section_2_2_10_httpd }}"
+  nginx: "{{ section_2_2_10_nginx }}"
+  apache: "{{ section_2_2_10_apache }}"
+  apache2: "{{ section_2_2_10_apache2 }}"
+  lighttpd: "{{ section_2_2_10_lighttpd }}"
+  dovecot: "{{ section_2_2_11_dovecot }}"
+  courier-imap: "{{ section_2_2_11_courier_imap }}"
+  cyrus-imap: "{{ section_2_2_11_cyrus_imap }}"
+  smb: "{{ section_2_2_12_smb }}"
+  samba: "{{ section_2_2_12_samba }}"
+  squid: "{{ section_2_2_13 }}"
+  snmpd: "{{ section_2_2_14 }}"
+  rsyncd: "{{ section_2_2_16 }}"
+  ypserv: "{{ section_2_2_17_ypserv }}"
+  nis: "{{ section_2_2_17_nis }}"
+
+# 2.2.15
+local_only_mta: "{{ section_2_2_15 }}"

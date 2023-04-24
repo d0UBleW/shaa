@@ -28,3 +28,5 @@ chrony_systemd_service_file: >-
   /usr/lib/systemd/system/{{ chrony_systemd }}.service
 
 chrony_conf: "/etc/chrony.conf"
+
+xorg_pkgs: "xorg-x11*"

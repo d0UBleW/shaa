@@ -1,0 +1,24 @@
+---
+- name: 2.2.2
+  when:
+    # section_2_2_2
+    - uninstall_x_window_system | bool
+  block:
+    - name: |
+        ---
+        2.2.2 Ensure X Window System is not installed
+        > Remove {{ xorg_pkgs }} via package manager
+        ---
+      ansible.builtin.package:
+        name: "{{ xorg_pkgs }}"
+        state: absent
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 2.2.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
