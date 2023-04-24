@@ -1,0 +1,61 @@
+---
+- name: 2.3.1 Ensure <service> client is not installed
+  tags:
+    - 2.3.1-5
+    - 2.3.1
+    - 2.3.1_ypbind
+    - 2.3.2
+    - 2.3.2_rsh
+    - 2.3.3
+    - 2.3.3_talk
+    - 2.3.4
+    - 2.3.4_telnet
+    - 2.3.5
+    - 2.3.5_openldap-clients
+    - 2.3.5_openldap2-client
+    - 2.3.5_ldap-utils
+  vars:
+    service_clients:
+      - name: ypbind
+        section_id: 2.3.1
+        desc: NIS
+
+      - name: rsh
+        section_id: 2.3.2
+        desc: rsh
+
+      - name: talk
+        section_id: 2.3.3
+        desc: talk
+
+      - name: telnet
+        section_id: 2.3.4
+        desc: telnet
+
+      - name: openldap-clients
+        section_id: 2.3.5
+        desc: LDAP
+
+      - name: openldap2-client
+        section_id: 2.3.5
+        desc: LDAP
+
+      - name: ldap-utils
+        section_id: 2.3.5
+        desc: LDAP
+
+  ansible.builtin.include_tasks:
+    file: ./2.3.1-5.yml
+    apply:
+      tags:
+        - 2.3.1-5
+        - "{{ svc.section_id }}"
+        - "{{ svc.section_id }}_{{ svc.name }}"
+  loop: "{{ service_clients }}"
+  loop_control:
+    loop_var: svc
+    label: >-
+      {{ svc.section_id }} Ensure {{ svc.desc }} client is not installed
+  when:
+    - svc.name not in disable_service_clients.keys() or
+      (disable_service_clients[svc.name] | bool)

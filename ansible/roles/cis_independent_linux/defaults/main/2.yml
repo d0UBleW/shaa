@@ -97,3 +97,18 @@ disable_special_purpose_services:
 
 # 2.2.15
 local_only_mta: "{{ section_2_2_15 }}"
+
+##########
+#
+# 2.3
+#
+##########
+
+disable_service_clients:
+  ypbind: "{{ section_2_3_1 }}"
+  rsh: "{{ section_2_3_2 }}"
+  talk: "{{ section_2_3_3 }}"
+  telnet: "{{ section_2_3_4 }}"
+  openldap-clients: "{{ section_2_3_5_openldap_clients }}"
+  openldap2-client: "{{ section_2_3_5_openldap2_client }}"
+  ldap-utils: "{{ section_2_3_5_ldap_utils }}"

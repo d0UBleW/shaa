@@ -1,0 +1,24 @@
+---
+- name: 2.3.1-5
+  tags:
+    - level_1_server
+    - level_1_workstation
+  block:
+    - name: |
+        ---
+        {{ svc.section_id }} Ensure {{ svc.desc }} service is not installed
+        > Uninstall {{ svc.name }} via package manager
+        ---
+      ansible.builtin.package:
+        name: "{{ svc.name }}"
+        state: absent
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "{{ svc.section_id }}"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
