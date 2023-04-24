@@ -100,7 +100,7 @@
       ansible.builtin.set_fact:
         has_systemd: "{{ match | int > 0 }}"
 
-    - name: Check if systemd exists
+    - name: Check if update-rc.d exists
       vars:
         match: >
           {{ ansible_facts.packages | dict2items |
