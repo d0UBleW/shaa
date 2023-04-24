@@ -46,7 +46,7 @@
           ansible.builtin.shell: >
             update-rc.d xinetd disable
           when: xinetd_update_rc.changed
-          changed_when: false
+          changed_when: true
 
   rescue:
     - name: Flushing all handlers
