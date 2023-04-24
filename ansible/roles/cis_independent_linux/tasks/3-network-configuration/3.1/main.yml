@@ -1,0 +1,8 @@
+---
+- name: 3.1.1 Ensure IP forwarding is disabled
+  ansible.builtin.import_tasks:
+    file: ./3.1.1.yml
+
+- name: 3.1.2 Ensure packet redirect sending is disabled
+  ansible.builtin.import_tasks:
+    file: ./3.1.2.yml

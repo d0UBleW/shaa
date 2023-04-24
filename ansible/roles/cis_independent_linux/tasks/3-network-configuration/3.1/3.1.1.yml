@@ -1,0 +1,49 @@
+---
+- name: 3.1.1
+  tags:
+    - 3.1.1
+  when:
+    # section_3_1_1
+    - disable_ip_forwarding | bool
+  block:
+    - name: |
+        ---
+        3.1.1 Ensure IP forwarding is disabled
+        > Edit /etc/sysctl.d/99-ip-forwarding.conf
+        ---
+      vars:
+        confs:
+          - key: net.ipv4.ip_forward
+            value: 0
+          - key: net.ipv6.conf.all.forwarding
+            value: 0
+        esc_key: "{{ conf.key | regex_escape() }}"
+        esc_value: "{{ conf.value | regex_escape() }}"
+        rg_template: >-
+          ^{{ esc_key }}\s*=\s*(?:(?!{{ esc_value }}).)*$
+      diff: true
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.d/99-ip-forwarding.conf
+        regexp: "{{ rg_template }}"
+        line: "{{ conf.key }} = {{ conf.value }}"
+        state: present
+        create: true
+        backup: true
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ confs }}"
+      loop_control:
+        loop_var: conf
+        label: "{{ conf.key }} = {{ conf.value }}"
+      notify: "sysctl reload"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 3.1.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -15,6 +15,12 @@
   ansible.builtin.import_tasks:
     file: ./2-services/main.yml
 
+- name: "3 Network Configuration"
+  tags:
+    - 3.x
+  ansible.builtin.import_tasks:
+    file: ./3-network-configuration/main.yml
+
 - name: Flushing all handlers
   tags:
     - always
