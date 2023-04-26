@@ -1,23 +1,21 @@
 ---
-- name: 3.1.2
+- name: 3.2.6
   tags:
-    - 3.1.2
+    - 3.2.6
     - level_1_server
     - level_1_workstation
   when:
-    # section_3_1_2
-    - disable_packet_redirect_sending | bool
+    # section_3_2_6
+    - ignore_bogus_icmp_resp | bool
   block:
     - name: |
         ---
-        3.1.2 Ensure IP forwarding is disabled
-        > Edit /etc/sysctl.d/99-packet-redirect-sending.conf
+        3.2.6 Ensure bogus ICMP responses are ignored
+        > Edit /etc/sysctl.d/99-bogus-icmp-resp.conf
         ---
       vars:
         confs:
-          - key: net.ipv4.conf.all.send_redirects
-            value: 0
-          - key: net.ipv4.conf.default.send_redirects
+          - key: net.ipv4.icmp_ignore_bogus_error_responses
             value: 0
         esc_key: "{{ conf.key | regex_escape() }}"
         esc_value: "{{ conf.value | regex_escape() }}"
@@ -25,7 +23,7 @@
           ^{{ esc_key }}\s*=\s*(?:(?!{{ esc_value }}).)*$
       diff: true
       ansible.builtin.lineinfile:
-        path: /etc/sysctl.d/99-packet-redirect-sending.conf
+        path: /etc/sysctl.d/99-bogus-icmp-resp.conf
         regexp: "{{ rg_template }}"
         line: "{{ conf.key }} = {{ conf.value }}"
         state: present
@@ -46,6 +44,6 @@
 
     - name: Error backtrace
       vars:
-        section_id: 3.1.2
+        section_id: 3.2.6
       ansible.builtin.import_tasks:
         file: error_logging.yml

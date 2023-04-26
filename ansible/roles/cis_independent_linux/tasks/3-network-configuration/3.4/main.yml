@@ -1,0 +1,35 @@
+---
+- name: 3.4.x Ensure <module> is disabled
+  tags:
+    - 3.4.1-4
+    - 3.4.1
+    - 3.4.2
+    - 3.4.3
+    - 3.4.4
+  vars:
+    uncommon_network_protocols:
+      - name: dccp
+        desc: DCCP
+        section_id: 3.4.1
+      - name: sctp
+        desc: SCTP
+        section_id: 3.4.2
+      - name: rds
+        desc: RDS
+        section_id: 3.4.3
+      - name: tipc
+        desc: TIPC
+        section_id: 3.4.4
+  ansible.builtin.include_tasks:
+    file: ./3.4.x.yml
+    apply:
+      tags:
+        - 3.4.1-4
+        - "{{ prot.section_id }}"
+  loop: "{{ uncommon_network_protocols }}"
+  loop_control:
+    loop_var: prot
+    label: "{{ prot.section_id }} Ensure {{ prot.desc }} is disabled"
+  when:
+    - prot.name not in disable_uncommon_network_protocols.keys() or
+      (disable_uncommon_network_protocols[prot.name] | bool)

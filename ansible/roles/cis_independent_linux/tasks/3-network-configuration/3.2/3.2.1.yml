@@ -1,23 +1,27 @@
 ---
-- name: 3.1.2
+- name: 3.2.1
   tags:
-    - 3.1.2
+    - 3.2.1
     - level_1_server
     - level_1_workstation
   when:
-    # section_3_1_2
-    - disable_packet_redirect_sending | bool
+    # section_3_2_1
+    - reject_source_routed_packets | bool
   block:
     - name: |
         ---
-        3.1.2 Ensure IP forwarding is disabled
-        > Edit /etc/sysctl.d/99-packet-redirect-sending.conf
+        3.2.1 Ensure source routed packets are not accepted
+        > Edit /etc/sysctl.d/99-source-routed-packets.conf
         ---
       vars:
         confs:
-          - key: net.ipv4.conf.all.send_redirects
+          - key: net.ipv4.conf.all.accept_source_route
             value: 0
-          - key: net.ipv4.conf.default.send_redirects
+          - key: net.ipv4.conf.default.accept_source_route
+            value: 0
+          - key: net.ipv6.conf.all.accept_source_route
+            value: 0
+          - key: net.ipv6.conf.default.accept_source_route
             value: 0
         esc_key: "{{ conf.key | regex_escape() }}"
         esc_value: "{{ conf.value | regex_escape() }}"
@@ -25,7 +29,7 @@
           ^{{ esc_key }}\s*=\s*(?:(?!{{ esc_value }}).)*$
       diff: true
       ansible.builtin.lineinfile:
-        path: /etc/sysctl.d/99-packet-redirect-sending.conf
+        path: /etc/sysctl.d/99-source-routed-packets.conf
         regexp: "{{ rg_template }}"
         line: "{{ conf.key }} = {{ conf.value }}"
         state: present
@@ -46,6 +50,6 @@
 
     - name: Error backtrace
       vars:
-        section_id: 3.1.2
+        section_id: 3.2.1
       ansible.builtin.import_tasks:
         file: error_logging.yml

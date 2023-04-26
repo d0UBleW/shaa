@@ -1,0 +1,30 @@
+---
+- name: 3.3.5
+  tags:
+    - 3.3.5
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_3_3_5
+    - hosts_deny_perms | bool
+  block:
+    - name: |
+        ---
+        3.3.5 Ensure permissions on /etc/hosts.deny are configured
+        > Set permissions to root:root 0644
+        ---
+      ansible.builtin.file:
+        path: /etc/hosts.deny
+        owner: root
+        group: root
+        mode: "0644"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 3.3.5
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,50 @@
+---
+- name: 3.3.2
+  tags:
+    - 3.3.2
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_3_3_2
+    - configure_hosts_allow | bool
+  block:
+    - name: |
+        ---
+        3.3.2 Ensure /etc/hosts.allow is configured
+        > Get existing configuration for pattern: {{ rule }}
+        ---
+      ansible.builtin.shell: >-
+        grep -P '^{{ rule | regex_escape() }}\s*:' /etc/hosts.allow |
+        cut -d ':' -f2-
+      register: old_hosts_allow
+      changed_when: false
+
+    - name: |
+        ---
+        3.3.2 Ensure /etc/hosts.allow is configured
+        > Configure /etc/hosts.allow for pattern: {{ rule }}
+        ---
+      vars:
+        old_confs: "{{ old_hosts_allow.stdout.split() }}"
+        diff_confs: "{{ hosts_allow[rule] | symmetric_difference(old_confs) }}"
+      when: diff_confs | length > 0
+      ansible.builtin.lineinfile:
+        path: /etc/hosts.allow
+        regexp: '^{{ rule | regex_escape() }}\s*:'
+        line: "{{ rule }}: {{ ', '.join(hosts_allow[rule]) }}"
+        state: present
+        create: true
+        # backup: true
+        owner: root
+        group: root
+        mode: "0644"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 3.3.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

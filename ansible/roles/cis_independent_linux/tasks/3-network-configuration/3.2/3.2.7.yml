@@ -1,31 +1,31 @@
 ---
-- name: 3.1.2
+- name: 3.2.7
   tags:
-    - 3.1.2
+    - 3.2.7
     - level_1_server
     - level_1_workstation
   when:
-    # section_3_1_2
-    - disable_packet_redirect_sending | bool
+    # section_3_2_7
+    - enable_reverse_path_filtering | bool
   block:
     - name: |
         ---
-        3.1.2 Ensure IP forwarding is disabled
-        > Edit /etc/sysctl.d/99-packet-redirect-sending.conf
+        3.2.7 Ensure Reverse Path Filtering is enabled
+        > Edit /etc/sysctl.d/99-reverse-path-filtering.conf
         ---
       vars:
         confs:
-          - key: net.ipv4.conf.all.send_redirects
-            value: 0
-          - key: net.ipv4.conf.default.send_redirects
-            value: 0
+          - key: net.ipv4.conf.all.rp_filter
+            value: 1
+          - key: net.ipv4.conf.default.rp_filter
+            value: 1
         esc_key: "{{ conf.key | regex_escape() }}"
         esc_value: "{{ conf.value | regex_escape() }}"
         rg_template: >-
           ^{{ esc_key }}\s*=\s*(?:(?!{{ esc_value }}).)*$
       diff: true
       ansible.builtin.lineinfile:
-        path: /etc/sysctl.d/99-packet-redirect-sending.conf
+        path: /etc/sysctl.d/99-reverse-path-filtering.conf
         regexp: "{{ rg_template }}"
         line: "{{ conf.key }} = {{ conf.value }}"
         state: present
@@ -46,6 +46,6 @@
 
     - name: Error backtrace
       vars:
-        section_id: 3.1.2
+        section_id: 3.2.7
       ansible.builtin.import_tasks:
         file: error_logging.yml

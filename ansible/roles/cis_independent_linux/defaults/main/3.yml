@@ -7,3 +7,88 @@
 
 # 3.1.1
 disable_ip_forwarding: "{{ section_3_1_1 }}"
+
+# 3.1.2
+disable_packet_redirect_sending: "{{ section_3_1_2 }}"
+
+##########
+#
+# 3.2
+#
+##########
+
+# 3.2.1
+reject_source_routed_packets: "{{ section_3_2_1 }}"
+
+# 3.2.2
+reject_icmp_redirects: "{{ section_3_2_2 }}"
+
+# 3.2.3
+reject_secure_icmp_redirects: "{{ section_3_2_3 }}"
+
+# 3.2.4
+log_suspicious_packets: "{{ section_3_2_4 }}"
+
+# 3.2.5
+ignore_broadcast_icmp_req: "{{ section_3_2_5 }}"
+
+# 3.2.6
+ignore_bogus_icmp_resp: "{{ section_3_2_6 }}"
+
+# 3.2.7
+enable_reverse_path_filtering: "{{ section_3_2_7 }}"
+
+# 3.2.8
+enable_tcp_syn_cookies: "{{ section_3_2_8 }}"
+
+# 3.2.9
+reject_ipv6_router_advertisements: "{{ section_3_2_9 }}"
+
+##########
+#
+# 3.3
+#
+##########
+
+# 3.3.1
+install_tcp_wrappers: "{{ section_3_3_1 }}"
+
+# 3.3.2
+configure_hosts_allow: "{{ section_3_3_2 }}"
+hosts_allow:
+  ALL EXCEPT in.fingerd:
+    - 192.168.0.0/255.255.255.0
+    - 192.168.1.0/24
+    - 192.168.2.*
+    - .example.com
+  sshd:
+    - 10.0.0.0/8
+
+hosts_allow_cleanup: true
+
+# 3.3.3
+configure_hosts_deny: "{{ section_3_3_3 }}"
+hosts_deny:
+  ALL:
+    - ALL
+
+hosts_deny_cleanup: true
+
+# 3.3.4
+hosts_allow_perms: "{{ section_3_3_4 }}"
+
+# 3.3.5
+hosts_deny_perms: "{{ section_3_3_5 }}"
+
+##########
+#
+# 3.4
+#
+##########
+
+# 3.4.x
+disable_uncommon_network_protocols:
+  dccp: "{{ section_3_4_1 }}"
+  sctp: "{{ section_3_4_2 }}"
+  rds: "{{ section_3_4_3 }}"
+  tipc: "{{ section_3_4_4 }}"

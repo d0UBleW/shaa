@@ -1,0 +1,36 @@
+---
+- name: 3.2.1 Ensure source routed packets are not accepted
+  ansible.builtin.import_tasks:
+    file: ./3.2.1.yml
+
+- name: 3.2.2 Ensure ICMP redirects are not accepted
+  ansible.builtin.import_tasks:
+    file: ./3.2.2.yml
+
+- name: 3.2.3 Ensure secure ICMP redirects are not accepted
+  ansible.builtin.import_tasks:
+    file: ./3.2.3.yml
+
+- name: 3.2.4 Ensure suspicious packets are logged
+  ansible.builtin.import_tasks:
+    file: ./3.2.4.yml
+
+- name: 3.2.5 Ensure broadcast ICMP requests are ignored
+  ansible.builtin.import_tasks:
+    file: ./3.2.5.yml
+
+- name: 3.2.6 Ensure bogus ICMP responses are ignored
+  ansible.builtin.import_tasks:
+    file: ./3.2.6.yml
+
+- name: 3.2.7 Ensure Reverse Path Filtering is enabled
+  ansible.builtin.import_tasks:
+    file: ./3.2.7.yml
+
+- name: 3.2.8 Ensure TCP SYN Cookies is enabled
+  ansible.builtin.import_tasks:
+    file: ./3.2.8.yml
+
+- name: 3.2.9 Ensure IPv6 router advertisements are not accepted
+  ansible.builtin.import_tasks:
+    file: ./3.2.9.yml

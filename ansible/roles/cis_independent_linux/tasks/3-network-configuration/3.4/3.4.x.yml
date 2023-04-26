@@ -1,0 +1,31 @@
+---
+- name: 3.4.x
+  tags:
+    - level_2_server
+    - level_2_workstation
+  block:
+    - name: |
+        ---
+        {{ prot.section_id }} Ensure {{ prot.desc }} is disabled
+        > Configure /etc/modprobe.d/{{ prot.name }}.conf
+        ---
+      ansible.builtin.lineinfile:
+        path: "/etc/modprobe.d/{{ prot.name }}.conf"
+        regexp: '^install\s+{{ prot.name }}\s+(?:(?!/bin/true).)*$'
+        line: "install {{ prot.name }} /bin/true"
+        state: present
+        create: true
+        backup: true
+        owner: root
+        group: root
+        mode: 0644
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "{{ prot.section_id }}"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

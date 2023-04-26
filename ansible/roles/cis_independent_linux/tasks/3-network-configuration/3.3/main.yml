@@ -1,0 +1,83 @@
+---
+- name: 3.3.1 Ensure TCP Wrappers is installed
+  ansible.builtin.import_tasks:
+    file: ./3.3.1.yml
+
+- name: 3.3.2 Ensure /etc/hosts.allow is configured
+  tags:
+    - 3.3.2
+    - level_1_server
+    - level_1_workstation
+  ansible.builtin.include_tasks:
+    file: ./3.3.2.yml
+  loop: "{{ hosts_allow.keys() }}"
+  loop_control:
+    loop_var: rule
+    label: "{{ rule }}"
+
+- name: Clean up
+  block:
+    - name: |
+        ---
+        3.3.2 Ensure /etc/hosts.allow is configured
+        > Clean up unspecified rules
+        ---
+      tags:
+        - 3.3.2
+      when:
+        - hosts_allow_cleanup | bool
+      ansible.builtin.lineinfile:
+        path: /etc/hosts.allow
+        regexp: '^(?:(?!{{ "|".join(hosts_allow.keys()) }}).)*$'
+        state: absent
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 3.3.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
+
+- name: 3.3.3 Ensure /etc/hosts.deny is configured
+  tags:
+    - 3.3.3
+    - level_1_server
+    - level_1_workstation
+  ansible.builtin.include_tasks:
+    file: ./3.3.3.yml
+  loop: "{{ hosts_deny.keys() }}"
+  loop_control:
+    loop_var: rule
+    label: "{{ rule }}"
+
+- name: Clean up
+  block:
+    - name: |
+        ---
+        3.3.3 Ensure /etc/hosts.deny is configured
+        > Clean up unspecified rules
+        ---
+      tags:
+        - 3.3.3
+      when:
+        - hosts_deny_cleanup | bool
+      ansible.builtin.lineinfile:
+        path: /etc/hosts.deny
+        regexp: '^(?:(?!{{ "|".join(hosts_deny.keys()) }}).)*$'
+        state: absent
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 3.3.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
+
+- name: 3.3.4 Ensure permissions on /etc/hosts.allow are configured
+  ansible.builtin.import_tasks:
+    file: ./3.3.4.yml

@@ -4,3 +4,21 @@
     - 3.1.x
   ansible.builtin.import_tasks:
     file: ./3.1/main.yml
+
+- name: 3.2 Network Parameters (Host and Router)
+  tags:
+    - 3.2.x
+  ansible.builtin.import_tasks:
+    file: ./3.2/main.yml
+
+- name: 3.3 TCP Wrappers
+  tags:
+    - 3.3.x
+  ansible.builtin.import_tasks:
+    file: ./3.3/main.yml
+
+- name: 3.4 Uncommon Network Protocols
+  tags:
+    - 3.4.x
+  ansible.builtin.import_tasks:
+    file: ./3.4/main.yml

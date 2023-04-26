@@ -4,6 +4,7 @@ bootstrap_pkgs:
   - cronie
   - procps-ng
   - grubby
+  - epel-release
 
 grub_prefix: grub2
 
@@ -25,3 +26,5 @@ chrony_systemd_service_file: >-
 chrony_conf: "/etc/chrony.conf"
 
 xorg_pkgs: "xorg-x11*"
+
+tcp_wrappers_pkg: "tcp_wrappers"
