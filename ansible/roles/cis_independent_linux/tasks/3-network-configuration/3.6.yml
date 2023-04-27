@@ -1,0 +1,17 @@
+---
+- name: 3.6
+  tags:
+    - level_1_server
+    - level_2_workstation
+  when:
+    # section_3_6
+    - disable_wireless | bool
+  block:
+    - name: |
+        ---
+        3.6 Ensure wireless interfaces are disabled
+        > Get list of wireless adapters
+        ---
+      ansible.builtin.shell: >
+        iwconfig
+      changed_when: false

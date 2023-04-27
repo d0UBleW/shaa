@@ -1,0 +1,20 @@
+---
+- name: Flush IPv4 ip6tables
+  when:
+    - flush_iptables | bool
+    - 'ansible_os_family != "Suse"'
+  block:
+    - name: Flush IPv4 iptables
+      ansible.builtin.iptables:
+        flush: true
+        ip_version: ipv4
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "3.5.2-flush"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,53 @@
+---
+- name: 3.5.1.2
+  tags:
+    - 3.5.1.2
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_3_5_1_2
+    - ip6tables_loopback | bool
+    - 'ansible_os_family != "Suse"'
+  block:
+    - name: |
+        ---
+        3.5.1.2 Ensure IPv6 loopback traffic is configured
+        > Accept traffic going to loopback interface (lo)
+        ---
+      ansible.builtin.iptables:
+        chain: INPUT
+        in_interface: lo
+        jump: ACCEPT
+        ip_version: ipv6
+
+    - name: |
+        ---
+        3.5.1.2 Ensure IPv6 loopback traffic is configured
+        > Accept traffic originating from loopback interface (lo)
+        ---
+      ansible.builtin.iptables:
+        chain: OUTPUT
+        out_interface: lo
+        jump: ACCEPT
+        ip_version: ipv6
+
+    - name: |
+        ---
+        3.5.1.2 Ensure IPv6 loopback traffic is configured
+        > Drop traffic originating from loopback address (::1)
+        ---
+      ansible.builtin.iptables:
+        chain: INPUT
+        source: ::1
+        jump: DROP
+        ip_version: ipv6
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "3.5.1.2"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

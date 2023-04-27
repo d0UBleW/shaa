@@ -22,3 +22,21 @@
     - 3.4.x
   ansible.builtin.import_tasks:
     file: ./3.4/main.yml
+
+- name: 3.5 Firewall Configuration
+  tags:
+    - 3.5.x
+  ansible.builtin.import_tasks:
+    file: ./3.5/main.yml
+
+- name: 3.6 Ensure wireless interfaces are disabled
+  tags:
+    - 3.6.x
+  ansible.builtin.import_tasks:
+    file: ./3.6.yml
+
+- name: 3.7 Disable IPv6
+  tags:
+    - 3.7.x
+  ansible.builtin.import_tasks:
+    file: ./3.7.yml

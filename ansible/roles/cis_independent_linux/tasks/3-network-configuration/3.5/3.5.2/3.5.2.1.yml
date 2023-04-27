@@ -1,0 +1,36 @@
+---
+- name: 3.5.2.1
+  tags:
+    - 3.5.2.1
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_3_5_2_1
+    - iptables_default_deny | bool
+    - 'ansible_os_family != "Suse"'
+  block:
+    - name: |
+        ---
+        3.5.1.1 Ensure IPv4 default deny firewall policy
+        > Implement default DROP policy
+        ---
+      ansible.builtin.iptables:
+        chain: "{{ item }}"
+        policy: DROP
+        ip_version: ipv4
+      loop:
+        - INPUT
+        - OUTPUT
+        - FORWARD
+      loop_control:
+        label: "chain: {{ item }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "3.5.2.1"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

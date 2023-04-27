@@ -1,8 +1,11 @@
 ---
 bootstrap_pkgs:
+  - iproute2
+  - iputils-ping
   - kmod
   - cron
   - procps
+  - iptables
 
 grub_prefix: grub
 
@@ -30,3 +33,9 @@ chrony_conf: "/etc/chrony/chrony.conf"
 xorg_pkgs: "xserver-xorg*"
 
 tcp_wrappers_pkg: "tcpd"
+
+iptables_data: "/etc/iptables/rules.v4"
+ip6tables_data: "/etc/iptables/rules.v6"
+
+iptables_persist_pkg: "iptables-persistent"
+iptables_persist_service: "netfilter-persistent"

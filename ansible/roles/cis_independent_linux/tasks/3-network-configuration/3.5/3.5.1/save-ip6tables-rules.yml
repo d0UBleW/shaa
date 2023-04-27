@@ -1,0 +1,34 @@
+---
+- name: Save ip6tables rules
+  when:
+    - save_ip6tables_rules | bool
+    - 'ansible_os_family != "Suse"'
+  block:
+    - name: Install iptables persistence package
+      when:
+        - has_systemd
+      ansible.builtin.package:
+        name: "{{ iptables_persist_pkg }}"
+        state: present
+
+    - name: Save ip6tables rules
+      ansible.builtin.shell: >
+        ip6tables-save > {{ ip6tables_data }}
+
+    - name: Enable iptables persistence service
+      when:
+        - has_systemd
+      ansible.builtin.systemd:
+        name: "{{ iptables_persist_service }}"
+        enabled: true
+        state: started
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "3.5.1-save"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

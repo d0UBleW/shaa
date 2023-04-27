@@ -1,0 +1,24 @@
+---
+- name: Flush IPv4 iptables
+  ansible.builtin.import_tasks:
+    file: ./flush-iptables.yml
+
+- name: 3.5.2.1 Ensure IPv4 default deny firewall policy
+  ansible.builtin.import_tasks:
+    file: ./3.5.2.1.yml
+
+- name: 3.5.2.2 Ensure IPv4 loopback traffic is configured
+  ansible.builtin.import_tasks:
+    file: ./3.5.2.2.yml
+
+- name: 3.5.2.3 Ensure IPv4 outbound and established connections are configured
+  ansible.builtin.import_tasks:
+    file: ./3.5.2.3.yml
+
+- name: 3.5.2.4 Ensure IPv4 firewall rules exists for all open ports
+  ansible.builtin.import_tasks:
+    file: ./3.5.2.4.yml
+
+- name: Save iptables rules
+  ansible.builtin.import_tasks:
+    file: ./save-iptables-rules.yml

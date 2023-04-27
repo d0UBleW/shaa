@@ -1,0 +1,34 @@
+---
+- name: Save iptables rules
+  when:
+    - save_iptables_rules | bool
+    - 'ansible_os_family != "Suse"'
+  block:
+    - name: Install iptables persistence package
+      when:
+        - has_systemd
+      ansible.builtin.package:
+        name: "{{ iptables_persist_pkg }}"
+        state: present
+
+    - name: Save iptables rules
+      ansible.builtin.shell: >
+        iptables-save > {{ iptables_data }}
+
+    - name: Enable iptables persistence service
+      when:
+        - has_systemd
+      ansible.builtin.systemd:
+        name: "{{ iptables_persist_service }}"
+        enabled: true
+        state: started
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "3.5.2-save"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

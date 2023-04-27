@@ -1,0 +1,38 @@
+---
+- name: 3.5.2.4
+  tags:
+    - 3.5.2.4
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_3_5_2_4
+    - iptables_loopback | bool
+    - 'ansible_os_family != "Suse"'
+  block:
+    - name: |
+        ---
+        3.5.2.4 Ensure IPv4 firewall rules exist for all open ports
+        > Allow new inbound connections to port {{ rule.port }}
+        ---
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: "{{ rule.protocol }}"
+        match: state
+        ctstate:
+          - NEW
+        destination_port: "{{ rule.port }}"
+        jump: ACCEPT
+        ip_version: ipv4
+      loop: "{{ iptables_rules }}"
+      loop_control:
+        loop_var: rule
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "3.5.2.4"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

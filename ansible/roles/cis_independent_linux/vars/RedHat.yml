@@ -1,10 +1,13 @@
 ---
 bootstrap_pkgs:
+  - iproute
+  - iputils
   - kmod
   - cronie
   - procps-ng
   - grubby
   - epel-release
+  - iptables
 
 grub_prefix: grub2
 
@@ -28,3 +31,9 @@ chrony_conf: "/etc/chrony.conf"
 xorg_pkgs: "xorg-x11*"
 
 tcp_wrappers_pkg: "tcp_wrappers"
+
+iptables_data: "/etc/sysconfig/iptables"
+ip6tables_data: "/etc/sysconfig/ip6tables"
+
+iptables_persist_pkg: "iptables-services"
+iptables_persist_service: "iptables"

@@ -1,0 +1,12 @@
+---
+- name: 3.5.1 Configure IPv6 ip6tables
+  tags:
+    - 3.5.1
+  ansible.builtin.import_tasks:
+    file: ./3.5.1/main.yml
+
+- name: 3.5.2 Configure IPv4 iptables
+  tags:
+    - 3.5.2
+  ansible.builtin.import_tasks:
+    file: ./3.5.2/main.yml

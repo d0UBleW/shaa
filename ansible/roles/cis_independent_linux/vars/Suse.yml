@@ -1,5 +1,7 @@
 ---
 bootstrap_pkgs:
+  - iproute
+  - iputils
   - kmod
   - cronie
   - procps
