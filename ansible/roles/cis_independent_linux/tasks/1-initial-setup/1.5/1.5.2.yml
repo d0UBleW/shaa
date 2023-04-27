@@ -44,7 +44,7 @@
         - grub_v2
       ansible.builtin.lineinfile:
         path: "/etc/default/grub"
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!noexec=on).)*)"$'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!noexec=on).)*)"'
         line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 noexec=on"'
         backrefs: true
         backup: true

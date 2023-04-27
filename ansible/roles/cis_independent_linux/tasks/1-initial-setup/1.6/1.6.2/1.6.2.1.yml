@@ -20,7 +20,7 @@
         > Get GRUB_CMDLINE_LINUX value from /etc/default/grub
         ---
       ansible.builtin.shell: >
-        grep -oP '(?<=^GRUB_CMDLINE_LINUX=").*(?="$)' /etc/default/grub
+        grep -oP '(?<=^GRUB_CMDLINE_LINUX=").*(?=")' /etc/default/grub
       register: raw_args
       changed_when: false
       failed_when: false
@@ -32,8 +32,8 @@
         ---
       when:
         - raw_args.rc == 0
-        - "'selinux=0' not in raw_args"
-        - "'enforcing=0' not in raw_args"
+        - "'selinux=0' in raw_args.stdout or
+          'enforcing=0' in raw_args.stdout"
       vars:
         new_args: >-
           {{ raw_args.stdout.split() |
@@ -41,7 +41,7 @@
              join(' ') }}
       ansible.builtin.lineinfile:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX=".*"$'
+        regexp: '^GRUB_CMDLINE_LINUX=".*"'
         line: 'GRUB_CMDLINE_LINUX="{{ new_args }}"'
         backup: true
       notify: "grub mkconfig"
@@ -52,7 +52,7 @@
         > Get GRUB_CMDLINE_LINUX_DEFAULT value from /etc/default/grub
         ---
       ansible.builtin.shell: >
-        grep -oP '(?<=^GRUB_CMDLINE_LINUX_DEFAULT=").*(?="$)' /etc/default/grub
+        grep -oP '(?<=^GRUB_CMDLINE_LINUX_DEFAULT=").*(?=")' /etc/default/grub
       register: raw_args
       changed_when: false
       failed_when: false
@@ -64,8 +64,8 @@
         ---
       when:
         - raw_args.rc == 0
-        - "'selinux=0' not in raw_args"
-        - "'enforcing=0' not in raw_args"
+        - "'selinux=0' in raw_args.stdout or
+          'enforcing=0' in raw_args.stdout"
       vars:
         new_args: >-
           {{ raw_args.stdout.split() |
@@ -73,7 +73,7 @@
              join(' ') }}
       ansible.builtin.lineinfile:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=".*"$'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=".*"'
         line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ new_args }}"'
         backup: true
       notify: "grub mkconfig"
