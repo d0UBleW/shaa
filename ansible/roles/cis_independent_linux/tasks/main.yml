@@ -21,6 +21,12 @@
   ansible.builtin.import_tasks:
     file: ./3-network-configuration/main.yml
 
+- name: "4 Logging and Auditing"
+  tags:
+    - 4.x
+  ansible.builtin.import_tasks:
+    file: ./4-logging-and-auditing/main.yml
+
 - name: Flushing all handlers
   tags:
     - always

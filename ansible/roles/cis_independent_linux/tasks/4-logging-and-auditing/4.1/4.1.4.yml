@@ -1,0 +1,51 @@
+---
+- name: 4.1.4
+  tags:
+    - 4.1.4
+    - level_2_server
+    - level_2_workstation
+  when:
+    # section_4_1_4
+    - audit_processes_before_auditd | bool
+    - not is_container
+    - grub_v2
+  block:
+    - name: |
+        ---
+        4.1.4 Enable auditing for processes that start prior to auditd is
+        enabled
+        > Get GRUB_CMDLINE_LINUX value from /etc/default/grub
+        ---
+      ansible.builtin.shell: >
+        grep -oP '(?<=^GRUB_CMDLINE_LINUX=").*(?="$)' /etc/default/grub
+      register: raw_args
+      changed_when: false
+      failed_when: false
+
+    - name: |
+        ---
+        4.1.4 Enable auditing for processes that start prior to auditd is
+        enabled
+        > Add boot parameter 'audit=1'
+        ---
+      when:
+        - "'audit=1' not in raw_args.stdout"
+      vars:
+        new_args: >-
+          {{ (raw_args.stdout.split() + ['audit=1']) | join(' ') }}
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX=".*"'
+        line: 'GRUB_CMDLINE_LINUX="{{ new_args }}"'
+        backup: true
+      notify: "grub mkconfig"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.1.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -6,6 +6,7 @@ bootstrap_pkgs:
   - cronie
   - procps
   - grubby
+  - audit
 
 grub_prefix: grub2
 
@@ -34,3 +35,7 @@ chrony_conf: "/etc/chrony.conf"
 xorg_pkgs: "xorg-x11*"
 
 tcp_wrappers_pkg: "tcpd"
+
+auditd_pkgs:
+  - audit
+  - audit-libs

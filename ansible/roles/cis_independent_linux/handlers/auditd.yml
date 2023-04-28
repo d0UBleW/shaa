@@ -1,0 +1,12 @@
+---
+- name: Compile rules
+  ansible.builtin.shell: >
+    augenrules --load
+  register: augen
+  failed_when: augen.rc > 1
+  changed_when: false
+
+- name: Restart auditd
+  ansible.builtin.shell: >
+    service auditd restart
+  changed_when: false

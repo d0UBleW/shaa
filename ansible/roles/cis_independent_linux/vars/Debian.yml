@@ -6,6 +6,7 @@ bootstrap_pkgs:
   - cron
   - procps
   - iptables
+  - auditd
 
 grub_prefix: grub
 
@@ -39,3 +40,7 @@ ip6tables_data: "/etc/iptables/rules.v6"
 
 iptables_persist_pkg: "iptables-persistent"
 iptables_persist_service: "netfilter-persistent"
+
+auditd_pkgs:
+  - auditd
+  - audispd-plugins

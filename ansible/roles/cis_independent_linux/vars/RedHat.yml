@@ -8,6 +8,7 @@ bootstrap_pkgs:
   - grubby
   - epel-release
   - iptables
+  - audit
 
 grub_prefix: grub2
 
@@ -37,3 +38,7 @@ ip6tables_data: "/etc/sysconfig/ip6tables"
 
 iptables_persist_pkg: "iptables-services"
 iptables_persist_service: "iptables"
+
+auditd_pkgs:
+  - audit
+  - audit-libs

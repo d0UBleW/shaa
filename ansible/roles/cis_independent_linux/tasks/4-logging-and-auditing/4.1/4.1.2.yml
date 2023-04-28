@@ -1,0 +1,32 @@
+---
+- name: 4.1.2
+  tags:
+    - 4.1.2
+    - level_2_server
+    - level_2_workstation
+  when:
+    # section_4_1_2
+    - install_auditd_pkgs
+    - not is_container
+  block:
+    - name: |
+        ---
+        4.1.2 Ensure auditd is installed
+        > Install relevant packages via package manager
+        ---
+      ansible.builtin.package:
+        name: "{{ pkg }}"
+        state: present
+      loop: "{{ auditd_pkgs }}"
+      loop_control:
+        loop_var: pkg
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.1.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,6 @@
+---
+- name: 4.1 Configure System Auditing (auditd)
+  tags:
+    - 4.1.x
+  ansible.builtin.import_tasks:
+    file: ./4.1/main.yml

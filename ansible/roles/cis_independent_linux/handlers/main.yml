@@ -9,6 +9,11 @@
     daemon_reload: true
   listen: "systemctl reload tmp.mount"
 
+- name: Reload auditd
+  ansible.builtin.include_tasks:
+    file: auditd.yml
+  listen: "reload auditd"
+
 - name: Set reboot flag
   ansible.builtin.set_fact:
     reboot: true

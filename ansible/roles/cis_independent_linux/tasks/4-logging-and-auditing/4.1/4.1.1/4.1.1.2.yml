@@ -1,0 +1,45 @@
+---
+- name: 4.1.1.2 Ensure system is disabled when audit logs are full
+  tags:
+    - 4.1.1.2
+    - level_2_server
+    - level_2_workstation
+  when:
+    # section_4_1_1_2
+    - halt_system_if_audit_logs_full | bool
+    - not is_container
+  block:
+    - name: |
+        ---
+        4.1.1.2 Ensure system is disabled when audit logs are full
+        > Edit /etc/audit/auditd.conf
+        ---
+      vars:
+        confs:
+          - key: space_left_action
+            value: "{{ space_left_action }}"
+          - key: action_mail_acct
+            value: root
+          - key: admin_space_left_action
+            value: halt
+      ansible.builtin.lineinfile:
+        path: /etc/audit/auditd.conf
+        regexp: '^{{ conf.key }}\s*=\s*(?:(?!{{ conf.value }}).)*'
+        line: "{{ conf.key }} = {{ conf.value }}"
+        state: present
+        backup: true
+      loop: "{{ confs }}"
+      loop_control:
+        loop_var: conf
+        label: "{{ conf.key }} = {{ conf.value }}"
+      notify: "reload auditd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.1.1.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
