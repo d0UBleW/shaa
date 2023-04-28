@@ -35,7 +35,7 @@
           ansible.builtin.shell: >
             ls /etc/rc*.d | grep xinetd | grep '^S.*'
           register: xinetd_update_rc
-          changed_when: xinetd_update_rc.stdout_lines | length > 0
+          changed_when: false
           failed_when: false
 
         - name: |
@@ -45,7 +45,8 @@
             ---
           ansible.builtin.shell: >
             update-rc.d xinetd disable
-          when: xinetd_update_rc.changed
+          when:
+            - xinetd_update_rc.stdout_lines | length > 0
           changed_when: true
 
   rescue:

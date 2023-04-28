@@ -44,7 +44,7 @@
             grep -oE -i '{{ sensitive_rg }}' {{ file_name }} | grep -v '\\S'
           register: out
           failed_when: false
-          changed_when: out.stdout_lines | length > 0
+          changed_when: false
 
         - name: |
             ---
@@ -52,7 +52,7 @@
             > Strip out OS sensitive information if exists
             ---
           when:
-            - out.changed
+            - out.stdout_lines | length > 0
           ansible.builtin.shell: >
             sed -E -i 's#{{ sensitive_rg }}#ANSIBLE_STRIP#g' {{ file_name }} &&
             sed -E -i 's#{{ os_info_rg }}#ANSIBLE_STRIP#gi' {{ file_name }}

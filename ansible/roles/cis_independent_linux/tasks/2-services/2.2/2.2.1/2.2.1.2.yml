@@ -15,7 +15,7 @@
         grep -P '^restrict\s+-4\s+' /etc/ntp.conf |
         grep -oP '(kod|notrap|nomodify|nopeer|noquery)' | wc -l
       register: check_restrict_4
-      changed_when: check_restrict_4.stdout.strip() != "5"
+      changed_when: false
 
     - name: |
         ---
@@ -23,7 +23,7 @@
         > Configure restriction for restrict -4
         ---
       when:
-        - check_restrict_4.changed
+        - check_restrict_4.stdout.strip() != "5"
       ansible.builtin.lineinfile:
         path: /etc/ntp.conf
         regexp: >-
@@ -43,7 +43,7 @@
         grep -P '^restrict\s+-6\s+' /etc/ntp.conf |
         grep -oP '(kod|notrap|nomodify|nopeer|noquery)' | wc -l
       register: check_restrict_6
-      changed_when: check_restrict_6.stdout.strip() != "5"
+      changed_when: false
 
     - name: |
         ---
@@ -51,7 +51,7 @@
         > Add restriction for -6
         ---
       when:
-        - check_restrict_6.changed
+        - check_restrict_6.stdout.strip() != "5"
       diff: true
       ansible.builtin.lineinfile:
         path: /etc/ntp.conf

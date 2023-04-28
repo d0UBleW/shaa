@@ -87,7 +87,7 @@
       ansible.builtin.shell: >
         timedatectl status | grep -q 'NTP service: active'
       register: timedatectl_ntp
-      changed_when: timedatectl_ntp.rc == 1
+      changed_when: false
 
     - name: |
         ---
@@ -95,8 +95,8 @@
         > timedatectl set-ntp true
         ---
       when:
-        - timedatectl_ntp.changed
-      ansible.builtin.shell: timedatectl set-ntp true
+        - timedatectl_ntp.rc == 1
+      ansible.builtin.command: timedatectl set-ntp true
       changed_when: false
 
   rescue:
