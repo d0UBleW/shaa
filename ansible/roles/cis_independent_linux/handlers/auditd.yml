@@ -3,7 +3,8 @@
   ansible.builtin.shell: >
     augenrules --load
   register: augen
-  failed_when: augen.rc > 1
+  failed_when:
+    - "'There was an error in line' in augen.stderr"
   changed_when: false
 
 - name: Restart auditd

@@ -16,3 +16,70 @@
 - name: 4.1.4 Ensure auditing for process that start prior to auditd is enabled
   ansible.builtin.import_tasks:
     file: ./4.1.4.yml
+
+- name: 4.1.5 Ensure events that modify date and time information are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.5.yml
+
+- name: 4.1.6 Ensure events that modify user/group information are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.6.yml
+
+- name: >-
+    4.1.7 Ensure events that modify system's network environment are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.7.yml
+
+- name: >-
+    4.1.8 Ensure events that modify system's Mandatory Access Controls are
+    collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.8.yml
+
+- name: 4.1.9 Ensure login and logout events are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.9.yml
+
+- name: 4.1.10 Ensure session initiation information is collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.10.yml
+
+- name: >-
+    4.1.11 Ensure discretionary access control permission configuration events
+    are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.11.yml
+
+- name: >-
+    4.1.12 Ensure unsuccessful unauthorized file access attempts are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.12.yml
+
+- name: 4.1.13 Ensure use of privileged commands is collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.13.yml
+
+- name: 4.1.14 Ensure successful file system mounts are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.14.yml
+
+- name: 4.1.15 Ensure file deletion events by users are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.15.yml
+
+- name: >-
+    4.1.16 Ensure changes to system administration scope (sudoers) is collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.16.yml
+
+- name: 4.1.17 Ensure system administration actions (sudolog) are collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.17.yml
+
+- name: 4.1.18 Ensure kernel module loading and unloading is collected
+  ansible.builtin.import_tasks:
+    file: ./4.1.18.yml
+
+- name: 4.1.19 Ensure the audit configuration is immutable
+  ansible.builtin.import_tasks:
+    file: ./4.1.19.yml

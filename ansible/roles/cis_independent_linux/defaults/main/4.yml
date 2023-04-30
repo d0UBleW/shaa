@@ -26,3 +26,48 @@ enable_auditd: "{{ section_4_1_3 }}"
 
 # 4.1.4
 audit_processes_before_auditd: "{{ section_4_1_3 }}"
+
+# 4.1.5
+audit_time_modification: "{{ section_4_1_5 }}"
+
+# 4.1.6
+audit_user_group_modification: "{{ section_4_1_6 }}"
+
+# 4.1.7
+audit_network_modification: "{{ section_4_1_7 }}"
+
+# 4.1.8
+audit_mac_modification: "{{ section_4_1_8 }}"
+
+# 4.1.9
+audit_login: "{{ section_4_1_9 }}"
+
+# 4.1.10
+audit_session_init: "{{ section_4_1_10 }}"
+
+# 4.1.11
+audit_permissions_modification: "{{ section_4_1_11 }}"
+
+# 4.1.12
+audit_unauthorized_access: "{{ section_4_1_12 }}"
+
+# 4.1.13
+audit_suid_binary: "{{ section_4_1_13 }}"
+
+# 4.1.14
+audit_mounts: "{{ section_4_1_14 }}"
+
+# 4.1.15
+audit_file_deletion: "{{ section_4_1_15 }}"
+
+# 4.1.16
+audit_sudoers_modification: "{{ section_4_1_16 }}"
+
+# 4.1.17
+audit_sudo_actions: "{{ section_4_1_17 }}"
+
+# 4.1.18
+audit_kernel_modules: "{{ section_4_1_18 }}"
+
+# 4.1.19
+immutable_audit_conf: "{{ section_4_1_19 }}"

@@ -1,0 +1,46 @@
+---
+- name: 4.1.8
+  tags:
+    - 4.1.8
+    - level_2_server
+    - level_2_workstation
+  when:
+    # section_4_1_8
+    - audit_mac_modification | bool
+  block:
+    - name: |
+        ---
+        4.1.8 Ensure events that modify system's Mandatory Access Controls are
+        collected
+        > Edit /etc/auditd/rules.d/90-mac-policy.rules
+        ---
+      ansible.builtin.copy:
+        src: etc/audit/rules.d/90-mac-policy.rules
+        dest: /etc/audit/rules.d/90-mac-policy.rules
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload auditd"
+      register: rules_out
+
+    - name: |
+        ---
+        4.1.8 Ensure events that modify system's Mandatory Access Controls are
+        collected
+        > Notify reboot handler
+        ---
+      when:
+        - rules_out.changed
+      ansible.builtin.debug:
+        msg: Notify reboot handler
+      notify: "reboot"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.1.8
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

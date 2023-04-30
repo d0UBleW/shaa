@@ -1,0 +1,57 @@
+---
+- name: 4.1.13
+  tags:
+    - 4.1.13
+    - level_2_server
+    - level_2_workstation
+  when:
+    # section_4_1_13
+    - audit_suid_binary | bool
+  block:
+    - name: |
+        ---
+        4.1.13 Ensure use of privileged commands is collected
+        > Get suid files
+        ---
+      ansible.builtin.shell: >
+        find / -xdev \( -perm -4000 -o -perm -2000 \) -type f
+      changed_when: false
+      register: suid_files
+
+    - name: |
+        ---
+        4.1.13 Ensure use of privileged commands is collected
+        > Edit /etc/auditd/rules.d/90-privileged.rules
+        ---
+      vars:
+        sticky_files: "{{ suid_files.stdout_lines }}"
+      ansible.builtin.template:
+        src: >-
+          etc/audit/rules.d/90-privileged.rules.j2
+        dest: /etc/audit/rules.d/90-privileged.rules
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload auditd"
+      register: rules_out
+
+    - name: |
+        ---
+        4.1.13 Ensure use of privileged commands is collected
+        > Notify reboot handler
+        ---
+      when:
+        - rules_out.changed
+      ansible.builtin.debug:
+        msg: Notify reboot handler
+      notify: "reboot"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.1.13
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
