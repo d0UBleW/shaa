@@ -1,0 +1,45 @@
+---
+- name: 4.2.1.5
+  tags:
+    - 4.2.1.5
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_4_2_1_5
+    - rsyslog_log_forwarding | bool
+  block:
+    - name: |
+        ---
+        4.2.1.5 Ensure rsyslog is configured to send logs to a remote host
+        > Check for existing setting
+        ---
+      ansible.builtin.command: >-
+        grep -P '^\*\.\*\s+@@.+' /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      register: old_remote_host
+      changed_when: false
+      failed_when: old_remote_host.rc > 2
+
+    - name: |
+        ---
+        4.2.1.5 Ensure rsyslog is configured to send logs to a remote host
+        > Edit {{ file_name | default('/etc/rsyslog.conf', true) }}
+        ---
+      vars:
+        file_name: >-
+          {{ old_remote_host.stdout | regex_search('^.*?(?=:)') }}
+      ansible.builtin.lineinfile:
+        path: "{{ file_name | default('/etc/rsyslog.conf', true) }}"
+        regexp: '^\*\.\*\s+@@(?:(?!{{ rsyslog_remote_host }}).)*'
+        line: "*.* @@{{ rsyslog_remote_host }}"
+        backup: true
+      notify: "reload rsyslogd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.2.1.5
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

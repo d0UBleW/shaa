@@ -1,0 +1,45 @@
+---
+- name: 4.2.1.4
+  tags:
+    - 4.2.1.4
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_4_2_1_4
+    - rsyslog_filecreatemode | bool
+  block:
+    - name: |
+        ---
+        4.2.1.4 Ensure rsyslog default file permissions configured
+        > Check for existing setting `FileCreateMode`
+        ---
+      ansible.builtin.command: >-
+        grep -P '^\$FileCreateMode\s' /etc/rsyslog.conf /etc/rsyslog.d/*.conf
+      register: old_filecreatemode
+      changed_when: false
+      failed_when: old_filecreatemode.rc > 2
+
+    - name: |
+        ---
+        4.2.1.4 Ensure rsyslog default file permissions configured
+        > Edit {{ file_name | default('/etc/rsyslog.conf', true) }}
+        ---
+      vars:
+        file_name: >-
+          {{ old_filecreatemode.stdout | regex_search('^.*?(?=:)') }}
+      ansible.builtin.lineinfile:
+        path: "{{ file_name | default('/etc/rsyslog.conf', true) }}"
+        regexp: '^\$FileCreateMode\s+(?:(?!0640).)*'
+        line: "$FileCreateMode 0640"
+        backup: true
+      notify: "reload rsyslogd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.2.1.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

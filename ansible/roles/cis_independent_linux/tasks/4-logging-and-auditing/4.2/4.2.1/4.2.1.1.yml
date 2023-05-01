@@ -1,0 +1,28 @@
+---
+- name: 4.2.1.1
+  tags:
+    - 4.2.1.1
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_4_2_1_1
+    - install_rsyslog | bool
+  block:
+    - name: |
+        ---
+        4.2.1.1 Ensure rsyslog is installed
+        > Install rsyslog via package manager
+        ---
+      ansible.builtin.package:
+        name: rsyslog
+        state: present
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.2.1.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

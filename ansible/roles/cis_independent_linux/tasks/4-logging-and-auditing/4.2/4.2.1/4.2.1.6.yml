@@ -1,0 +1,109 @@
+---
+- name: 4.2.1.6
+  tags:
+    - 4.2.1.6
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_4_2_1_6
+    - rsyslog_log_forwarding | bool
+  block:
+    - name: |
+        ---
+        4.2.1.6 Ensure remote rsyslog messages are only accepted on
+        designated log hosts
+        > Get imtcp module setting
+        ---
+      ansible.builtin.shell: >-
+        grep -P '^\$ModLoad\s+[^#]*/?imtcp(\.so)?\b' /etc/rsyslog.conf
+        /etc/rsyslog.d/*.conf
+      register: imtcp
+      changed_when: false
+      failed_when: imtcp.rc > 2
+
+    - name: |
+        ---
+        4.2.1.6 Ensure remote rsyslog messages are only accepted on
+        designated log hosts
+        > Get InputTCPServerRun setting
+        ---
+      ansible.builtin.command: >-
+        grep -P '^\$InputTCPServerRun\s+\d+' /etc/rsyslog.conf
+        /etc/rsyslog.d/*.conf
+      register: inputtcpserverrun
+      changed_when: false
+      failed_when: inputtcpserverrun.rc > 2
+
+    - name: Is log hosts
+      when:
+        - rsyslog_is_log_hosts
+      block:
+        - name: |
+            ---
+            4.2.1.6 Ensure remote rsyslog messages are only accepted on
+            designated log hosts
+            > Edit /etc/rsyslog.conf ($ModLoad imtcp)
+            ---
+          when:
+            - imtcp.stdout_lines | length ==  0
+          ansible.builtin.lineinfile:
+            path: /etc/rsyslog.conf
+            line: "$ModLoad imtcp"
+            insertbefore: '^\$InputTCPServerRun'
+          notify: "reload rsyslogd"
+
+        - name: |
+            ---
+            4.2.1.6 Ensure remote rsyslog messages are only accepted on
+            designated log hosts
+            > Edit /etc/rsyslog.conf ($InputTCPServerRun {{ port }})
+            ---
+          vars:
+            file_name: >-
+              {{ inputtcpserverrun.stdout | regex_search('^.*?(?=:)') }}
+            port: "{{ rsyslog_log_hosts_listen_port }}"
+          ansible.builtin.lineinfile:
+            path: "{{ file_name | default('/etc/rsyslog.conf', true) }}"
+            regexp: '^\$InputTCPServerRun\s+(?:(?!{{ port }})\d)*'
+            line: "$InputTCPServerRun {{ port }}"
+          notify: "reload rsyslogd"
+
+    - name: |
+        ---
+        4.2.1.6 Ensure remote rsyslog messages are only accepted on designated
+        log hosts
+        > Edit /etc/rsyslog.conf to not accept logs from remote systems
+        ---
+      when:
+        - not rsyslog_is_log_hosts
+        - conf.out.stdout_lines | length > 0
+      vars:
+        confs:
+          - key: "$ModLoad"
+            out: "{{ imtcp }}"
+            file_name: >-
+              {{ imtcp.stdout | regex_search('^.*?(?=:)') }}
+          - key: "$InputTCPServerRun"
+            out: "{{ inputtcpserverrun }}"
+            file_name: >-
+              {{ inputtcpserverrun.stdout | regex_search('^.*?(?=:)') }}
+      ansible.builtin.lineinfile:
+        path: "{{ conf.file_name }}"
+        regexp: '^{{ conf.key | regex_escape }}\s+(.*)'
+        line: '# {{ conf.key }} \1'
+        backrefs: true
+      loop: "{{ confs }}"
+      loop_control:
+        loop_var: conf
+        label: "{{ conf.key }}"
+      notify: "reload rsyslogd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.2.1.6
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

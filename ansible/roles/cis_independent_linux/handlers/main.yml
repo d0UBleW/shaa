@@ -34,3 +34,9 @@
   ansible.builtin.include_tasks:
     file: grub.yml
   listen: "grub mkconfig"
+
+- name: Reload rsyslogd
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted
+  listen: "reload rsyslogd"

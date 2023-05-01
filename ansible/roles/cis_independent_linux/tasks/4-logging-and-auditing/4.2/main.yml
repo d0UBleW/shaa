@@ -1,0 +1,6 @@
+---
+- name: 4.2.1 Configure rsyslog
+  tags:
+    - 4.2.1
+  ansible.builtin.import_tasks:
+    file: ./4.2.1/main.yml

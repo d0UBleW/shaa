@@ -4,3 +4,9 @@
     - 4.1.x
   ansible.builtin.import_tasks:
     file: ./4.1/main.yml
+
+- name: 4.2 Configure Logging
+  tags:
+    - 4.2.x
+  ansible.builtin.import_tasks:
+    file: ./4.2/main.yml

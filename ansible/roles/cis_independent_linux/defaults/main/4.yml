@@ -71,3 +71,30 @@ audit_kernel_modules: "{{ section_4_1_18 }}"
 
 # 4.1.19
 immutable_audit_conf: "{{ section_4_1_19 }}"
+
+##########
+#
+# 4.2
+#
+##########
+
+# 4.2.1.1
+install_rsyslog: "{{ section_4_2_1_1 }}"
+
+# 4.2.1.2
+enable_rsyslog: "{{ section_4_2_1_2 }}"
+
+# 4.2.1.3
+rsyslog_rules_conf: "{{ section_4_2_1_3 }}"
+
+# 4.2.1.4
+rsyslog_filecreatemode: "{{ section_4_2_1_4 }}"
+
+# 4.2.1.5
+rsyslog_log_forwarding: "{{ section_4_2_1_5 }}"
+rsyslog_remote_host: "loghost.example.com"
+
+# 4.2.1.6
+rsyslog_log_hosts: "{{ section_4_2_1_6 }}"
+rsyslog_is_log_hosts: true
+rsyslog_log_hosts_listen_port: 514
