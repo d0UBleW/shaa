@@ -1,5 +1,11 @@
 ---
-- name: "ERROR: Caught in {{ section_id }}"
+- name: |
+    ---
+    ERROR: Caught in {{ section_id }}
+    {{ error_details | default('') }}
+    ---
+  when:
+    - section_id not in error_list
   ansible.builtin.set_fact:
     error_list: "{{ error_list + [section_id] }}"
-    error_count: "{{ error_count | int + 1}}"
+    error_count: "{{ (error_count | int) + 1}}"
