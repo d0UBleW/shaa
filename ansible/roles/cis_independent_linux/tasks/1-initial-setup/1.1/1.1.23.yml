@@ -14,7 +14,7 @@
         ---
       ansible.builtin.lineinfile:
         path: /etc/modprobe.d/usb-storage.conf
-        regexp: '^install\s+usb-storage\s+(?:(?!/bin/true).)*$'
+        regexp: '^install\s+usb-storage\s+(?:(?!\b/bin/true\b).)*$'
         line: "install usb-storage /bin/true"
         state: present
         create: true

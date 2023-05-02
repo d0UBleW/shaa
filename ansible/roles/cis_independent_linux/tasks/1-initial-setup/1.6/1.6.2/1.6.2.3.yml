@@ -15,7 +15,7 @@
         ---
       ansible.builtin.lineinfile:
         path: /etc/selinux/config
-        regexp: "^SELINUXTYPE=(?:(?!{{ selinuxtype }}).)*$"
+        regexp: "^SELINUXTYPE=(?:(?!\b{{ selinuxtype }}\b).)*$"
         line: "SELINUXTYPE={{ selinuxtype }}"
         create: true
         owner: root

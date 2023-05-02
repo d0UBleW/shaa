@@ -27,7 +27,7 @@
           diff: true
           ansible.builtin.lineinfile:
             path: /etc/postfix/main.cf
-            regexp: '^inet_interfaces\s*=\s*(?:(?!loopback-only).)*$'
+            regexp: '^inet_interfaces\s*=\s*(?:(?!\bloopback-only\b).)*$'
             line: "inet_interfaces = loopback-only"
             state: present
             backup: true

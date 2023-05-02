@@ -29,7 +29,7 @@
           {{ old_filecreatemode.stdout | regex_search('^.*?(?=:)') }}
       ansible.builtin.lineinfile:
         path: "{{ file_name | default('/etc/rsyslog.conf', true) }}"
-        regexp: '^\$FileCreateMode\s+(?:(?!0640).)*'
+        regexp: '^\$FileCreateMode\s+(?:(?!\b0640\b).)*'
         line: "$FileCreateMode 0640"
         backup: true
       notify: "reload rsyslogd"

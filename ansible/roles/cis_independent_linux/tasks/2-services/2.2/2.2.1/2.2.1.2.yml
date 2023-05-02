@@ -27,7 +27,7 @@
       ansible.builtin.lineinfile:
         path: /etc/ntp.conf
         regexp: >-
-          ^restrict\s+-4\s+default(?:(?!\s+{{ "\s+".join(ntp_options) }}).)*$
+          ^restrict\s+-4\s+default(?:(?!\b\s+{{ "\s+".join(ntp_options) }}\b).)*$
         line: 'restrict -4 default {{ " ".join(ntp_options) }}'
         state: present
         backup: true
@@ -56,7 +56,7 @@
       ansible.builtin.lineinfile:
         path: /etc/ntp.conf
         regexp: >-
-          ^restrict\s+-6\s+default(?:(?!\s+{{ "\s+".join(ntp_options) }}).)*$
+          ^restrict\s+-6\s+default(?:(?!\b\s+{{ "\s+".join(ntp_options) }}\b).)*$
         line: 'restrict -6 default {{ " ".join(ntp_options) }}'
         state: present
         backup: true
@@ -69,7 +69,7 @@
       diff: true
       ansible.builtin.lineinfile:
         path: /etc/ntp.conf
-        regexp: '^server\s+(?:(?!{{ time_sync_remote_server }}).)*$'
+        regexp: '^server\s+(?:(?!\b{{ time_sync_remote_server }}\b).)*$'
         line: "server {{ time_sync_remote_server }}"
         state: present
         backup: true
@@ -112,7 +112,7 @@
           diff: true
           ansible.builtin.lineinfile:
             path: "{{ ntp_sysconfig_path }}"
-            regexp: '^{{ opt_key }}="(?:(?!-g\s+-u\s+ntp:ntp).)*"'
+            regexp: '^{{ opt_key }}="(?:(?!\b-g\s+-u\s+ntp:ntp\b).)*"'
             line: '{{ opt_key }}="-g -u ntp:ntp"'
             state: present
             backup: true
@@ -127,7 +127,7 @@
       diff: true
       ansible.builtin.lineinfile:
         path: /etc/init.d/ntp
-        regexp: "^RUNASUSER=(?:(?!ntp).)*$"
+        regexp: "^RUNASUSER=(?:(?!\bntp\b).)*$"
         line: "RUNASUSER=ntp"
         state: present
         backup: true

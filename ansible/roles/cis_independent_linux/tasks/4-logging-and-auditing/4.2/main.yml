@@ -4,3 +4,9 @@
     - 4.2.1
   ansible.builtin.import_tasks:
     file: ./4.2.1/main.yml
+
+- name: 4.2.2 Configure journald
+  tags:
+    - 4.2.2
+  ansible.builtin.import_tasks:
+    file: ./4.2.2/main.yml

@@ -13,7 +13,7 @@
       diff: true
       ansible.builtin.lineinfile:
         path: "{{ chrony_conf }}"
-        regexp: '^server\s+(?:(?!{{ time_sync_remote_server }}).)*$'
+        regexp: '^server\s+(?:(?!\b{{ time_sync_remote_server }}\b).)*$'
         line: "server {{ time_sync_remote_server }}"
         state: present
         backup: true
@@ -28,7 +28,7 @@
       diff: true
       ansible.builtin.lineinfile:
         path: "{{ chrony_systemd_service_file }}"
-        regexp: "^User=(?:(?!chrony).)*"
+        regexp: "^User=(?:(?!\bchrony\b).)*"
         line: "User=chrony"
         insertafter: "^[Service]"
         state: present

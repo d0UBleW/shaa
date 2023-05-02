@@ -11,7 +11,7 @@
         ---
       ansible.builtin.lineinfile:
         path: "/etc/modprobe.d/{{ prot.name }}.conf"
-        regexp: '^install\s+{{ prot.name }}\s+(?:(?!/bin/true).)*$'
+        regexp: '^install\s+{{ prot.name }}\s+(?:(?!\b/bin/true\b).)*$'
         line: "install {{ prot.name }} /bin/true"
         state: present
         create: true

@@ -24,7 +24,7 @@
             value: halt
       ansible.builtin.lineinfile:
         path: /etc/audit/auditd.conf
-        regexp: '^{{ conf.key }}\s*=\s*(?:(?!{{ conf.value }}).)*'
+        regexp: '^{{ conf.key }}\s*=\s*(?:(?!\b{{ conf.value }}\b).)*'
         line: "{{ conf.key }} = {{ conf.value }}"
         state: present
         backup: true

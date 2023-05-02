@@ -38,7 +38,7 @@
           ansible.builtin.lineinfile:
             path: /etc/systemd/timesyncd.conf
             regexp: >-
-              ^{{ conf.key }}=(?:(?!{{ '\s+'.join(conf.value) }}).)*$
+              ^{{ conf.key }}=(?:(?!\b{{ '\s+'.join(conf.value) }}\b).)*$
             line: "{{ conf.key }}={{ ' '.join(conf.value) }}"
             state: present
             backup: true
@@ -59,7 +59,7 @@
           ansible.builtin.lineinfile:
             path: /etc/systemd/timesyncd.conf
             regexp: >-
-              ^{{ conf.key }}=(?:(?!{{ conf.value }}).)*$
+              ^{{ conf.key }}=(?:(?!\b{{ conf.value }}\b).)*$
             line: "{{ conf.key }}={{ conf.value }}"
             state: present
             backup: true

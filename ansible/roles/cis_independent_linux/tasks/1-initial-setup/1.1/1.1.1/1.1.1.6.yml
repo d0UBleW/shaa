@@ -11,7 +11,7 @@
         > Configure /etc/modprobe.d/{{ fs }}.conf
         ---
       vars:
-        regexp: '^install\s+{{ fs }}\s+(?:(?!/bin/true).)*$'
+        regexp: '^install\s+{{ fs }}\s+(?:(?!\b/bin/true\b).)*$'
       ansible.builtin.lineinfile:
         path: "/etc/modprobe.d/{{ fs }}.conf"
         regexp: "{{ regexp }}"

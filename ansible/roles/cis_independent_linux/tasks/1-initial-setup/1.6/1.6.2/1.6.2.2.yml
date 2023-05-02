@@ -14,7 +14,7 @@
         ---
       ansible.builtin.lineinfile:
         path: /etc/selinux/config
-        regexp: "^SELINUX=(?:(?!enforcing).)*$"
+        regexp: "^SELINUX=(?:(?!\benforcing\b).)*$"
         line: "SELINUX=enforcing"
         create: true
         owner: root

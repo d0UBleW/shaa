@@ -16,7 +16,7 @@
         ---
       ansible.builtin.lineinfile:
         path: /etc/audit/auditd.conf
-        regexp: '^max_log_file\s*=\s*(?:(?!{{ max_log_file }}).)*'
+        regexp: '^max_log_file\s*=\s*(?:(?!\b{{ max_log_file }}\b).)*'
         line: "max_log_file = {{ max_log_file }}"
         state: present
         backup: true

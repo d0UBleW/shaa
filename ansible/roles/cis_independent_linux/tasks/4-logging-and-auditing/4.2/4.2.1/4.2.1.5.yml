@@ -29,7 +29,7 @@
           {{ old_remote_host.stdout | regex_search('^.*?(?=:)') }}
       ansible.builtin.lineinfile:
         path: "{{ file_name | default('/etc/rsyslog.conf', true) }}"
-        regexp: '^\*\.\*\s+@@(?:(?!{{ rsyslog_remote_host }}).)*'
+        regexp: '^\*\.\*\s+@@(?:(?!\b{{ rsyslog_remote_host }}\b).)*'
         line: "*.* @@{{ rsyslog_remote_host }}"
         backup: true
       notify: "reload rsyslogd"

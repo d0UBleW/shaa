@@ -64,7 +64,7 @@
             port: "{{ rsyslog_log_hosts_listen_port }}"
           ansible.builtin.lineinfile:
             path: "{{ file_name | default('/etc/rsyslog.conf', true) }}"
-            regexp: '^\$InputTCPServerRun\s+(?:(?!{{ port }})\d)*'
+            regexp: '^\$InputTCPServerRun\s+(?:(?!\b{{ port }}\b)\d)*'
             line: "$InputTCPServerRun {{ port }}"
           notify: "reload rsyslogd"
 

@@ -28,7 +28,7 @@
         - hosts_allow_cleanup | bool
       ansible.builtin.lineinfile:
         path: /etc/hosts.allow
-        regexp: '^(?:(?!{{ "|".join(hosts_allow.keys()) }}).)*$'
+        regexp: '^(?:(?!\b{{ "|".join(hosts_allow.keys()) }}\b).)*$'
         state: absent
   rescue:
     - name: Flushing all handlers
@@ -65,7 +65,7 @@
         - hosts_deny_cleanup | bool
       ansible.builtin.lineinfile:
         path: /etc/hosts.deny
-        regexp: '^(?:(?!{{ "|".join(hosts_deny.keys()) }}).)*$'
+        regexp: '^(?:(?!\b{{ "|".join(hosts_deny.keys()) }}\b).)*$'
         state: absent
 
   rescue:
