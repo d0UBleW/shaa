@@ -1,0 +1,62 @@
+---
+- name: 4.3
+  tags:
+    - 4.3.x
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_4_3
+    - configure_logrotate | bool
+  block:
+    - name: |
+        ---
+        4.3 Ensure logrotate is configured
+        > Get current rotate period
+        ---
+      ansible.builtin.command: >-
+        grep -P '^(hourly|daily|weekly|monthly|yearly)\b' /etc/logrotate.conf
+      register: old_rotate_period
+      changed_when: false
+      failed_when: false
+
+    - name: |
+        ---
+        4.3 Ensure logrotate is configured
+        > Configure rotate period
+        ---
+      vars:
+        period: "{{ old_rotate_period.stdout | default(rotate_period, true) }}"
+      ansible.builtin.lineinfile:
+        path: /etc/logrotate.conf
+        regexp: "^{{ period }}"
+        line: "{{ rotate_period }}"
+        state: present
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: |
+        ---
+        4.3 Ensure logrotate is configured
+        > Configure backlog keeping period
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/logrotate.conf
+        regexp: '^rotate\s+(?:(?!\b{{ keep_backlogs }}\b)\d)*'
+        line: "rotate {{ keep_backlogs }}"
+        state: present
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 4.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

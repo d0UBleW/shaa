@@ -10,3 +10,7 @@
     - 4.2.x
   ansible.builtin.import_tasks:
     file: ./4.2/main.yml
+
+- name: 4.3 Ensure logrotate is configured
+  ansible.builtin.import_tasks:
+    file: ./4.3.yml

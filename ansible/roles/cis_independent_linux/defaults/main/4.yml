@@ -98,3 +98,30 @@ rsyslog_remote_host: "loghost.example.com"
 rsyslog_log_hosts: "{{ section_4_2_1_6 }}"
 rsyslog_is_log_hosts: true
 rsyslog_log_hosts_listen_port: 514
+
+# 4.2.2.1
+journald_forward_to_syslog: "{{ section_4_2_2_1 }}"
+
+# 4.2.2.2
+journald_compress_files: "{{ section_4_2_2_2 }}"
+
+# 4.2.2.3
+journald_persistent_storage: "{{ section_4_2_2_3 }}"
+
+# 4.2.3
+logfiles_permissions: "{{ section_4_2_3 }}"
+
+##########
+#
+# 4.3
+#
+##########
+
+# 4.3
+configure_logrotate: "{{ section_4_3 }}"
+
+# hourly, daily, weekly, monthly, yearly
+rotate_period: "yearly"
+
+# Measure in week
+keep_backlogs: 8

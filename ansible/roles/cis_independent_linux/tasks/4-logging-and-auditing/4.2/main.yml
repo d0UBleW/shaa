@@ -10,3 +10,9 @@
     - 4.2.2
   ansible.builtin.import_tasks:
     file: ./4.2.2/main.yml
+
+- name: 4.2.3 Ensure permissions on all logfiles are configured
+  tags:
+    - 4.2.3
+  ansible.builtin.import_tasks:
+    file: ./4.2.3.yml
