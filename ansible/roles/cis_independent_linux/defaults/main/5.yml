@@ -1,0 +1,151 @@
+---
+##########
+#
+# 5.1
+#
+##########
+
+# 5.1.1
+enable_cron_daemon: "{{ section_5_1_1 }}"
+
+# 5.1.2
+crontab_permissions: "{{ section_5_1_2 }}"
+
+# 5.1.3
+cron_hourly_permissions: "{{ section_5_1_3 }}"
+
+# 5.1.4
+cron_daily_permissions: "{{ section_5_1_4 }}"
+
+# 5.1.5
+cron_weekly_permissions: "{{ section_5_1_5 }}"
+
+# 5.1.6
+cron_monthly_permissions: "{{ section_5_1_6 }}"
+
+# 5.1.7
+cron_d_permissions: "{{ section_5_1_7 }}"
+
+# 5.1.8
+cron_at_permissions: "{{ section_5_1_8 }}"
+
+##########
+#
+# 5.2
+#
+##########
+
+# 5.2.1
+sshd_config_permissions: "{{ section_5_2_1 }}"
+
+# 5.2.2
+ssh_private_host_key_permissions: "{{ section_5_2_2 }}"
+
+# 5.2.3
+ssh_public_host_key_permissions: "{{ section_5_2_3 }}"
+
+# 5.2.4
+sshd_protocol_v2: "{{ section_5_2_4 }}"
+
+# 5.2.5
+sshd_log_level_conf: "{{ section_5_2_5 }}"
+
+# Valid value: verbose, info
+sshd_log_level: "verbose"
+
+# 5.2.6
+sshd_x11_forwarding: "{{ section_5_2_6 }}"
+
+# 5.2.7
+sshd_max_auth_tries_conf: "{{ section_5_2_7 }}"
+ssh_max_auth_tries: "4"
+
+# 5.2.8
+sshd_ignore_rhosts: "{{ section_5_2_8 }}"
+
+# 5.2.9
+sshd_disable_host_based_auth: "{{ section_5_2_9 }}"
+
+# 5.2.10
+sshd_disable_root_login: "{{ section_5_2_10 }}"
+
+# 5.2.11
+sshd_disable_empty_passwords: "{{ section_5_2_11 }}"
+
+# 5.2.12
+sshd_disable_environment_vars: "{{ section_5_2_12 }}"
+
+# 5.2.13
+sshd_enforce_strong_ciphers: "{{ section_5_2_13 }}"
+
+sshd_ciphers:
+  - aes256-ctr
+  - aes192-ctr
+  - aes128-ctr
+
+# 5.2.14
+sshd_enforce_strong_mac_algs: "{{ section_5_2_14 }}"
+sshd_mac_algs:
+  - hmac-sha2-256
+  - hmac-sha2-512
+
+# 5.2.15
+sshd_enforce_strong_kex_algs: "{{ section_5_2_15 }}"
+sshd_kex_algs:
+  - ecdh-sha2-nistp256
+  - ecdh-sha2-nistp384
+  - ecdh-sha2-nistp521
+  - diffie-hellman-group-exchange-sha256
+  - diffie-hellman-group16-sha512
+  - diffie-hellman-group18-sha512
+  - diffie-hellman-group14-sha256
+
+# 5.2.16
+sshd_idle_timeout_conf: "{{ section_5_2_16 }}"
+
+# measured in seconds
+sshd_idle_timeout: 300
+
+# 0 message would terminate session instantly
+sshd_idle_timeout_msg: 0
+
+# 5.2.17
+sshd_login_grace_time_conf: "{{ section_5_2_17 }}"
+
+# measured in seconds
+sshd_login_grace_time: 60
+
+# 5.2.18
+sshd_access_conf: "{{ section_5_2_18 }}"
+
+sshd_allow_users:
+  - "*"
+
+sshd_allow_groups:
+  - "*"
+
+sshd_deny_users:
+  - root
+  - bar@10.0.0.1
+
+sshd_deny_groups:
+  - bad
+
+# 5.2.19
+sshd_banner_conf: "{{ section_5_2_19 }}"
+
+sshd_banner: "/etc/issue.net"
+
+# 5.2.20
+sshd_pam_conf: "{{ section_5_2_20 }}"
+
+# 5.2.21
+sshd_disable_tcp_forwarding: "{{ section_5_2_21 }}"
+
+# 5.2.22
+sshd_max_startups_conf: "{{ section_5_2_22 }}"
+sshd_max_startups: "10:30:60"
+
+# 5.2.23
+sshd_max_sessions_conf: "{{ section_5_2_23 }}"
+sshd_max_sessions: 4

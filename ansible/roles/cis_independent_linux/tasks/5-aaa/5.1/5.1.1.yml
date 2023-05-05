@@ -1,0 +1,64 @@
+---
+- name: 5.1.1
+  tags:
+    - 5.1.1
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_1_1
+    - enable_cron_daemon | bool
+  block:
+    - name: |
+        ---
+        5.1.1 Ensure cron daemon is enabled
+        > Enable cron via systemd
+        ---
+      when:
+        - has_systemd
+      ansible.builtin.systemd:
+        name: "{{ cron_daemon }}"
+        enabled: true
+        state: started
+
+    - name: |
+        ---
+        5.1.1 Ensure cron daemon is enabled
+        > Enable cron via update-rc.d
+        ---
+      when:
+        - has_update_rc_d
+      block:
+        - name: |
+            ---
+            5.1.1 Ensure cron daemon is enabled
+            > Check if cron is enabled
+            ---
+          ansible.builtin.shell: >-
+            find /etc -wholename '/etc/rc?.d/S*{{ cron_daemon }}*' |
+            awk -F '/' '{print $3}' |
+            sort -u |
+            grep -P '^rc[2-5]\.d$'
+          register: cron_update_rc
+          changed_when: false
+          failed_when: false
+
+        - name: |
+            ---
+            5.1.1 Ensure cron daemon is enabled
+            > Enable cron via update-rc.d
+            ---
+          when:
+            - cron_update_rc.stdout_lines | length != 4
+          ansible.builtin.command: >-
+            update-rc.d {{ cron_daemon }} enable
+          changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.1.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

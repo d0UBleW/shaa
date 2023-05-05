@@ -9,6 +9,7 @@ bootstrap_pkgs:
   - epel-release
   - iptables
   - audit
+  - openssh-server
 
 grub_prefix: grub2
 
@@ -42,3 +43,7 @@ iptables_persist_service: "iptables"
 auditd_pkgs:
   - audit
   - audit-libs
+
+cron_daemon: crond
+
+sshd_pkg: "openssh-server"

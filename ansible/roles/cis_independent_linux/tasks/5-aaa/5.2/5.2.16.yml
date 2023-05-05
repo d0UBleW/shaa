@@ -1,0 +1,50 @@
+---
+- name: 5.2.16
+  tags:
+    - 5.2.16
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_16
+    - sshd_idle_timeout_conf | bool
+  block:
+    - name: |
+        ---
+        5.2.16 Ensure SSH Idle Timeout Interval is configured
+        > Edit /etc/ssh/sshd_config (ClientAliveInterval)
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^ClientAliveInterval\s+(?:(?!\b{{ sshd_idle_timeout }}\b)\d)*'
+        line: "ClientAliveInterval {{ sshd_idle_timeout }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+    - name: |
+        ---
+        5.2.16 Ensure SSH Idle Timeout Interval is configured
+        > Edit /etc/ssh/sshd_config (ClientAliveCountMax)
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: >-
+          ^ClientAliveCountMax\s+(?:(?!\b{{ sshd_idle_timeout_msg }}\b)\d)*
+        line: "ClientAliveCountMax {{ sshd_idle_timeout_msg }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.16
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

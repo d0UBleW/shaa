@@ -1,0 +1,50 @@
+---
+- name: 5.2.15
+  tags:
+    - 5.2.15
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_15
+    - sshd_enforce_strong_kex_algs | bool
+  block:
+    - name: |
+        ---
+        5.2.15 Ensure only strong Key Exchange algorithms are used
+        > Get current set Key Exchange algorithms
+        ---
+      ansible.builtin.shell: >
+        grep -P '^kexalgorithms\s+' /etc/ssh/sshd_config | awk '{print $2}'
+      register: kex_out
+      changed_when: false
+
+    - name: |
+        ---
+        5.2.15 Ensure only strong Key Exchange algorithms are used
+        > Edit /etc/ssh/sshd_config
+        ---
+      vars:
+        old_kex: "{{ kex_out.stdout.split(',') }}"
+        diff_kex: "{{ old_kex | difference(sshd_kex_algs) }}"
+      when:
+        - (old_kex | length) != (sshd_kex_algs | length) or
+          diff_kex | length != 0
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^kexalgorithms\s+(?:(?!\b{{ ",".join(sshd_kex_algs) }}\b)\d)*'
+        line: "kexalgorithms {{ ','.join(sshd_kex_algs) }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.15
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,92 @@
+---
+- name: 5.2.1 Ensure permissions on /etc/ssh/sshd_config are configured
+  ansible.builtin.import_tasks:
+    file: ./5.2.1.yml
+
+- name: 5.2.2 Ensure permissions on SSH private host key files are configured
+  ansible.builtin.import_tasks:
+    file: ./5.2.2.yml
+
+- name: 5.2.3 Ensure permissions on SSH public host key files are configured
+  ansible.builtin.import_tasks:
+    file: ./5.2.3.yml
+
+- name: 5.2.4 Ensure SSH Protocol is set to 2
+  ansible.builtin.import_tasks:
+    file: ./5.2.4.yml
+
+- name: 5.2.5 Ensure SSH LogLevel is appropriate
+  ansible.builtin.import_tasks:
+    file: ./5.2.5.yml
+
+- name: 5.2.6 Ensure SSH X11 forwarding is disabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.6.yml
+
+- name: 5.2.7 Ensure SSH MaxAuthTries is set to 4 or less
+  ansible.builtin.import_tasks:
+    file: ./5.2.7.yml
+
+- name: 5.2.8 Ensure SSH IgnoreRhosts is enabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.8.yml
+
+- name: 5.2.9 Ensure SSH HostbasedAuthentication is disabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.9.yml
+
+- name: 5.2.10 Ensure SSH root login is disabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.10.yml
+
+- name: 5.2.11 Ensure SSH PermitEmptyPasswords is disabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.11.yml
+
+- name: 5.2.12 Ensure SSH PermitUserEnvironment is disabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.12.yml
+
+- name: 5.2.13 Ensure only strong Ciphers are used
+  ansible.builtin.import_tasks:
+    file: ./5.2.13.yml
+
+- name: 5.2.14 Ensure only strong MAC algorithms are used
+  ansible.builtin.import_tasks:
+    file: ./5.2.14.yml
+
+- name: 5.2.15 Ensure only strong Key Exchange algorithms are used
+  ansible.builtin.import_tasks:
+    file: ./5.2.15.yml
+
+- name: 5.2.16 Ensure SSH Idle Timeout Interval is configured
+  ansible.builtin.import_tasks:
+    file: ./5.2.16.yml
+
+- name: 5.2.17 Ensure SSH LoginGraceTime is set to one minute or less
+  ansible.builtin.import_tasks:
+    file: ./5.2.17.yml
+
+- name: 5.2.18 Ensure SSH access is limited
+  ansible.builtin.import_tasks:
+    file: ./5.2.18.yml
+
+- name: 5.2.19 Ensure SSH warning banner is configured
+  ansible.builtin.import_tasks:
+    file: ./5.2.19.yml
+
+- name: 5.2.20 Ensure SSH PAM is enabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.20.yml
+
+- name: 5.2.21 Ensure SSH AllowTcpForwarding is disabled
+  ansible.builtin.import_tasks:
+    file: ./5.2.21.yml
+
+- name: 5.2.22 Ensure SSH MaxStartups is configured
+  ansible.builtin.import_tasks:
+    file: ./5.2.22.yml
+
+- name: 5.2.23 Ensure SSH MaxSessions is set to 4 or less
+  ansible.builtin.import_tasks:
+    file: ./5.2.23.yml

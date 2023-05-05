@@ -1,0 +1,56 @@
+---
+- name: 5.1.8
+  tags:
+    - 5.1.8
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_1_8
+    - cron_at_permissions
+  block:
+    - name: |
+        ---
+        5.1.8 Ensure at/cron is restricted to authorized users
+        > Remove /etc/cron.deny and /etc/at.deny if exist
+        ---
+      vars:
+        files:
+          - /etc/cron.deny
+          - /etc/at.deny
+      ansible.builtin.file:
+        path: "{{ file }}"
+        state: absent
+      loop: "{{ files }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+    - name: |
+        ---
+        5.1.8 Ensure at/cron is restricted to authorized users
+        > Create /etc/cron.allow and /etc/at.allow if not exist
+        ---
+      vars:
+        files:
+          - /etc/cron.allow
+          - /etc/at.allow
+      ansible.builtin.file:
+        path: "{{ file }}"
+        state: touch
+        owner: root
+        group: root
+        mode: "0600"
+      loop: "{{ files }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.1.8
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

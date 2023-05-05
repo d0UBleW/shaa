@@ -1,0 +1,12 @@
+---
+- name: 5.1 Configure Cron
+  tags:
+    - 5.1.x
+  ansible.builtin.import_tasks:
+    file: ./5.1/main.yml
+
+- name: 5.2 SSH Server Configuration
+  tags:
+    - 5.2.x
+  ansible.builtin.import_tasks:
+    file: ./5.2/main.yml

@@ -1,0 +1,30 @@
+---
+- name: 5.2.1
+  tags:
+    - 5.2.1
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_1
+    - sshd_config_permissions | bool
+  block:
+    - name: |
+        ---
+        5.2.1 Ensure permissions on /etc/ssh/sshd_config are configure
+        > Permissions root:root 0600
+        ---
+      ansible.builtin.file:
+        path: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: "0600"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

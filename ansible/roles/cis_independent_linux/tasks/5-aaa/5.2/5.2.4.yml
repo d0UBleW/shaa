@@ -1,0 +1,34 @@
+---
+- name: 5.2.4
+  tags:
+    - 5.2.4
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_4
+    - sshd_protocol_v2 | bool
+  block:
+    - name: |
+        ---
+        5.2.4 Ensure SSH Protocol is set to 2
+        > Edit /etc/ssh/sshd_config
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^Protocol\s+(?:(?!\b2\b)\d)*'
+        line: "Protocol 2"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

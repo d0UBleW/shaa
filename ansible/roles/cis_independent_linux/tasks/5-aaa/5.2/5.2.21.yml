@@ -1,0 +1,35 @@
+---
+- name: 5.2.21
+  tags:
+    - 5.2.21
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_21
+    - sshd_disable_tcp_forwarding | bool
+    - ansible_os_family != 'RedHat'
+  block:
+    - name: |
+        ---
+        5.2.21 Ensure SSH AllowTcpForwarding is disabled
+        > Edit /etc/ssh/sshd_config
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^AllowTcpForwarding\s+(?:(?!\bno\b).)*'
+        line: "AllowTcpForwarding no"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.21
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

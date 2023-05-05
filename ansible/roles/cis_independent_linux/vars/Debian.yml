@@ -7,6 +7,7 @@ bootstrap_pkgs:
   - procps
   - iptables
   - auditd
+  - ssh
 
 grub_prefix: grub
 
@@ -44,3 +45,7 @@ iptables_persist_service: "netfilter-persistent"
 auditd_pkgs:
   - auditd
   - audispd-plugins
+
+cron_daemon: cron
+
+sshd_pkg: "ssh"

@@ -1,0 +1,50 @@
+---
+- name: 5.2.14
+  tags:
+    - 5.2.14
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_14
+    - sshd_enforce_strong_mac_algs | bool
+  block:
+    - name: |
+        ---
+        5.2.14 Ensure only strong MAC algorithms are used
+        > Get current set MAC algorithms
+        ---
+      ansible.builtin.shell: >
+        grep -P '^MACs\s+' /etc/ssh/sshd_config | awk '{print $2}'
+      register: macs_out
+      changed_when: false
+
+    - name: |
+        ---
+        5.2.14 Ensure only strong MAC algorithms are used
+        > Edit /etc/ssh/sshd_config
+        ---
+      vars:
+        old_macs: "{{ macs_out.stdout.split(',') }}"
+        diff_macs: "{{ old_macs | difference(sshd_mac_algs) }}"
+      when:
+        - (old_macs | length) != (sshd_mac_algs | length) or
+          diff_macs | length != 0
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^MACs\s+(?:(?!\b{{ ",".join(sshd_mac_algs) }}\b)\d)*'
+        line: "MACs {{ ','.join(sshd_mac_algs) }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.14
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -40,3 +40,9 @@
     name: rsyslog
     state: restarted
   listen: "reload rsyslogd"
+
+- name: Reload sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+  listen: "reload sshd"

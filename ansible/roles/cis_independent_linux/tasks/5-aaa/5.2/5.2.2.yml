@@ -1,0 +1,61 @@
+---
+- name: 5.2.2
+  tags:
+    - 5.2.2
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_2
+    - ssh_private_host_key_permissions | bool
+  block:
+    - name: |
+        ---
+        5.2.2 Ensure permissions on SSH private host key files are configured
+        > Get all SSH private host key files name
+        ---
+      ansible.builtin.command: >-
+        find /etc/ssh -xdev -type f -name 'ssh_host_*_key'
+      register: ssh_private_host_key_files
+      changed_when: false
+
+    - name: |
+        ---
+        5.2.2 Ensure permissions on SSH private host key files are configured
+        > Get each files permissions
+        ---
+      ansible.builtin.stat:
+        path: "{{ file }}"
+      register: files_stat
+      loop: "{{ ssh_private_host_key_files.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+    - name: |
+        ---
+        5.2.2 Ensure permissions on SSH private host key files are configured
+        > Configure permissions to be root:root 0600
+        ---
+      when:
+        - file_stat.stat.mode != '0600' or
+          file_stat.stat.pw_name != 'root' or
+          file_stat.stat.gr_name != 'root'
+      ansible.builtin.file:
+        path: "{{ file_stat.file }}"
+        owner: root
+        group: root
+        mode: "0600"
+      loop: "{{ files_stat.results }}"
+      loop_control:
+        loop_var: file_stat
+        label: "{{ file_stat.file }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

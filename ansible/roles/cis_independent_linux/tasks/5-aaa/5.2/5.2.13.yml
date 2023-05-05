@@ -1,0 +1,50 @@
+---
+- name: 5.2.13
+  tags:
+    - 5.2.13
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_13
+    - sshd_enforce_strong_ciphers | bool
+  block:
+    - name: |
+        ---
+        5.2.13 Ensure only strong Ciphers are used
+        > Get current set ciphers
+        ---
+      ansible.builtin.shell: >
+        grep -P '^Ciphers\s+' /etc/ssh/sshd_config | awk '{print $2}'
+      register: ciphers_out
+      changed_when: false
+
+    - name: |
+        ---
+        5.2.13 Ensure only strong Ciphers are used
+        > Edit /etc/ssh/sshd_config
+        ---
+      vars:
+        old_ciphers: "{{ ciphers_out.stdout.split(',') }}"
+        diff_ciphers: "{{ old_ciphers | difference(sshd_ciphers) }}"
+      when:
+        - (old_ciphers | length) != (sshd_ciphers | length) or
+          diff_ciphers | length != 0
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^Ciphers\s+(?:(?!\b{{ ",".join(sshd_ciphers) }}\b)\d)*'
+        line: "Ciphers {{ ','.join(sshd_ciphers) }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.13
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

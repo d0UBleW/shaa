@@ -1,0 +1,91 @@
+---
+- name: 5.2.18
+  tags:
+    - 5.2.18
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_2_18
+    - sshd_access_conf | bool
+  block:
+    - name: |
+        ---
+        5.2.18 Ensure SSH access is limited
+        > Edit /etc/ssh/sshd_config (AllowUsers)
+        ---
+      vars:
+        esc_rg: "{{ ','.join(sshd_allow_users) | regex_escape }}"
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: >-
+          ^AllowUsers\s+(?:(?!\b{{ esc_rg }}\b).)*
+        line: "AllowUsers {{ ','.join(sshd_allow_users) }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+    - name: |
+        ---
+        5.2.18 Ensure SSH access is limited
+        > Edit /etc/ssh/sshd_config (AllowGroups)
+        ---
+      vars:
+        esc_rg: "{{ ','.join(sshd_allow_groups) | regex_escape }}"
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: >-
+          ^AllowGroups\s+(?:(?!\b{{ esc_rg }}\b).)*
+        line: "AllowGroups {{ ','.join(sshd_allow_groups) }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+    - name: |
+        ---
+        5.2.18 Ensure SSH access is limited
+        > Edit /etc/ssh/sshd_config (DenyUsers)
+        ---
+      vars:
+        esc_rg: "{{ ','.join(sshd_deny_users) | regex_escape }}"
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: >-
+          ^DenyUsers\s+(?:(?!\b{{ esc_rg }}\b).)*
+        line: "DenyUsers {{ ','.join(sshd_deny_users) }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+    - name: |
+        ---
+        5.2.18 Ensure SSH access is limited
+        > Edit /etc/ssh/sshd_config (DenyGroups)
+        ---
+      vars:
+        esc_rg: "{{ ','.join(sshd_deny_groups) | regex_escape }}"
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: >-
+          ^DenyGroups\s+(?:(?!\b{{ esc_rg }}\b).)*
+        line: "DenyGroups {{ ','.join(sshd_deny_groups) }}"
+        create: true
+        owner: root
+        group: root
+        mode: "0600"
+      notify: "reload sshd"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.2.18
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
