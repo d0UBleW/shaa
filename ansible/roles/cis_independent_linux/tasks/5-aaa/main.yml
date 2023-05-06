@@ -10,3 +10,9 @@
     - 5.2.x
   ansible.builtin.import_tasks:
     file: ./5.2/main.yml
+
+- name: 5.3 Configure PAM
+  tags:
+    - 5.3.x
+  ansible.builtin.import_tasks:
+    file: ./5.3/main.yml

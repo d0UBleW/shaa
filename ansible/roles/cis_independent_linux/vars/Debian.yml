@@ -49,3 +49,7 @@ auditd_pkgs:
 cron_daemon: cron
 
 sshd_pkg: "ssh"
+
+pwquality_pkg: "libpam-pwquality"
+
+pam_password_file: "/etc/pam.d/common-password"

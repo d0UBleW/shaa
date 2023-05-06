@@ -149,3 +149,28 @@ sshd_max_startups: "10:30:60"
 # 5.2.23
 sshd_max_sessions_conf: "{{ section_5_2_23 }}"
 sshd_max_sessions: 4
+
+##########
+#
+# 5.3
+#
+##########
+
+# 5.3.1
+pam_password_conf: "{{ section_5_3_1 }}"
+
+pwquality_retry: 3
+
+pwquality_minlen: 14
+
+# digit (negative is minimum, positive is maximum, 0 is disable)
+pwquality_dcredit: -1
+
+# uppercase letter (negative is minimum, positive is maximum, 0 is disable)
+pwquality_ucredit: -1
+
+# other character (negative is minimum, positive is maximum, 0 is disable)
+pwquality_ocredit: -1
+
+# lowercase letter (negative is minimum, positive is maximum, 0 is disable)
+pwquality_lcredit: -1

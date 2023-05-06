@@ -1,0 +1,70 @@
+---
+- name: 5.3.1
+  tags:
+    - 5.3.1
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_3_1
+    - pam_password_conf | bool
+  block:
+    - name: |
+        ---
+        5.3.1 Ensure password creation requirements are configured
+        > Install pwquality package
+        ---
+      ansible.builtin.package:
+        name: "{{ pwquality_pkg }}"
+        state: present
+
+    - name: |
+        ---
+        5.3.1 Ensure password creation requirements are configured
+        > Configure pwquality settings
+        ---
+      vars:
+        confs:
+          - key: minlen
+            value: "{{ pwquality_minlen }}"
+          - key: dcredit
+            value: "{{ pwquality_dcredit }}"
+          - key: ucredit
+            value: "{{ pwquality_ucredit }}"
+          - key: ocredit
+            value: "{{ pwquality_ocredit }}"
+          - key: lcredit
+            value: "{{ pwquality_lcredit }}"
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: '^{{ conf.key }}\s+=\s+(?:(?!\b{{ conf.value }}).)*'
+        line: "{{ conf.key }} = {{ conf.value }}"
+      loop: "{{ confs }}"
+      loop_control:
+        loop_var: conf
+        label: "{{ conf.key }} = {{ conf.value }}"
+
+    - name: |
+        ---
+        5.3.1 Ensure password creation requirements are configured
+        > Edit {{ pam_password_file }}
+        ---
+      vars:
+        confs:
+          - try_first_pass
+          - "retry={{ pwquality_retry }}"
+        opts: "{{ ' '.join(confs) }}"
+      ansible.builtin.lineinfile:
+        path: "{{ pam_password_file }}"
+        regexp: >-
+          ^password\s+requisite\s+pam_pwquality.so\s+(?:(?!\b{{ opts }}\b).)*
+        line: "password requisite pam_pwquality.so {{ opts }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.3.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

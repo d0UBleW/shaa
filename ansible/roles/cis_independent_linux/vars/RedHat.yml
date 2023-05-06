@@ -47,3 +47,7 @@ auditd_pkgs:
 cron_daemon: crond
 
 sshd_pkg: "openssh-server"
+
+pwquality_pkg: "libpwquality"
+
+pam_password_file: "/etc/pam.d/system-auth"
