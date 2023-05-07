@@ -1,0 +1,57 @@
+---
+- name: 5.4.1.1
+  tags:
+    - 5.4.1.1
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_4_1_1
+    - password_expiration_conf | bool
+  block:
+    - name: |
+        ---
+        5.4.1.1 Ensure password expiration is 365 days or less
+        > Edit {{ login_defs }} (PASS_MAX_DAYS {{ pass_max_days }})
+        ---
+      ansible.builtin.lineinfile:
+        path: "{{ login_defs }}"
+        regexp: '^PASS_MAX_DAYS\s+(?:(?!\b{{ pass_max_days }}\b).)*'
+        line: "PASS_MAX_DAYS {{ pass_max_days }}"
+
+    - name: |
+        ---
+        5.4.1.1 Ensure password expiration is 365 days or less
+        > Get users with wrong password expiration time
+        ---
+      ansible.builtin.shell: >-
+        grep -E '^[^:]+:[^!*]' /etc/shadow | cut -d: -f1,5
+      register: found_users
+      changed_when: false
+
+    - name: |
+        ---
+        5.4.1.1 Ensure password expiration is 365 days or less
+        > Set password expiration time on found users
+        ---
+      when:
+        - found_users.stdout_lines | length > 0
+        - (exp_day | string) != (pass_max_days | string)
+      vars:
+        username: "{{ user.strip().split(':')[0] }}"
+        exp_day: "{{ user.strip().split(':')[1] }}"
+      ansible.builtin.command: >-
+        chage --maxdays {{ pass_max_days }} {{ username }}
+      loop: "{{ found_users.stdout_lines }}"
+      loop_control:
+        loop_var: user
+        label: "{{ user }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.4.1.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

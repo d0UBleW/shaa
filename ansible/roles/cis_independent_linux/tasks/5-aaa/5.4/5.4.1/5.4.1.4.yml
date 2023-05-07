@@ -1,0 +1,69 @@
+---
+- name: 5.4.1.4
+  tags:
+    - 5.4.1.4
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_4_1_4
+    - inactive_password_lock_conf | bool
+  block:
+    - name: |
+        ---
+        5.4.1.4 Ensure inactive password lock is 30 days or less
+        > Get current INACTIVE value
+        ---
+      ansible.builtin.shell: >-
+        useradd -D | grep -oP '(?<=^INACTIVE=).*'
+      register: old_inactive_val
+      changed_when: false
+
+    - name: |
+        ---
+        5.4.1.4 Ensure inactive password lock is 30 days or less
+        > Set the appropriate INACTIVE value
+        ---
+      when:
+        - (old_inactive_val.stdout.strip() | string) != (inactive_days | string)
+      ansible.builtin.command: >-
+        useradd -D -f {{ inactive_days }}
+      changed_when: true
+
+    - name: |
+        ---
+        5.4.1.4 Ensure inactive password lock is 30 days or less
+        > Get users with wrong inactive period
+        ---
+      ansible.builtin.shell: >-
+        grep -E '^[^:]+:[^!*]' /etc/shadow | cut -d: -f1,7
+      register: found_users
+      changed_when: false
+
+    - name: |
+        ---
+        5.4.1.4 Ensure inactive password lock is 30 days or less
+        > Set approproiate PASS_WARN_AGE on found users
+        ---
+      when:
+        - found_users.stdout_lines | length > 0
+        - (user_inactive_days | string) != (inactive_days | string)
+      vars:
+        username: "{{ user.strip().split(':')[0] }}"
+        user_inactive_days: "{{ user.strip().split(':')[1] }}"
+      ansible.builtin.command: >-
+        chage --inactive {{ inactive_days }} {{ username }}
+      loop: "{{ found_users.stdout_lines }}"
+      loop_control:
+        loop_var: user
+        label: "{{ user }}"
+      changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.4.1.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

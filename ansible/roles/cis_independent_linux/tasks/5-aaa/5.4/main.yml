@@ -1,0 +1,12 @@
+---
+- name: 5.4.1 Set Shadow Password Suite Parameters
+  tags:
+    - 5.4.1
+  ansible.builtin.import_tasks:
+    file: ./5.4.1/main.yml
+
+- name: 5.4.2 Ensure system accounts are secured
+  tags:
+    - 5.4.2
+  ansible.builtin.import_tasks:
+    file: ./5.4.2.yml

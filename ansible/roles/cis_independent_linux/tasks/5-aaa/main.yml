@@ -16,3 +16,9 @@
     - 5.3.x
   ansible.builtin.import_tasks:
     file: ./5.3/main.yml
+
+- name: 5.4 User Accounts and Environment
+  tags:
+    - 5.4.x
+  ansible.builtin.import_tasks:
+    file: ./5.4/main.yml

@@ -1,0 +1,20 @@
+---
+- name: 5.4.1.1 Ensure password expiration is 365 days or less
+  ansible.builtin.import_tasks:
+    file: ./5.4.1.1.yml
+
+- name: 5.4.1.2 Ensure minimum days between password change is 7 or more
+  ansible.builtin.import_tasks:
+    file: ./5.4.1.2.yml
+
+- name: 5.4.1.3 Ensure password expiration warning days is 7 or more
+  ansible.builtin.import_tasks:
+    file: ./5.4.1.3.yml
+
+- name: 5.4.1.4 Ensure inactive apssword lock is 30 days or less
+  ansible.builtin.import_tasks:
+    file: ./5.4.1.4.yml
+
+- name: 5.4.1.5 Ensure all users last password change date is in the past
+  ansible.builtin.import_tasks:
+    file: ./5.4.1.5.yml

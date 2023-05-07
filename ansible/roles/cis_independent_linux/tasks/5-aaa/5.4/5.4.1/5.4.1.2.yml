@@ -1,0 +1,58 @@
+---
+- name: 5.4.1.2
+  tags:
+    - 5.4.1.2
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_4_1_2
+    - password_change_conf | bool
+  block:
+    - name: |
+        ---
+        5.4.1.2 Ensure minimum days between password change is 7 or more
+        > Edit {{ login_defs }} (PASS_MIN_DAYS {{ pass_min_days }})
+        ---
+      ansible.builtin.lineinfile:
+        path: "{{ login_defs }}"
+        regexp: '^PASS_MIN_DAYS\s+(?:(?!\b{{ pass_min_days }}\b).)*'
+        line: "PASS_MIN_DAYS {{ pass_min_days }}"
+
+    - name: |
+        ---
+        5.4.1.2 Ensure minimum days between password change is 7 or more
+        > Get users with wrong PASS_MIN_DAYS
+        ---
+      ansible.builtin.shell: >-
+        grep -E '^[^:]+:[^!*]' /etc/shadow | cut -d: -f1,4
+      register: found_users
+      changed_when: false
+
+    - name: |
+        ---
+        5.4.1.2 Ensure minimum days between password change is 7 or more
+        > Set approproiate PASS_MIN_DAYS on found users
+        ---
+      when:
+        - found_users.stdout_lines | length > 0
+        - (user_min_days | string) != (pass_min_days | string)
+      vars:
+        username: "{{ user.strip().split(':')[0] }}"
+        user_min_days: "{{ user.strip().split(':')[1] }}"
+      ansible.builtin.command: >-
+        chage --mindays {{ pass_min_days }} {{ username }}
+      loop: "{{ found_users.stdout_lines }}"
+      loop_control:
+        loop_var: user
+        label: "{{ user }}"
+      changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.4.1.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

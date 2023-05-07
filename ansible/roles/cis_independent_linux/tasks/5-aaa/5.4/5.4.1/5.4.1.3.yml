@@ -1,0 +1,58 @@
+---
+- name: 5.4.1.3
+  tags:
+    - 5.4.1.3
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_4_1_3
+    - password_exp_warn_conf | bool
+  block:
+    - name: |
+        ---
+        5.4.1.3 Ensure password expiration warning days is 7 or more
+        > Edit {{ login_defs }} (PASS_WARN_AGE {{ pass_warn_age }})
+        ---
+      ansible.builtin.lineinfile:
+        path: "{{ login_defs }}"
+        regexp: '^PASS_WARN_AGE\s+(?:(?!\b{{ pass_warn_age }}\b).)*'
+        line: "PASS_WARN_AGE {{ pass_warn_age }}"
+
+    - name: |
+        ---
+        5.4.1.3 Ensure password expiration warning days is 7 or more
+        > Get users with wrong PASS_WARN_AGE
+        ---
+      ansible.builtin.shell: >-
+        grep -E '^[^:]+:[^!*]' /etc/shadow | cut -d: -f1,6
+      register: found_users
+      changed_when: false
+
+    - name: |
+        ---
+        5.4.1.3 Ensure password expiration warning days is 7 or more
+        > Set approproiate PASS_WARN_AGE on found users
+        ---
+      when:
+        - found_users.stdout_lines | length > 0
+        - (user_warn_age | string) != (pass_warn_age | string)
+      vars:
+        username: "{{ user.strip().split(':')[0] }}"
+        user_warn_age: "{{ user.strip().split(':')[1] }}"
+      ansible.builtin.command: >-
+        chage --warndays {{ pass_warn_age }} {{ username }}
+      loop: "{{ found_users.stdout_lines }}"
+      loop_control:
+        loop_var: user
+        label: "{{ user }}"
+      changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.4.1.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
