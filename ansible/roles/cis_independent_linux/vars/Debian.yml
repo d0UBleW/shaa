@@ -9,6 +9,8 @@ bootstrap_pkgs:
   - auditd
   - ssh
 
+login_defs: /etc/login.defs
+
 grub_prefix: grub
 
 list_repo: apt-cache policy

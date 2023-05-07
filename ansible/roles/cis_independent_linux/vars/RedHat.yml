@@ -11,6 +11,8 @@ bootstrap_pkgs:
   - audit
   - openssh-server
 
+login_defs: /etc/login.defs
+
 grub_prefix: grub2
 
 list_repo: dnf repolist

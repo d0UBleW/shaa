@@ -14,9 +14,9 @@
         collected
         > Edit /etc/auditd/rules.d/90-access.rules
         ---
-      ansible.builtin.copy:
+      ansible.builtin.template:
         src: >-
-          etc/audit/rules.d/90-access.rules.{{ ansible_userspace_bits }}
+          etc/audit/rules.d/90-access.rules.{{ ansible_userspace_bits }}.j2
         dest: /etc/audit/rules.d/90-access.rules
         owner: root
         group: root

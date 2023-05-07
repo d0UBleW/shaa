@@ -13,9 +13,9 @@
         4.1.15 Ensure file deletion events by users are collected
         > Edit /etc/auditd/rules.d/90-delete.rules
         ---
-      ansible.builtin.copy:
+      ansible.builtin.template:
         src: >-
-          etc/audit/rules.d/90-delete.rules.{{ ansible_userspace_bits }}
+          etc/audit/rules.d/90-delete.rules.{{ ansible_userspace_bits }}.j2
         dest: /etc/audit/rules.d/90-delete.rules
         owner: root
         group: root

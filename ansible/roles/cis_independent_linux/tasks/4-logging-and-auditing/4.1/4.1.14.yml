@@ -13,9 +13,9 @@
         4.1.14 Ensure successful file system mounts are collected
         > Edit /etc/auditd/rules.d/90-mounts.rules
         ---
-      ansible.builtin.copy:
+      ansible.builtin.template:
         src: >-
-          etc/audit/rules.d/90-mounts.rules.{{ ansible_userspace_bits }}
+          etc/audit/rules.d/90-mounts.rules.{{ ansible_userspace_bits }}.j2
         dest: /etc/audit/rules.d/90-mounts.rules
         owner: root
         group: root

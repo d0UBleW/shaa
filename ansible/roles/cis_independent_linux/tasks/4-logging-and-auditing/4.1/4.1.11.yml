@@ -14,9 +14,9 @@
         events are collected
         > Edit /etc/auditd/rules.d/90-perm-mod.rules
         ---
-      ansible.builtin.copy:
+      ansible.builtin.template:
         src: >-
-          etc/audit/rules.d/90-perm-mod.rules.{{ ansible_userspace_bits }}
+          etc/audit/rules.d/90-perm-mod.rules.{{ ansible_userspace_bits }}.j2
         dest: /etc/audit/rules.d/90-perm-mod.rules
         owner: root
         group: root

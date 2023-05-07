@@ -49,6 +49,16 @@
       ansible.builtin.pip:
         name: pexpect
 
+    - name: Get UID_MIN value from login.defs
+      ansible.builtin.shell: >-
+        grep -P '^UID_MIN' {{ login_defs }} | awk '{print $2}'
+      register: uid_min_out
+      changed_when: false
+
+    - name: Set UID_MIN fact
+      ansible.builtin.set_fact:
+        uid_min: "{{ uid_min_out.stdout.strip() }}"
+
     - name: Check for BIOS vs UEFI boot option
       ansible.builtin.shell: >
         [ -d /sys/firmware/efi ] && echo -n UEFI || echo -n BIOS
