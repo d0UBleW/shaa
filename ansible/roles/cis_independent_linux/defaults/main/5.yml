@@ -186,3 +186,4 @@ pam_password_reuse_history: 5
 
 # 5.3.4
 pam_password_hash_alg_conf: "{{ section_5_3_4 }}"
+force_password_change: true

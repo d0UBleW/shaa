@@ -33,6 +33,20 @@
         regexp: 'password\s+(.+)\s+pam_unix.so'
         line: 'password \1 pam_unix.so {{ " ".join(new_mod_args) }}'
         backrefs: true
+      register: pam_sha512
+
+    - name: |
+        ---
+        5.3.4 Ensure password hashing algorithm is SHA-512
+        > Force password change on non system users
+        ---
+      when:
+        # - pam_sha512.changed
+        - force_password_change
+      ansible.builtin.shell: >-
+        cat /etc/passwd | awk -F: '( $3 >= {{ uid_min }} && $1 != "nfsnobody"
+        && $1 != "nobody" ) { print $1 }' | xargs -I{} -n1 chage -d 0 {}
+      changed_when: true
 
   rescue:
     - name: Flushing all handlers
