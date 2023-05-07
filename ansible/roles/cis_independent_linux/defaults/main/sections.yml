@@ -281,3 +281,6 @@ section_5_2_23: "{{ section_5_2 }}"
 
 section_5_3: "{{ section_5 }}"
 section_5_3_1: "{{ section_5_3 }}"
+section_5_3_2: "{{ section_5_3 }}"
+section_5_3_3: "{{ section_5_3 }}"
+section_5_3_4: "{{ section_5_3 }}"

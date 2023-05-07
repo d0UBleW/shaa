@@ -1,0 +1,45 @@
+---
+- name: 5.3.4
+  tags:
+    - 5.3.4
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_3_4
+    - pam_password_hash_alg_conf | bool
+  block:
+    - name: |
+        ---
+        5.3.4 Ensure password hashing algorithm is SHA-512
+        > Get existing password pam_unix module args
+        ---
+      ansible.builtin.shell: >-
+        grep -P '^password\s.+pam_unix\.so' {{ pam_password_file }} |
+        grep -oP '(?<=pam_unix.so).*'
+      changed_when: false
+      register: mod_args
+
+    - name: |
+        ---
+        5.3.4 Ensure password hashing algorithm is SHA-512
+        > Edit {{ pam_password_file }}
+        ---
+      when:
+        - "'sha512' not in mod_args.stdout.split()"
+      vars:
+        new_mod_args: "{{ ['sha512'] + mod_args.stdout.strip().split() }}"
+      ansible.builtin.lineinfile:
+        path: "{{ pam_password_file }}"
+        regexp: 'password\s+(.+)\s+pam_unix.so'
+        line: 'password \1 pam_unix.so {{ " ".join(new_mod_args) }}'
+        backrefs: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.3.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

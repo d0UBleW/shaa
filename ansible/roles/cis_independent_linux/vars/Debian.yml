@@ -53,3 +53,4 @@ sshd_pkg: "ssh"
 pwquality_pkg: "libpam-pwquality"
 
 pam_password_file: "/etc/pam.d/common-password"
+pam_auth_file: "/etc/pam.d/common-auth"

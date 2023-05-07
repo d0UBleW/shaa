@@ -51,3 +51,4 @@ sshd_pkg: "openssh-server"
 pwquality_pkg: "libpwquality"
 
 pam_password_file: "/etc/pam.d/system-auth"
+pam_auth_file: "/etc/pam.d/system-auth"

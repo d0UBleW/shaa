@@ -42,18 +42,17 @@
   tags:
     - always
   ansible.builtin.debug:
-    msg: |
-      Count: {{ info_count }}
-      Affected: {{ info_list }}
+    msg:
+      - "Count: {{ info_count }}"
+      - "Affected: {{ info_list }}"
 
 - name: Caught errors summary
   tags:
     - always
   ansible.builtin.debug:
-    msg: |
-      Count: {{ error_count }}
-      Affected: {{ error_list }}
-
+    msg:
+      - "Count: {{ error_count }}"
+      - "Affected: {{ error_list }}"
 # - name: Reboot
 #   tags:
 #     - always

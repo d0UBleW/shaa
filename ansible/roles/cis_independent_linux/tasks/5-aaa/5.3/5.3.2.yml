@@ -1,0 +1,85 @@
+---
+- name: 5.3.2
+  tags:
+    - 5.3.2
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_3_2
+    - pam_lockout_conf | bool
+  block:
+    - name: |
+        ---
+        5.3.2 Ensure lockout for failed password attempts is configured
+        > Edit {{ pam_auth_file }} (pam_unix.so)
+        ---
+      ansible.builtin.lineinfile:
+        path: "{{ pam_auth_file }}"
+        regexp: >-
+          ^auth\s+.+pam_unix.so\s+(.*)
+        line: 'auth sufficient pam_unix.so \1'
+        backrefs: true
+
+    - name: |
+        ---
+        5.3.2 Ensure lockout for failed password attempts is configured
+        > Edit {{ pam_auth_file }} (preauth)
+        ---
+      vars:
+        args:
+          - audit
+          - silent
+          - "deny={{ pam_auth_fail_try }}"
+          - "unlock_time={{ pam_auth_lock_time }}"
+      ansible.builtin.lineinfile:
+        path: "{{ pam_auth_file }}"
+        regexp: >-
+          ^auth\s+.+pam_faillock.so\s+preauth\s+(?:(?!\b{{ " ".join(args) }}\b).)*
+        line: "auth required pam_faillock.so preauth {{ ' '.join(args) }}"
+        insertbefore: '^auth\s.*pam_unix\.so'
+
+    - name: |
+        ---
+        5.3.2 Ensure lockout for failed password attempts is configured
+        > Edit {{ pam_auth_file }} (authsucc)
+        ---
+      vars:
+        args:
+          - audit
+          - "deny={{ pam_auth_fail_try }}"
+          - "unlock_time={{ pam_auth_lock_time }}"
+        _args: "{{ ' '.join(args) }}"
+      ansible.builtin.lineinfile:
+        path: "{{ pam_auth_file }}"
+        regexp: >-
+          ^auth\s+.+pam_faillock.so\s+authsucc\s+(?:(?!\b{{ _args }}\b).)*
+        line: "auth sufficient pam_faillock.so authsucc {{ _args }}"
+        insertafter: '^auth\s.*pam_unix\.so'
+
+    - name: |
+        ---
+        5.3.2 Ensure lockout for failed password attempts is configured
+        > Edit {{ pam_auth_file }} (authfail)
+        ---
+      vars:
+        args:
+          - audit
+          - "deny={{ pam_auth_fail_try }}"
+          - "unlock_time={{ pam_auth_lock_time }}"
+        _args: "{{ ' '.join(args) }}"
+      ansible.builtin.lineinfile:
+        path: "{{ pam_auth_file }}"
+        regexp: >-
+          ^auth\s+.+pam_faillock.so\s+authfail\s+(?:(?!\b{{ _args }}\b).)*
+        line: "auth [default=die] pam_faillock.so authfail {{ _args }}"
+        insertafter: '^auth\s.*pam_unix\.so'
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.3.2
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

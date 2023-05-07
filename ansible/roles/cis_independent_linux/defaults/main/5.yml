@@ -174,3 +174,15 @@ pwquality_ocredit: -1
 
 # lowercase letter (negative is minimum, positive is maximum, 0 is disable)
 pwquality_lcredit: -1
+
+# 5.3.2
+pam_lockout_conf: "{{ section_5_3_2 }}"
+pam_auth_fail_try: 2
+pam_auth_lock_time: 10
+
+# 5.3.3
+pam_password_reuse_conf: "{{ section_5_3_3 }}"
+pam_password_reuse_history: 5
+
+# 5.3.4
+pam_password_hash_alg_conf: "{{ section_5_3_4 }}"

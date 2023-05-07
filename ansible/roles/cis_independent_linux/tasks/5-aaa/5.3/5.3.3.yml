@@ -1,0 +1,33 @@
+---
+- name: 5.3.3
+  tags:
+    - 5.3.3
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_3_3
+    - pam_password_reuse_conf | bool
+  block:
+    - name: |
+        ---
+        5.3.3 Ensure password reuse is limited
+        > Edit {{ pam_password_file }}
+        ---
+      vars:
+        args: "remember={{ pam_password_reuse_history }}"
+      ansible.builtin.lineinfile:
+        path: "{{ pam_password_file }}"
+        regexp: >-
+          password\s+.+pam_pwhistory.so\s+(?:(?!\b{{ args }}\b).)*
+        line: "password required pam_pwhistory.so {{ args }}"
+        insertbefore: '^password\s.*pam_unix\.so'
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.3.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
