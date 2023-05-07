@@ -1,0 +1,53 @@
+---
+- name: 6.1.1
+  tags:
+    - 6.1.1
+    - level_2_server
+    - level_2_workstation
+  when:
+    # section_6_1_1
+    - audit_system_file_perms | bool
+  block:
+    - name: |
+        ---
+        6.1.1 Audit system file permissions
+        > Get package verification output
+        ---
+      ansible.builtin.command: "{{ verify_pkgs }}"
+      register: pkg_verification_out
+      changed_when: false
+      failed_when: false
+
+    - name: |
+        ---
+        6.1.1 Audit system file permissions
+        > Dump output to {{ pkg_verification_file }}
+        ---
+      when:
+        - pkg_verification_out.stdout_lines | length > 0
+      ansible.builtin.copy:
+        dest: "{{ pkg_verification_file }}"
+        content: "{{ pkg_verification_out.stdout }}"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Info logging
+      when:
+        - pkg_verification_out.stdout_lines | length > 0
+      vars:
+        section_id: 6.1.1
+        info_details: |-
+          Package descrepancies issue(s) found
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.1.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

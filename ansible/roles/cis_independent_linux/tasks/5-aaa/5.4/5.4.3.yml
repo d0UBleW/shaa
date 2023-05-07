@@ -1,0 +1,40 @@
+---
+- name: 5.4.3
+  tags:
+    - 5.4.3
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_4_3
+    - root_default_group_conf | bool
+  block:
+    - name: |
+        ---
+        5.4.3 Ensure default group for the root account is GID 0
+        > Get root account GID
+        ---
+      ansible.builtin.shell: >-
+        grep '^root:' /etc/passwd | cut -d: -f4
+      register: root_gid
+      changed_when: false
+
+    - name: |
+        ---
+        5.4.3 Ensure default group for the root account is GID 0
+        > Set root user default group to GID 0
+        ---
+      when:
+        - root_gid.stdout.strip() | int != 0
+      ansible.builtin.shell: >-
+        usermod -g 0 root
+      changed_when: true
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.4.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

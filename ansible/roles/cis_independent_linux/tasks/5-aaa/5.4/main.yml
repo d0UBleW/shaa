@@ -6,7 +6,17 @@
     file: ./5.4.1/main.yml
 
 - name: 5.4.2 Ensure system accounts are secured
-  tags:
-    - 5.4.2
   ansible.builtin.import_tasks:
     file: ./5.4.2.yml
+
+- name: 5.4.3 Ensure default group for the root account is GID 0
+  ansible.builtin.import_tasks:
+    file: ./5.4.3.yml
+
+- name: 5.4.4 Ensure default user umask is 027 or more restrictive
+  ansible.builtin.import_tasks:
+    file: ./5.4.4.yml
+
+- name: 5.4.5 Ensure default user shell timeout is 900 seconds or less
+  ansible.builtin.import_tasks:
+    file: ./5.4.5.yml

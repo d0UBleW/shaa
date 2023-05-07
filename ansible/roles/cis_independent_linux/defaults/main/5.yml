@@ -215,3 +215,30 @@ audit_last_pw_change: "{{ section_5_4_1_5 }}"
 
 # 5.4.2
 secure_system_accounts: "{{ section_5_4_2 }}"
+
+# 5.4.3
+root_default_group_conf: "{{ section_5_4_3 }}"
+
+# 5.4.4
+default_user_umask_conf: "{{ section_5_4_4 }}"
+user_umask: "027"
+
+# 5.4.5
+default_user_shell_timeout_conf: "{{ section_5_4_4 }}"
+user_shell_timeout: 900
+
+##########
+#
+# 5.5
+#
+##########
+
+restrict_physical_root_login: "{{ section_5_5 }}"
+
+##########
+#
+# 5.6
+#
+##########
+
+restrict_su_command: "{{ section_5_6 }}"

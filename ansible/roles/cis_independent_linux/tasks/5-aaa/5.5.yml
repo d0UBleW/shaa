@@ -1,0 +1,33 @@
+---
+- name: 5.5
+  tags:
+    - 5.5.x
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_5
+    - restrict_physical_root_login | bool
+  block:
+    - name: |
+        ---
+        5.5 Ensure root login is restricted to system console
+        > Edit /etc/securetty
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/securetty
+        regexp: "^console"
+        line: console
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.5
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

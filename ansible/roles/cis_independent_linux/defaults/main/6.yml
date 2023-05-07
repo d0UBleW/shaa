@@ -1,0 +1,13 @@
+---
+##########
+#
+# 6.1
+#
+##########
+
+# 6.1.1
+audit_system_file_perms: "{{ section_6_1_1 }}"
+pkg_verification_file: "/root/pkg_verify"
+
+# 6.1.2-9
+critical_files_perms: "{{ section_6_1_2___9 }}"

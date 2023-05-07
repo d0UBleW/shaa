@@ -1,0 +1,47 @@
+---
+- name: 5.4.4
+  tags:
+    - 5.4.4
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_5_4_4
+    - default_user_umask_conf | bool
+  vars:
+    conf_files:
+      - /etc/profile
+  block:
+    - name: |
+        ---
+        5.4.4 Ensure default user umask is 027 or more restrictive
+        > Get files with umask configuration
+        ---
+      ansible.builtin.shell: >-
+        grep -lP '^umask\s' /etc/*shrc /etc/profile.d/*
+      register: umask_conf_files
+      changed_when: false
+      failed_when: umask_conf_files.rc > 2
+
+    - name: |
+        ---
+        5.4.4 Ensure default group for the root account is GID 0
+        > Set umask {{ user_umask }}
+        ---
+      ansible.builtin.lineinfile:
+        path: "{{ file }}"
+        regexp: '^umask\s+(?:(?!\b{{ user_umask }}\b).)*'
+        line: "umask {{ user_umask }}"
+      loop: "{{ conf_files | union(umask_conf_files.stdout_lines) | unique }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 5.4.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

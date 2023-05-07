@@ -33,6 +33,12 @@
   ansible.builtin.import_tasks:
     file: ./5-aaa/main.yml
 
+- name: "6 System Maintenance"
+  tags:
+    - 6.x
+  ansible.builtin.import_tasks:
+    file: ./6-system-maintenance/main.yml
+
 - name: Flushing all handlers
   tags:
     - always

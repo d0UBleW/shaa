@@ -54,3 +54,5 @@ pwquality_pkg: "libpwquality"
 
 pam_password_file: "/etc/pam.d/system-auth"
 pam_auth_file: "/etc/pam.d/system-auth"
+
+verify_pkgs: "rpm -Va --nomtime --nosize --nomd5 --nolinkto"

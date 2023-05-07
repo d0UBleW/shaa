@@ -1,0 +1,37 @@
+---
+- name: 6.1.2-9
+  tags:
+    - level_1_server
+    - level_1_workstation
+  block:
+    - name: |
+        ---
+        {{ file.section_id }} Ensure permissions on {{ file.file_name }} are
+        > Check if {{ file.file_name }} exists
+        ---
+      ansible.builtin.stat:
+        path: "{{ file.file_name }}"
+      register: critical_file_stat
+
+    - name: |
+        ---
+        {{ file.section_id }} Ensure permissions on {{ file.file_name }} are
+        > Set permissions to {{ file.owner }}:{{ file.group }} {{ file.mode }}
+        ---
+      when:
+        - critical_file_stat.stat.exists
+      ansible.builtin.file:
+        path: "{{ file.file_name }}"
+        owner: "{{ file.owner }}"
+        group: "{{ file.group }}"
+        mode: "{{ file.mode }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: "{{ file.section_id }}"
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
