@@ -20,7 +20,7 @@
         regexp: >-
           password\s+.+pam_pwhistory.so\s+(?:(?!\b{{ args }}\b).)*
         line: "password required pam_pwhistory.so {{ args }}"
-        insertbefore: '^password\s.*pam_unix\.so'
+        insertbefore: '^[#\s]*password\s.*pam_unix\.so'
 
   rescue:
     - name: Flushing all handlers

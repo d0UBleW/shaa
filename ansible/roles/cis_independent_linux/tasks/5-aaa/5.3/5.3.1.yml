@@ -58,7 +58,7 @@
         regexp: >-
           ^password\s+requisite\s+pam_pwquality.so\s+(?:(?!\b{{ opts }}\b).)*
         line: "password requisite pam_pwquality.so {{ opts }}"
-        insertbefore: '^password\s+'
+        insertbefore: '^[#\s]*password\s+'
 
   rescue:
     - name: Flushing all handlers

@@ -36,7 +36,7 @@
         regexp: >-
           ^auth\s+.+pam_faillock.so\s+preauth\s+(?:(?!\b{{ " ".join(args) }}\b).)*
         line: "auth required pam_faillock.so preauth {{ ' '.join(args) }}"
-        insertbefore: '^auth\s.*pam_unix\.so'
+        insertbefore: '^[#\s]*auth\s.*pam_unix\.so'
 
     - name: |
         ---
@@ -54,7 +54,7 @@
         regexp: >-
           ^auth\s+.+pam_faillock.so\s+authsucc\s+(?:(?!\b{{ _args }}\b).)*
         line: "auth sufficient pam_faillock.so authsucc {{ _args }}"
-        insertafter: '^auth\s.*pam_unix\.so'
+        insertafter: '^[#\s]*auth\s.*pam_unix\.so'
 
     - name: |
         ---
@@ -72,7 +72,7 @@
         regexp: >-
           ^auth\s+.+pam_faillock.so\s+authfail\s+(?:(?!\b{{ _args }}\b).)*
         line: "auth [default=die] pam_faillock.so authfail {{ _args }}"
-        insertafter: '^auth\s.*pam_unix\.so'
+        insertafter: '^[#\s]*auth\s.*pam_unix\.so'
 
   rescue:
     - name: Flushing all handlers
