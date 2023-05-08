@@ -11,3 +11,24 @@ pkg_verification_file: "/root/pkg_verify"
 
 # 6.1.2-9
 critical_files_perms: "{{ section_6_1_2___9 }}"
+
+# 6.1.10
+no_world_writable_files: "{{ section_6_1_10 }}"
+
+# 6.1.11
+no_unowned_files_or_dirs: "{{ section_6_1_11 }}"
+create_dummy_user: true
+dummy_username: "foobar"
+unowned_default_user: "{{ dummy_username }}"
+
+# 6.1.12
+no_ungrouped_files_or_dirs: "{{ section_6_1_12 }}"
+create_dummy_group: true
+dummy_groupname: "foobar"
+ungrouped_default_group: "{{ dummy_groupname }}"
+
+# 6.1.13
+audit_suid_executables: "{{ section_6_1_13 }}"
+
+# 6.1.14
+audit_sgid_executables: "{{ section_6_1_13 }}"

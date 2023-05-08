@@ -1,0 +1,47 @@
+---
+- name: 6.1.13
+  tags:
+    - 6.1.13
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_1_13
+    - audit_suid_executables | bool
+  block:
+    - name: |
+        ---
+        6.1.13 Audit SUID executables
+        > Get all SUID executables
+        ---
+      ansible.builtin.shell: >-
+        df -P | awk '{if (NR!=1) print $6}' |
+        xargs -I '{}' find '{}' -xdev  -type f -perm -4000
+      register: suid_exes
+
+    - name: |
+        ---
+        6.1.13 Audit SUID executables
+        > List all SUID executables
+        ---
+      ansible.builtin.debug:
+        msg: "{{ suid_exes.stdout_lines }}"
+
+    - name: Info logging
+      when:
+        - suid_exes.stdout_lines | length > 0
+      vars:
+        section_id: 6.1.13
+        info_details: |-
+          Please review found SUID executables
+      ansible.builtin.import_tasks:
+        file: info_logging.yml
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.1.13
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

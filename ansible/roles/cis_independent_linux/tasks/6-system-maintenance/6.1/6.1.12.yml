@@ -1,0 +1,55 @@
+---
+- name: 6.1.12
+  tags:
+    - 6.1.12
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_1_12
+    - no_ungrouped_files_or_dirs | bool
+  block:
+    - name: |
+        ---
+        6.1.12 Ensure no ungrouped files or directories exist
+        > Create dummy group to own ungrouped files or directories
+        ---
+      when:
+        - create_dummy_group
+      ansible.builtin.group:
+        name: "{{ dummy_groupname }}"
+        state: present
+
+    - name: |
+        ---
+        6.1.12 Ensure no ungrouped files or directories exist
+        > Find ungrouped files or directories
+        ---
+      ansible.builtin.shell: >-
+        df -P | awk '{if (NR!=1) print $6}' |
+        xargs -I'{}' -n1 find '{}' -xdev -nogroup
+      register: ungrouped_files_or_dirs
+      changed_when: false
+
+    - name: |
+        ---
+        6.1.12 Ensure no ungrouped files or directories exist
+        > Assign found ungrouped files or dirs to the group
+        {{ ungrouped_default_group }}
+        ---
+      ansible.builtin.file:
+        path: "{{ file }}"
+        owner: "{{ ungrouped_default_group }}"
+      loop: "{{ ungrouped_files_or_dirs.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.1.12
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

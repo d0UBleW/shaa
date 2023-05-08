@@ -1,0 +1,43 @@
+---
+- name: 6.1.10
+  tags:
+    - 6.1.10
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_1_10
+    - no_world_writable_files | bool
+  block:
+    - name: |
+        ---
+        6.1.10 Ensure no world writable files exist
+        > Find world writable files
+        ---
+      ansible.builtin.shell: >-
+        df -P | awk '{if (NR!=1) print $6}' |
+        xargs -I'{}' -n1 find '{}' -xdev -type f -perm -0002
+      register: world_writable_files_out
+      changed_when: false
+
+    - name: |
+        ---
+        6.1.10 Ensure no world writable files exist
+        > Remove world write permission on found files
+        ---
+      ansible.builtin.file:
+        path: "{{ file }}"
+        mode: "o-w"
+      loop: "{{ world_writable_files_out.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.1.10
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

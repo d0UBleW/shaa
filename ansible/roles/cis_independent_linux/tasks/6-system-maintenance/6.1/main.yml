@@ -79,3 +79,23 @@
   when:
     # section_6_1_2___9
     - critical_files_perms | bool
+
+- name: 6.1.10 Ensure no world writable files exist
+  ansible.builtin.import_tasks:
+    file: ./6.1.10.yml
+
+- name: 6.1.11 Ensure no unowned files or directories exist
+  ansible.builtin.import_tasks:
+    file: ./6.1.11.yml
+
+- name: 6.1.12 Ensure no ungrouped files or directories exist
+  ansible.builtin.import_tasks:
+    file: ./6.1.12.yml
+
+- name: 6.1.13 Audit SUID executables
+  ansible.builtin.import_tasks:
+    file: ./6.1.13.yml
+
+- name: 6.1.14 Audit SGID executables
+  ansible.builtin.import_tasks:
+    file: ./6.1.14.yml
