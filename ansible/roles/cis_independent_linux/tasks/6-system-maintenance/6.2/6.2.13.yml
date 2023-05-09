@@ -1,0 +1,44 @@
+---
+- name: 6.2.13
+  tags:
+    - 6.2.13
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_13
+    - dot_netrc_file_perms | bool
+  block:
+    - name: |
+        ---
+        6.2.13 Ensure users' .netrc Files are not group or world accessible
+        > Get users home directories from /etc/passwd
+        ---
+      ansible.builtin.shell: >-
+        grep -E -v '^(halt|sync|shutdown)' /etc/passwd |
+        awk -F: '($3>={{ uid_min }} && $7!="/bin/false" && $7!="/sbin/nologin"
+        && $7!="/usr/sbin/nologin") { print $6 }'
+      changed_when: false
+      register: user_home_dir
+
+    - name: |
+        ---
+        6.2.13 Ensure users' .netrc Files are not group or world writable
+        > Remove group and world write permissions from .netrc file
+        ---
+      ansible.builtin.file:
+        path: "{{ file }}/.netrc"
+        mode: "g-w,o-w"
+      loop: "{{ user_home_dir.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}/.netrc"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.13
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -1,0 +1,57 @@
+---
+- name: 6.2.1 Ensure password fields are not empty
+  ansible.builtin.import_tasks:
+    file: ./6.2.1.yml
+
+- name: 6.2.2 Ensure no legacy "+" entries exist in /etc/passwd
+  ansible.builtin.import_tasks:
+    file: ./6.2.2.yml
+
+- name: 6.2.3 Ensure no legacy "+" entries exist in /etc/shadow
+  ansible.builtin.import_tasks:
+    file: ./6.2.3.yml
+
+- name: 6.2.4 Ensure no legacy "+" entries exist in /etc/group
+  ansible.builtin.import_tasks:
+    file: ./6.2.4.yml
+
+- name: 6.2.5 Ensure root is the only UID 0 account
+  ansible.builtin.import_tasks:
+    file: ./6.2.5.yml
+
+- name: 6.2.6 Ensure root PATH Integrity
+  ansible.builtin.import_tasks:
+    file: ./6.2.6.yml
+
+- name: 6.2.7 Ensure all users' home directories exist
+  ansible.builtin.import_tasks:
+    file: ./6.2.7.yml
+
+- name: >
+    6.2.8 Ensure users' home directroies permissions are 750 or more restrictive
+  ansible.builtin.import_tasks:
+    file: ./6.2.8.yml
+
+- name: 6.2.9 Ensure users own their home directories
+  ansible.builtin.import_tasks:
+    file: ./6.2.9.yml
+
+- name: 6.2.10 Ensure users' dot files are not group or world writable
+  ansible.builtin.import_tasks:
+    file: ./6.2.10.yml
+
+- name: 6.2.11 Ensure no users have .forward files
+  ansible.builtin.import_tasks:
+    file: ./6.2.11.yml
+
+- name: 6.2.12 Ensure no users have .netrc files
+  ansible.builtin.import_tasks:
+    file: ./6.2.12.yml
+
+- name: 6.2.13 Ensure no users have .netrc files
+  ansible.builtin.import_tasks:
+    file: ./6.2.13.yml
+
+- name: 6.2.14 Ensure no users have .netrc files
+  ansible.builtin.import_tasks:
+    file: ./6.2.14.yml

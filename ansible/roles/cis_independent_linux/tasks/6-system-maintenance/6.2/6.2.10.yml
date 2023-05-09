@@ -1,0 +1,45 @@
+---
+- name: 6.2.10
+  tags:
+    - 6.2.10
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_10
+    - user_dot_files_perms | bool
+  block:
+    - name: |
+        ---
+        6.2.10 Ensure users' dot files are not group or world writable
+        > Get users dot files
+        ---
+      ansible.builtin.shell: >-
+        grep -E -v '^(halt|sync|shutdown)' /etc/passwd |
+        awk -F: '($3>={{ uid_min }} && $7!="/bin/false" && $7!="/sbin/nologin"
+        && $7!="/usr/sbin/nologin") { print $6 }' |
+        xargs -I '{}' find '{}' -xdev -maxdepth 1 -type f  -name '.?*'
+      changed_when: false
+      register: user_dot_files
+
+    - name: |
+        ---
+        6.2.10 Ensure users' dot files are not group or world writable
+        > Remove group and world write permissions
+        ---
+      ansible.builtin.file:
+        path: "{{ file }}"
+        mode: "g-w,o-w"
+      loop: "{{ user_dot_files.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.10
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

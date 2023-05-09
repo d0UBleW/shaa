@@ -1,0 +1,50 @@
+---
+- name: 6.2.6
+  tags:
+    - 6.2.6
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_6
+    - root_path_integrity | bool
+  block:
+    - name: |
+        ---
+        6.2.6 Ensure root PATH Integrity
+        > Get PATH value
+        ---
+      ansible.builtin.shell: >-
+        env | grep -oP '(?<=^PATH=).*' |
+        sed -e 's/::/:/' -e 's/:$//' -e 's/:/\n/g'
+      changed_when: false
+      register: path_value
+
+    - name: Dbg
+      ansible.builtin.debug:
+        var: path_value.stdout_lines
+
+    - name: |
+        ---
+        6.2.6 Ensure root PATH Integrity
+        > Remove group and other write permissions and set owner to root
+        ---
+      ansible.builtin.file:
+        path: "{{ dir }}"
+        follow: true
+        state: directory
+        owner: root
+        mode: "g-w,o-w"
+      loop: "{{ path_value.stdout_lines }}"
+      loop_control:
+        loop_var: dir
+        label: "{{ dir }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.6
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

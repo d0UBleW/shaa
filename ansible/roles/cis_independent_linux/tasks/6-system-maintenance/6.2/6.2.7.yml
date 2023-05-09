@@ -1,0 +1,50 @@
+---
+- name: 6.2.7
+  tags:
+    - 6.2.7
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_7
+    - all_users_home_dirs_exist | bool
+  block:
+    - name: |
+        ---
+        6.2.7 Ensure all users' home directories exist
+        > Get users home directories from /etc/passwd
+        ---
+      ansible.builtin.shell: >-
+        grep -E -v '^(halt|sync|shutdown)' /etc/passwd |
+        awk -F: '($3>={{ uid_min }} && $7!="/bin/false" && $7!="/sbin/nologin"
+        && $7!="/usr/sbin/nologin") { print $0 }'
+      changed_when: false
+      register: user_entries
+
+    - name: |
+        ---
+        6.2.7 Ensure all users' home directories exist
+        > Create user home directory if not exist
+        ---
+      vars:
+        home_dir: "{{ user.strip().split(':')[5] }}"
+        username: "{{ user.strip().split(':')[0] }}"
+      ansible.builtin.file:
+        path: "{{ home_dir }}"
+        state: directory
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        mode: "0700"
+      loop: "{{ user_entries.stdout_lines }}"
+      loop_control:
+        loop_var: user
+        label: "{{ user }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.7
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

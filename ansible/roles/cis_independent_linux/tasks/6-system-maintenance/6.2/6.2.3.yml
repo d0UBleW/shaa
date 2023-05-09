@@ -1,0 +1,29 @@
+---
+- name: 6.2.3
+  tags:
+    - 6.2.3
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_3
+    - no_legacy_entries_etc_shadow | bool
+  block:
+    - name: |
+        ---
+        6.2.3 Ensure no legacy "+" entries exist in /etc/shadow
+        > Remove any line with "+" on the first field
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/shadow
+        regexp: '^\+:'
+        state: absent
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.3
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

@@ -4,3 +4,9 @@
     - 6.1.x
   ansible.builtin.import_tasks:
     file: ./6.1/main.yml
+
+- name: 6.2 System File Permissions
+  tags:
+    - 6.2.x
+  ansible.builtin.import_tasks:
+    file: ./6.2/main.yml

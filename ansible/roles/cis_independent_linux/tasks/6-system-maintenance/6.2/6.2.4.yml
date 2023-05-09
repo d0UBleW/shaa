@@ -1,0 +1,29 @@
+---
+- name: 6.2.4
+  tags:
+    - 6.2.4
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_4
+    - no_legacy_entries_etc_group | bool
+  block:
+    - name: |
+        ---
+        6.2.4 Ensure no legacy "+" entries exist in /etc/group
+        > Remove any line with "+" on the first field
+        ---
+      ansible.builtin.lineinfile:
+        path: /etc/group
+        regexp: '^\+:'
+        state: absent
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.4
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

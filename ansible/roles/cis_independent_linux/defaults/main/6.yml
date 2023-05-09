@@ -32,3 +32,52 @@ audit_suid_executables: "{{ section_6_1_13 }}"
 
 # 6.1.14
 audit_sgid_executables: "{{ section_6_1_13 }}"
+
+##########
+#
+# 6.2
+#
+##########
+
+# 6.2.1
+lock_users_with_no_pw: "{{ section_6_2_1 }}"
+
+# 6.2.2
+no_legacy_entries_etc_passwd: "{{ section_6_2_2 }}"
+
+# 6.2.3
+no_legacy_entries_etc_shadow: "{{ section_6_2_3 }}"
+
+# 6.2.4
+no_legacy_entries_etc_group: "{{ section_6_2_4 }}"
+
+# 6.2.5
+only_root_with_uid_zero: "{{ section_6_2_5 }}"
+
+# 6.2.6
+root_path_integrity: "{{ section_6_2_6 }}"
+
+# 6.2.7
+all_users_home_dirs_exist: "{{ section_6_2_7 }}"
+
+# 6.2.8
+user_home_dir_perms_conf: "{{ section_6_2_8 }}"
+home_dir_perms: "0700"
+
+# 6.2.9
+user_home_dir_owner: "{{ section_6_2_9 }}"
+
+# 6.2.10
+user_dot_files_perms: "{{ section_6_2_10 }}"
+
+# 6.2.11
+no_dot_forward_file: "{{ section_6_2_11 }}"
+
+# 6.2.12
+no_dot_netrc_file: "{{ section_6_2_12 }}"
+
+# 6.2.13
+dot_netrc_file_perms: "{{ section_6_2_12 }}"
+
+# 6.2.14
+dot_rhosts_file_perms: "{{ section_6_2_12 }}"

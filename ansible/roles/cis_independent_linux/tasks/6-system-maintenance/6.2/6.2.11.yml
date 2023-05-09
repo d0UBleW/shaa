@@ -1,0 +1,46 @@
+---
+- name: 6.2.11
+  tags:
+    - 6.2.11
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_11
+    - no_dot_forward_file | bool
+  block:
+    - name: |
+        ---
+        6.2.11 Ensure no users have .forward files
+        > Get users home directories from /etc/passwd
+        ---
+      ansible.builtin.shell: >-
+        grep -E -v '^(halt|sync|shutdown)' /etc/passwd |
+        awk -F: '($3>={{ uid_min }} && $7!="/bin/false" && $7!="/sbin/nologin"
+        && $7!="/usr/sbin/nologin") { print $6 }'
+      changed_when: false
+      register: user_home_dir
+
+    - name: |
+        ---
+        6.2.11 Ensure no users have .forward files
+        > Remove .forward file if exist
+        ---
+      ansible.builtin.file:
+        path: "{{ file }}/.forward"
+        state: absent
+        follow: false
+        recurse: false
+      loop: "{{ user_home_dir.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}/.forward"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.11
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

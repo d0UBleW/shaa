@@ -1,0 +1,41 @@
+---
+- name: 6.2.1
+  tags:
+    - 6.2.1
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_1
+    - lock_users_with_no_pw | bool
+  block:
+    - name: |
+        ---
+        6.2.1 Ensure password fields are not empty
+        > Get users with no password
+        ---
+      ansible.builtin.shell: >-
+        awk -F: '( $2 == "" ) { print $0 }' /etc/shadow
+      register: found_users
+      changed_when: false
+
+    - name: |
+        ---
+        6.2.1 Ensure password fields are not empty
+        > Lock users with no password
+        ---
+      ansible.builtin.shell: passwd -l {{ user }}
+      changed_when: true
+      loop: "{{ found_users.stdout_lines }}"
+      loop_control:
+        loop_var: user
+        label: "{{ user }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.1
+      ansible.builtin.import_tasks:
+        file: error_logging.yml

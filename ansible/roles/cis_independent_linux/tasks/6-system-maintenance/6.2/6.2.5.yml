@@ -1,0 +1,45 @@
+---
+- name: 6.2.5
+  tags:
+    - 6.2.5
+    - level_1_server
+    - level_1_workstation
+  when:
+    # section_6_2_5
+    - only_root_with_uid_zero | bool
+  block:
+    - name: |
+        ---
+        6.2.5 Ensure root is the only UID 0 account
+        > Get users with UID 0 other than root
+        ---
+      ansible.builtin.shell: >-
+        awk -F: '($1 != "root" && $3 == 0) { print $0 }' /etc/passwd
+      changed_when: false
+      register: uid_zero_users
+
+    - name: |
+        ---
+        6.2.5 Ensure root is the only UID 0 account
+        > Delete users with UID 0 other than root
+        ---
+      vars:
+        username: "{{ user.strip().split(':')[0] }}"
+      ansible.builtin.shell: >-
+        sed -i '/^{{ username }}:/d' /etc/passwd &&
+        sed -i '/^{{ username }}:/d' /etc/shadow
+      changed_when: true
+      loop: "{{ uid_zero_users.stdout_lines }}"
+      loop_control:
+        loop_var: user
+        label: "{{ user }}"
+
+  rescue:
+    - name: Flushing all handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Error backtrace
+      vars:
+        section_id: 6.2.5
+      ansible.builtin.import_tasks:
+        file: error_logging.yml
