@@ -8,11 +8,26 @@
     - name: |
         ---
         2.1.10 Ensure xinetd is not enabled
+        > Check if xinetd.service is available
+        ---
+      when:
+        - disable_xinetd_systemd | bool
+        - has_systemd
+      ansible.builtin.shell: >-
+        systemctl list-unit-files | grep -P '^xinetd.+service'
+      changed_when: false
+      failed_when: false
+      register: xinetd_exists
+
+    - name: |
+        ---
+        2.1.10 Ensure xinetd is not enabled
         > Disable xinetd (systemd)
         ---
       when:
         - disable_xinetd_systemd | bool
         - has_systemd
+        - xinetd_exists.stdout_lines | length > 0
       ansible.builtin.systemd:
         name: xinetd
         state: stopped

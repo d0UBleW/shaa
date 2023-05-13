@@ -113,8 +113,8 @@
     loop_var: svc
     label: "{{ svc.desc }}"
   when:
-    - svc.name not in disable_inetd_services.keys() or
-      (disable_inetd_services[svc.name] | bool)
+    - svc.name.xinetd not in disable_inetd_services.keys() or
+      (disable_inetd_services[svc.name.xinetd] | bool)
 
 - name: 2.1.10 Ensure xinetd is not enabled
   ansible.builtin.import_tasks:

@@ -7,8 +7,15 @@
     - name: |
         ---
         2.2.2 Ensure X Window System is not installed
-        > Remove {{ xorg_pkgs }} via package manager
+        > Remove xorg packages via package manager
         ---
+      vars:
+        rg: "^{{ xorg_pkgs[:-1] }}"
+        match: >
+          {{ ansible_facts.packages | dict2items |
+             selectattr('key', 'match', rg) | length }}
+      when:
+        - match | int > 0
       ansible.builtin.package:
         name: "{{ xorg_pkgs }}"
         state: absent

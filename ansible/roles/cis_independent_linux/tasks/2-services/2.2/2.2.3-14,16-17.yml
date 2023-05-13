@@ -4,7 +4,7 @@
     - level_1_server
     - level_1_workstation
   block:
-    - name: systemd
+    - name: For systemd
       when:
         - has_systemd
       block:
@@ -14,7 +14,7 @@
             > Check if {{ svc.name }} exists via systemd
             ---
           ansible.builtin.shell: >
-            systemctl list-unit-files | grep -qiP "^{{ svc.name }}"
+            systemctl list-unit-files | grep -qiP '^{{ svc.name }}\.service'
           register: svc_check
           changed_when: false
           failed_when:
@@ -33,7 +33,7 @@
             state: stopped
             enabled: false
 
-    - name: update-rc.d
+    - name: For update-rc.d
       when:
         - has_update_rc_d
       block:
