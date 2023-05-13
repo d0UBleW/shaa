@@ -12,7 +12,7 @@
     - name: |
         ---
         3.5.2.4 Ensure IPv4 firewall rules exist for all open ports
-        > Allow new inbound connections to port {{ rule.port }}
+        > Allow new inbound connections to specified ports
         ---
       ansible.builtin.iptables:
         chain: INPUT

@@ -3,10 +3,6 @@
   ansible.builtin.import_tasks:
     file: ./flush-ip6tables.yml
 
-- name: 3.5.1.1 Ensure IPv6 default deny firewall policy
-  ansible.builtin.import_tasks:
-    file: ./3.5.1.1.yml
-
 - name: 3.5.1.2 Ensure IPv6 loopback traffic is configured
   ansible.builtin.import_tasks:
     file: ./3.5.1.2.yml
@@ -18,6 +14,10 @@
 - name: 3.5.1.4 Ensure IPv6 firewall rules exists for all open ports
   ansible.builtin.import_tasks:
     file: ./3.5.1.4.yml
+
+- name: 3.5.1.1 Ensure IPv6 default deny firewall policy
+  ansible.builtin.import_tasks:
+    file: ./3.5.1.1.yml
 
 - name: Save ip6tables rules
   ansible.builtin.import_tasks:
