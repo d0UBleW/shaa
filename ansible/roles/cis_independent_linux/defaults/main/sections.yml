@@ -160,6 +160,7 @@ section_2_3_5_ldap_utils: "{{ section_2_3_5 }}"
 
 section_3_1: "{{ section_3 }}"
 section_3_1_1: "{{ section_3_1 }}"
+section_3_1_2: "{{ section_3_1 }}"
 
 section_3_2: "{{ section_3 }}"
 section_3_2_1: "{{ section_3_2 }}"
