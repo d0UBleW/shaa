@@ -37,18 +37,18 @@
         > Configure permissions to be root:root 0600
         ---
       when:
-        - file_stat.stat.mode != '0600' or
-          file_stat.stat.pw_name != 'root' or
-          file_stat.stat.gr_name != 'root'
+        - fstat.stat.mode != '0600' or
+          fstat.stat.pw_name != 'root' or
+          fstat.stat.gr_name != 'root'
       ansible.builtin.file:
-        path: "{{ file_stat.file }}"
+        path: "{{ fstat.file }}"
         owner: root
         group: root
         mode: "0600"
       loop: "{{ files_stat.results }}"
       loop_control:
-        loop_var: file_stat
-        label: "{{ file_stat.file }}"
+        loop_var: fstat
+        label: "{{ fstat.file }}"
 
   rescue:
     - name: Flushing all handlers

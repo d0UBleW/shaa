@@ -11,8 +11,19 @@
     - name: |
         ---
         5.2.1 Ensure permissions on /etc/ssh/sshd_config are configure
+        > Chcek if /etc/ssh/sshd_config exists
+        ---
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config
+      register: sshd_conf_stat
+
+    - name: |
+        ---
+        5.2.1 Ensure permissions on /etc/ssh/sshd_config are configure
         > Permissions root:root 0600
         ---
+      when:
+        - sshd_conf_stat.stat.exists
       ansible.builtin.file:
         path: /etc/ssh/sshd_config
         owner: root
