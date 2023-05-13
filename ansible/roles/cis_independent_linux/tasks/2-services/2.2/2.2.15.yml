@@ -24,7 +24,6 @@
             ---
           when:
             - postfix_conf_stat.stat.exists
-          diff: true
           ansible.builtin.lineinfile:
             path: /etc/postfix/main.cf
             regexp: '^inet_interfaces\s*=\s*(?:(?!\bloopback-only\b).)*$'

@@ -32,7 +32,9 @@
         state: present
         backup: true
         create: true
-      diff: true
+        owner: root
+        group: root
+        mode: "0644"
 
     - name: |
         ---
@@ -52,7 +54,6 @@
         ---
       when:
         - check_restrict_6.stdout.strip() != "5"
-      diff: true
       ansible.builtin.lineinfile:
         path: /etc/ntp.conf
         regexp: >-
@@ -66,7 +67,6 @@
         2.2.1.2 Ensure ntp is configured
         > Set remote server
         ---
-      diff: true
       ansible.builtin.lineinfile:
         path: /etc/ntp.conf
         regexp: '^server\s+(?:(?!\b{{ time_sync_remote_server }}\b).)*$'
@@ -109,7 +109,6 @@
               {%- else -%}
                 OPTIONS
               {%- endif -%}
-          diff: true
           ansible.builtin.lineinfile:
             path: "{{ ntp_sysconfig_path }}"
             regexp: '^{{ opt_key }}="(?:(?!\b-g\s+-u\s+ntp:ntp\b).)*"'
@@ -124,7 +123,6 @@
         ---
       when:
         - has_update_rc_d
-      diff: true
       ansible.builtin.lineinfile:
         path: /etc/init.d/ntp
         regexp: "^RUNASUSER=(?:(?!\bntp\b).)*$"

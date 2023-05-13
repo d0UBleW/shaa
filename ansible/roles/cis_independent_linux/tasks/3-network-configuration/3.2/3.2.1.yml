@@ -27,7 +27,6 @@
         esc_value: "{{ conf.value | regex_escape() }}"
         rg_template: >-
           ^{{ esc_key }}\s*=\s*(?:(?!\b{{ esc_value }}\b).)*$
-      diff: true
       ansible.builtin.lineinfile:
         path: /etc/sysctl.d/99-source-routed-packets.conf
         regexp: "{{ rg_template }}"

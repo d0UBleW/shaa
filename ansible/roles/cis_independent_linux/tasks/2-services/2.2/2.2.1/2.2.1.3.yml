@@ -10,7 +10,6 @@
         2.2.1.3 Ensure chrony is configured
         > Set remote server
         ---
-      diff: true
       ansible.builtin.lineinfile:
         path: "{{ chrony_conf }}"
         regexp: '^server\s+(?:(?!\b{{ time_sync_remote_server }}\b).)*$'
@@ -25,7 +24,6 @@
         ---
       when:
         - has_systemd
-      diff: true
       ansible.builtin.lineinfile:
         path: "{{ chrony_systemd_service_file }}"
         regexp: "^User=(?:(?!\bchrony\b).)*"
