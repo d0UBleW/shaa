@@ -14,10 +14,12 @@
         1.4.2 Ensure bootloader password is set
         > Check if a password has been set
         ---
-      ansible.builtin.command: >
+      ansible.builtin.command: >-
         grep "password_pbkdf2\s+.+\s+grub\.pbkdf2\.sha512"
         {{ boot_loader_conf }}
+      register: grep_out
       changed_when: false
+      failed_when: grep_out.rc > 2
 
     - name: |
         ---
