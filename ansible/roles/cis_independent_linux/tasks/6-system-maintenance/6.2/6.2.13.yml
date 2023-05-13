@@ -23,15 +23,30 @@
     - name: |
         ---
         6.2.13 Ensure users' .netrc Files are not group or world writable
-        > Remove group and world write permissions from .netrc file
+        > Check if .netrc file is present
         ---
-      ansible.builtin.file:
+      ansible.builtin.stat:
         path: "{{ file }}/.netrc"
-        mode: "g-w,o-w"
       loop: "{{ user_home_dir.stdout_lines }}"
       loop_control:
         loop_var: file
         label: "{{ file }}/.netrc"
+      register: netrc_stat
+
+    - name: |
+        ---
+        6.2.13 Ensure users' .netrc Files are not group or world writable
+        > Remove group and world write permissions from .netrc file
+        ---
+      when:
+        - res.stat.exists
+      ansible.builtin.file:
+        path: "{{ res.file }}/.netrc"
+        mode: "g-w,o-w"
+      loop: "{{ netrc_stat.results }}"
+      loop_control:
+        loop_var: res
+        label: "{{ res.file }}/.netrc"
 
   rescue:
     - name: Flushing all handlers
