@@ -11,7 +11,7 @@
   block:
     - name: |
         ---
-        3.5.1.1 Ensure IPv4 default deny firewall policy
+        3.5.2.1 Ensure IPv4 default deny firewall policy
         > Implement default DROP policy
         ---
       ansible.builtin.iptables:
