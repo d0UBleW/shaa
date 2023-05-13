@@ -17,11 +17,6 @@
         find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec
         chmod g-w,o-rwx "{}" +
       changed_when: false
-      register: out
-
-    - name: Dbg
-      ansible.builtin.debug:
-        var: out
 
   rescue:
     - name: Flushing all handlers
