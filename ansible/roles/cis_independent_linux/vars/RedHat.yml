@@ -19,7 +19,8 @@ list_repo: dnf repolist
 list_gpg_keys: >
   rpm -q gpg-pubkey --qf '%{name}-%{version}-%{release} --> %{summary}\n'
 
-aide_init_cmd: aide --init
+aide_init_cmd: aide --init -B "database_out=file:/var/lib/aide/aide.db"
+aide_bin: aide
 
 valid_mandatory_access_controls:
   selinux:

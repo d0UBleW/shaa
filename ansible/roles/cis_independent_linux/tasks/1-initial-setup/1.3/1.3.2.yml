@@ -21,7 +21,7 @@
         day: "{{ aide_cron_day }}"
         hour: "{{ aide_cron_hour }}"
         minute: "{{ aide_cron_minute }}"
-        job: $(command -v aide) --check
+        job: "$(command -v {{ aide_bin }}) --check"
 
   rescue:
     - name: Flushing all handlers

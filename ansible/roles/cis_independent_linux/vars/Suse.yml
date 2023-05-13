@@ -16,7 +16,8 @@ grub_prefix: grub2
 list_repo: zypper repos
 list_gpg_keys: zypper repos
 
-aide_init_cmd: aide --init
+aide_init_cmd: aide --init -B "database_out=file:/var/lib/aide/aide.db"
+aide_bin: aide
 
 valid_mandatory_access_controls:
   selinux:
