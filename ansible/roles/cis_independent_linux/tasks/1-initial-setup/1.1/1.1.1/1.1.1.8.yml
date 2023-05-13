@@ -26,12 +26,15 @@
         1.1.1.8 Ensure mounting of FAT filesystems is limited
         > Unload {{ fs }} module
         ---
+      when:
+        - ansible_os_family != "Debian"
       ansible.builtin.command: rmmod {{ fs }}
       register: rmfs
       changed_when: rmfs.stdout_lines | length > 0
       failed_when: >
         rmfs.rc != 0 and
         "is not currently loaded" not in rmfs.stderr
+
   rescue:
     - name: Flushing all handlers
       ansible.builtin.meta: flush_handlers

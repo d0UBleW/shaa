@@ -26,6 +26,8 @@
         1.1.1.6 Ensure mounting of {{ fs }} filesystems is disabled
         > Unload {{ fs }} module
         ---
+      when:
+        - ansible_os_family != "Debian"
       ansible.builtin.command: rmmod {{ fs }}
       register: rmfs
       changed_when: rmfs.stdout_lines | length > 0
