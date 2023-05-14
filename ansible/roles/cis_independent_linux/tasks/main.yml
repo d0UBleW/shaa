@@ -59,11 +59,12 @@
     msg:
       - "Count: {{ error_count }}"
       - "Affected: {{ error_list }}"
-# - name: Reboot
-#   tags:
-#     - always
-#   when:
-#     - reboot | default(false)
-#     - not (is_container | default(false))
-#   ansible.builtin.reboot:
-#     reboot_timeout: 600
+
+- name: Reboot
+  tags:
+    - always
+  when:
+    - reboot | default(false)
+    - not is_container
+  ansible.builtin.reboot:
+    reboot_timeout: 300
