@@ -20,13 +20,6 @@
       ansible.builtin.set_fact:
         is_container: "{{ ansible_virtualization_type in virt_type }}"
 
-    - name: Dbg
-      ansible.builtin.debug:
-        var: is_container
-
-    - name: Dbg
-      ansible.builtin.fail:
-
     - name: Get OS information
       ansible.builtin.shell: >
         grep -oP '^(NAME|VERSION_ID)=.*$' /etc/os-release |
