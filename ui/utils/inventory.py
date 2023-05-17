@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+from pathlib import Path
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import TaggedScalar
 from ansible_vault import Vault
@@ -10,6 +11,8 @@ from dataclasses import dataclass, field
 yaml = YAML(typ="rt")
 vault_password = os.environ["VAULT_PASSWORD"]
 vault = Vault(vault_password)
+
+INVENTORY_PATH = Path("../ansible/inventory/")
 
 
 @dataclass
@@ -30,18 +33,22 @@ class InventoryNode:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict):
-        n_ip = data.pop("ansible_host")
-        n_user = data.pop("ansible_user")
-        n_password = vault.load(data.pop("ansible_password"))
-        n_host_vars = data
-        node = InventoryNode(
-            name=name,
-            ip_address=n_ip,
-            user=n_user,
-            password=n_password,
-            host_vars=n_host_vars)
-        return node
+    def from_dict(name: Text, data: Dict) -> Optional["InventoryNode"]:
+        try:
+            n_ip = data.pop("ansible_host")
+            n_user = data.pop("ansible_user")
+            n_password = vault.load(data.pop("ansible_password"))
+            n_host_vars = data
+            node = InventoryNode(
+                name=name,
+                ip_address=n_ip,
+                user=n_user,
+                password=n_password,
+                host_vars=n_host_vars)
+            return node
+        except KeyError as ex:
+            print(f"[{name}] Key not found: {ex}")
+            return None
 
 
 @dataclass
@@ -49,8 +56,9 @@ class InventoryGroup:
     name: Text
     nodes: List[InventoryNode] = field(default_factory=list)
 
-    def add_node(self, node: InventoryNode) -> None:
-        self.nodes.append(node)
+    def add_node(self, node: Optional[InventoryNode]) -> None:
+        if node:
+            self.nodes.append(node)
 
     def raw(self) -> Dict:
         data: Dict = {
@@ -63,12 +71,14 @@ class InventoryGroup:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict):
+    def from_dict(name: Text, data: Dict) -> Optional["InventoryGroup"]:
         group = InventoryGroup(name=name)
         for node_name, raw_node in data["hosts"].items():
             node = InventoryNode.from_dict(node_name, raw_node)
             group.add_node(node)
-        return group
+        if len(group.nodes) > 0:
+            return group
+        return None
 
 
 @dataclass
@@ -78,13 +88,18 @@ class Inventory:
         default_factory=lambda: InventoryGroup("_ungrouped"))
     groups: List[InventoryGroup] = field(default_factory=list)
 
-    def add_group(self, group: InventoryGroup) -> None:
+    def add_group(self, group: Optional[InventoryGroup]) -> None:
+        if group is None:
+            return
         self.groups.append(group)
 
     def add_node(
             self,
-            node: InventoryNode,
+            node: Optional[InventoryNode],
             group_name: Optional[Text] = None) -> None:
+        if node is None:
+            return
+
         if group_name is None:
             self.default_group.add_node(node)
             return
@@ -112,27 +127,49 @@ class Inventory:
             for group in self.groups:
                 data["all"]["children"][group.name] = group.raw()
 
-        with open(f"{self.name}.yml", "w") as f:
+        with open(f"{INVENTORY_PATH}/{self.name}.yml", "w") as f:
             yaml.dump(data, f)
 
     @staticmethod
-    def load(name: Text):
-        with open(f"{name}.yml", "r") as f:
+    def load(name: Text) -> Optional["Inventory"]:
+        file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
+        try:
+            file_path.relative_to(INVENTORY_PATH.resolve())
+        except ValueError:
+            print("Invalid file name")
+            return None
+
+        with open(file_path, "r") as f:
             data: Dict = yaml.load(f)
 
         inv = Inventory(name)
 
+        if "all" not in data.keys():
+            raise Exception("utils/inventory.py: invalid inventory file")
+            return
+
         # Ungrouped nodes
-        for node_name, raw_node in data["all"]["hosts"].items():
-            node = InventoryNode.from_dict(node_name, raw_node)
-            inv.add_node(node)
+        if "hosts" in data["all"].keys():
+            for node_name, raw_node in data["all"]["hosts"].items():
+                node = InventoryNode.from_dict(node_name, raw_node)
+                inv.add_node(node)
 
         # Grouped nodes
-        for group_name, raw_group in data["all"]["children"].items():
-            group = InventoryGroup.from_dict(name=group_name, data=raw_group)
-            inv.add_group(group)
+        if "children" in data["all"].keys():
+            for group_name, raw_group in data["all"]["children"].items():
+                group = InventoryGroup.from_dict(
+                    name=group_name, data=raw_group)
+                inv.add_group(group)
+
+        if len(inv.groups) == 0 or len(inv.default_group.nodes) == 0:
+            return None
 
         return inv
+
+
+def list_inventory():
+    files = INVENTORY_PATH.glob("*.yml")
+    return [file.stem for file in files]
 
 
 if __name__ == "__main__":
@@ -160,5 +197,8 @@ if __name__ == "__main__":
     inv.save()
 
     new_inv = Inventory.load("main_inventory")
+    if new_inv is None:
+        quit(1)
+
     new_inv.name = "test_inv"
     new_inv.save()
