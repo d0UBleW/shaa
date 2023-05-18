@@ -4,3 +4,4 @@
 vagrant/.vagrant/
 __pycache__/
 .shaa_*
+.mypy_cache/

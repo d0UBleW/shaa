@@ -248,17 +248,10 @@ out ungrouped nodes)""",
     @as_subcommand_to("node", "delete", delete_parser)
     def inv_node_delete(self, ns: argparse.Namespace):
         inv: Inventory = self._cmd._inventory
-        node = InventoryNode(
-            name=ns.node_name,
-            ip_address=ns.node_ip,
-            user=ns.node_user,
-            password=ns.node_password,
-        )
-        for group in ns.node_group:
-            if inv.add_node(node, group) == 0:
-                self._cmd.poutput("[+] Node has been deleted successfully")
-            else:
-                self._cmd.poutput("[!] Specified node name does not exist")
+        if inv.delete_node(ns.name, group_name=ns.node_group) == 0:
+            self._cmd.poutput("[+] Node has been deleted successfully")
+        else:
+            self._cmd.poutput("[!] Specified node name does not exist")
 
     @as_subcommand_to("node", "list", list_parser)
     def inv_node_list(self, ns: argparse.Namespace):
