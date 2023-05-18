@@ -10,11 +10,12 @@ from cmd2 import (
 )
 from cmd2.table_creator import BorderedTable, Column
 from cmd2.exceptions import CommandSetRegistrationError
+from dataclasses import asdict
+import pprint
 import re
-from typing import List, Any
-from utils.inventory import list_inventory, Inventory
+from typing import List, Any, Text, Tuple, Dict
+from utils.inventory import list_inventory, Inventory, InventoryNode
 from utils.parser import inventory_node_parser
-from utils.utils import completion_filter
 
 
 @with_default_category("inventory")
@@ -28,7 +29,7 @@ class inventory_subcmd(CommandSet):
 
     list_parser = Cmd2ArgumentParser()
     list_parser.add_argument('pattern', nargs='?', default='.*',
-                             help='name pattern in regex to search for')
+                             help='name pattern in regex to be searched')
 
     load_parser = Cmd2ArgumentParser()
     load_parser.add_argument('name', choices=list_inventory(),
@@ -71,6 +72,7 @@ class inventory_subcmd(CommandSet):
             self._cmd.register_command_set(self._cmd._inventory_node_cmd)
             self._cmd.register_command_set(self._cmd._inventory_node_subcmd)
             self._cmd.poutput("[*] inventory node module loaded")
+            self._cmd.poutput("[*] check `help node` for usage information")
         except CommandSetRegistrationError:
             pass
 
@@ -98,12 +100,21 @@ class inventory_node_cmd(CommandSet):
 
 @with_default_category("inventory node")
 class inventory_node_subcmd(CommandSet):
-    def _complete_group_name(self, text, line, begidx, endidx):
+    def _choices_group_name(self) -> List[Text]:
         inv: Inventory = self._cmd._inventory
-        groups = []
-        for group in inv.groups:
-            groups.append(group.name)
-        return completion_filter(text, groups)
+        return list(inv.groups.keys())
+
+    def _choices_node_name(
+        self,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[Text]:
+
+        inv: Inventory = self._cmd._inventory
+        group = "ungrouped"
+        if "node_group" in arg_tokens:
+            group = arg_tokens["node_group"][0]
+        nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
+        return nodes
 
     create_parser = Cmd2ArgumentParser()
     create_parser.add_argument(
@@ -128,7 +139,7 @@ class inventory_node_subcmd(CommandSet):
         dest="node_user",
         required=True,
         type=str,
-        help='node user')
+        help='node SSH user')
 
     create_parser.add_argument(
         '-p',
@@ -136,27 +147,151 @@ class inventory_node_subcmd(CommandSet):
         dest="node_password",
         required=True,
         type=str,
-        help='node password')
+        help='node SSH password')
 
     create_parser.add_argument(
+        '-g',
+        '--group',
+        dest="node_group",
+        default=["ungrouped"],
+        nargs='*',
+        metavar='group_name',
+        type=str,
+        help="""node group name (ungrouped is a reserved group name, \
+leaving it blank defaults to ungrouped)""",
+        choices_provider=_choices_group_name,
+    )
+
+    list_parser = Cmd2ArgumentParser()
+    list_parser.add_argument(
+        'pattern',
+        nargs='?',
+        default='.*',
+        help='node name pattern in regex to be searched'
+    )
+    list_parser.add_argument(
         '-g',
         '--group',
         dest="node_group",
         nargs='*',
         metavar='group_name',
         type=str,
-        help='node group name',
-        completer=_complete_group_name,
+        help="""node group name (ungrouped is a reserved group name, \
+leaving it blank defaults to all groups)""",
+        choices_provider=_choices_group_name,
     )
 
-    list_parser = Cmd2ArgumentParser()
+    info_parser = Cmd2ArgumentParser()
+    info_parser.add_argument(
+        '-g',
+        '--group',
+        dest="node_group",
+        nargs='?',
+        default="ungrouped",
+        metavar='group_name',
+        type=str,
+        help="""node group name (ungrouped is a reserved group name, \
+leaving it blank defaults to ungrouped)""",
+        choices_provider=_choices_group_name,
+    )
+
+    info_parser.add_argument(
+        'name',
+        type=str,
+        metavar="node_name",
+        help="""node name (if group flag is set, tab completion would list \
+out nodes from the specified group, otherwise it would just list \
+out ungrouped nodes)""",
+        choices_provider=_choices_node_name,
+    )
+
+    delete_parser = Cmd2ArgumentParser()
+    delete_parser.add_argument(
+        '-g',
+        '--group',
+        dest="node_group",
+        nargs='?',
+        default="ungrouped",
+        metavar='group_name',
+        type=str,
+        help="""node group name (ungrouped is a reserved group name, \
+leaving it blank defaults to ungrouped)""",
+        choices_provider=_choices_group_name,
+    )
+
+    delete_parser.add_argument(
+        'name',
+        type=str,
+        metavar="node_name",
+        help="""node name (if group flag is set, tab completion would list \
+out nodes from the specified group, otherwise it would just list \
+out ungrouped nodes)""",
+        choices_provider=_choices_node_name,
+    )
 
     @as_subcommand_to("node", "create", create_parser)
     def inv_node_create(self, ns: argparse.Namespace):
-        self._cmd.poutput("Node create: TODO")
-        self._cmd.poutput(ns.node_name)
-        self._cmd.poutput(ns.node_group)
+        inv: Inventory = self._cmd._inventory
+        node = InventoryNode(
+            name=ns.node_name,
+            ip_address=ns.node_ip,
+            user=ns.node_user,
+            password=ns.node_password,
+        )
+        for group in ns.node_group:
+            if inv.add_node(node, group) == 0:
+                self._cmd.poutput("[+] Node has been created successfully")
+            else:
+                self._cmd.poutput("[!] Specified node name already existed")
+                self._cmd.poutput("[!] Creation aborted!")
+
+    @as_subcommand_to("node", "delete", delete_parser)
+    def inv_node_delete(self, ns: argparse.Namespace):
+        inv: Inventory = self._cmd._inventory
+        node = InventoryNode(
+            name=ns.node_name,
+            ip_address=ns.node_ip,
+            user=ns.node_user,
+            password=ns.node_password,
+        )
+        for group in ns.node_group:
+            if inv.add_node(node, group) == 0:
+                self._cmd.poutput("[+] Node has been deleted successfully")
+            else:
+                self._cmd.poutput("[!] Specified node name does not exist")
 
     @as_subcommand_to("node", "list", list_parser)
     def inv_node_list(self, ns: argparse.Namespace):
-        self._cmd.poutput("Node list: TODO")
+        inv: Inventory = self._cmd._inventory
+        nodes: List[Tuple[InventoryNode, Text]] = inv.list_node(ns.pattern,
+                                                                ns.node_group)
+        data_list = []
+        for node, group_name in nodes:
+            data_list.append([node.name, group_name, node.ip_address])
+
+        columns: List[Column] = [
+            Column("Name", width=16),
+            Column("Group", width=16),
+            Column("IP Address", width=16),
+        ]
+        bt = BorderedTable(columns)
+        tbl = bt.generate_table(data_list)
+        self._cmd.poutput(f"{tbl}\n")
+
+    @as_subcommand_to("node", "info", info_parser)
+    def inv_node_info(self, ns: argparse.Namespace):
+        inv: Inventory = self._cmd._inventory
+        node = inv.groups[ns.node_group].nodes[ns.name]
+        data_list = list(asdict(node).items())
+        data_list[-1] = (data_list[-1][0],
+                         pprint.pformat(dict(data_list[-1][-1]),
+                                        sort_dicts=False))
+
+        columns: List[Column] = [
+            Column("Key", width=16),
+            Column("Value", width=64),
+        ]
+
+        bt = BorderedTable(columns)
+        tbl = bt.generate_table(data_list)
+        self._cmd.poutput(f"{tbl}\n")

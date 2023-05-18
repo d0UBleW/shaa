@@ -113,6 +113,33 @@ class Inventory:
             self.groups[group_name] = group
             return group.add_node(node)
 
+    def delete_node(self,
+                    node_name: Text,
+                    group_name: Text = "ungrouped") -> int:
+        nodes = self.groups[group_name].nodes
+        if node_name in nodes.keys():
+            nodes.pop(node_name)
+            return 0
+        return -1
+
+    def list_node(
+        self,
+        pattern: Text = '.*',
+        groups: Optional[List[Text]] = None
+    ) -> List[Tuple[InventoryNode, Text]]:
+
+        nodes: List[Tuple[InventoryNode, Text]] = []
+
+        for group in self.groups.values():
+            if groups is None or group.name in groups:
+                nodes += product(
+                    list(filter(lambda node: re.match(pattern, node.name),
+                                group.nodes.values())),
+                    [group.name]
+                )
+
+        return nodes
+
     def save(self) -> None:
         data: Dict = {
             "all": {
