@@ -5,7 +5,7 @@ from pathlib import Path
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import TaggedScalar
 from ansible_vault import Vault
-from typing import List, Text, Optional, Dict
+from typing import List, Text, Optional, Dict, Self
 from dataclasses import dataclass, field
 
 yaml = YAML(typ="rt")
@@ -15,7 +15,7 @@ vault = Vault(vault_password)
 INVENTORY_PATH = Path("../ansible/inventory/")
 
 
-@dataclass
+@dataclass(order=True)
 class InventoryNode:
     name: Text
     ip_address: Text
@@ -33,7 +33,7 @@ class InventoryNode:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict) -> Optional["InventoryNode"]:
+    def from_dict(name: Text, data: Dict) -> Optional[Self]:
         try:
             n_ip = data.pop("ansible_host")
             n_user = data.pop("ansible_user")
@@ -51,7 +51,7 @@ class InventoryNode:
             return None
 
 
-@dataclass
+@dataclass(order=True)
 class InventoryGroup:
     name: Text
     nodes: List[InventoryNode] = field(default_factory=list)
@@ -71,7 +71,7 @@ class InventoryGroup:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict) -> Optional["InventoryGroup"]:
+    def from_dict(name: Text, data: Dict) -> Optional[Self]:
         group = InventoryGroup(name=name)
         for node_name, raw_node in data["hosts"].items():
             node = InventoryNode.from_dict(node_name, raw_node)
@@ -81,7 +81,7 @@ class InventoryGroup:
         return None
 
 
-@dataclass
+@dataclass(order=True)
 class Inventory:
     name: Text
     default_group: InventoryGroup = field(
@@ -131,16 +131,18 @@ class Inventory:
             yaml.dump(data, f)
 
     @staticmethod
-    def load(name: Text) -> Optional["Inventory"]:
+    def load(name: Text) -> Optional[Self]:
         file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
         try:
             file_path.relative_to(INVENTORY_PATH.resolve())
+            with open(file_path, "r") as f:
+                data: Dict = yaml.load(f)
         except ValueError:
-            print("Invalid file name")
+            print("[!] Invalid inventory name")
             return None
-
-        with open(file_path, "r") as f:
-            data: Dict = yaml.load(f)
+        except FileNotFoundError:
+            print("[!] Inventory name not found")
+            return None
 
         inv = Inventory(name)
 
@@ -167,7 +169,7 @@ class Inventory:
         return inv
 
 
-def list_inventory():
+def list_inventory() -> List:
     files = INVENTORY_PATH.glob("*.yml")
     return [file.stem for file in files]
 

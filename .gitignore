@@ -2,3 +2,4 @@
 *.key
 *.pub
 vagrant/.vagrant/
+__pycache__/
