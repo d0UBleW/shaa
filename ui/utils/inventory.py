@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
+from ansible_vault import Vault
+from dataclasses import dataclass, field
+from itertools import product
 import os
 from pathlib import Path
+import re
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import TaggedScalar
-from ansible_vault import Vault
-from typing import List, Text, Optional, Dict
-from dataclasses import dataclass, field
+from typing import List, Text, Optional, Dict, Tuple
 
 yaml = YAML(typ="rt")
 vault_password = os.environ["VAULT_PASSWORD"]
@@ -54,18 +56,21 @@ class InventoryNode:
 @dataclass(order=True)
 class InventoryGroup:
     name: Text
-    nodes: List[InventoryNode] = field(default_factory=list)
+    nodes: Dict[Text, InventoryNode] = field(default_factory=dict)
 
-    def add_node(self, node: Optional[InventoryNode]) -> None:
-        if node:
-            self.nodes.append(node)
+    def add_node(self, node: Optional[InventoryNode]) -> int:
+        if node and node.name not in self.nodes.keys():
+            self.nodes[node.name] = node
+            return 0
+
+        return -1
 
     def raw(self) -> Dict:
         data: Dict = {
             "hosts": {}
         }
 
-        for node in self.nodes:
+        for node in self.nodes.values():
             data["hosts"][node.name] = node.raw()
 
         return data
@@ -84,33 +89,29 @@ class InventoryGroup:
 @dataclass(order=True)
 class Inventory:
     name: Text
-    default_group: InventoryGroup = field(
-        default_factory=lambda: InventoryGroup("_ungrouped"))
-    groups: List[InventoryGroup] = field(default_factory=list)
+    groups: Dict[Text, InventoryGroup] = field(
+        default_factory=lambda: {"ungrouped": InventoryGroup("ungrouped")}
+    )
 
-    def add_group(self, group: Optional[InventoryGroup]) -> None:
-        if group is None:
-            return
-        self.groups.append(group)
+    def add_group(self, group: Optional[InventoryGroup]) -> int:
+        if group and group.name not in self.groups.keys():
+            self.groups[group.name] = group
+            return 0
+        return -1
 
-    def add_node(
-            self,
-            node: Optional[InventoryNode],
-            group_name: Optional[Text] = None) -> None:
+    def add_node(self,
+                 node: Optional[InventoryNode],
+                 group_name: Text = "ungrouped") -> int:
         if node is None:
-            return
+            return -1
 
-        if group_name is None:
-            self.default_group.add_node(node)
-            return
+        if group_name in self.groups.keys():
+            return self.groups[group_name].add_node(node)
 
-        for group in self.groups:
-            if group.name == group_name:
-                group.add_node(node)
-                return
         else:
-            group = InventoryGroup(group_name, [node])
-            self.groups.append(group)
+            group = InventoryGroup(group_name)
+            self.groups[group_name] = group
+            return group.add_node(node)
 
     def save(self) -> None:
         data: Dict = {
@@ -119,13 +120,16 @@ class Inventory:
             }
         }
 
-        for node in self.default_group.nodes:
+        for node in self.groups["ungrouped"].nodes.values():
             data["all"]["hosts"][node.name] = node.raw()
 
-        if len(self.groups) > 0:
+        if len(self.groups) > 1:
             data["all"]["children"] = {}
-            for group in self.groups:
-                data["all"]["children"][group.name] = group.raw()
+
+        for group in self.groups.values():
+            if group.name == "ungrouped":
+                continue
+            data["all"]["children"][group.name] = group.raw()
 
         with open(f"{INVENTORY_PATH}/{self.name}.yml", "w") as f:
             yaml.dump(data, f)
@@ -147,7 +151,7 @@ class Inventory:
         inv = Inventory(name)
 
         if "all" not in data.keys():
-            raise Exception("utils/inventory.py: invalid inventory file")
+            raise Exception("[!] Invalid inventory file: missing `all` key")
             return
 
         # Ungrouped nodes
@@ -163,7 +167,7 @@ class Inventory:
                     name=group_name, data=raw_group)
                 inv.add_group(group)
 
-        if len(inv.groups) == 0 or len(inv.default_group.nodes) == 0:
+        if len(inv.groups) == 0 or len(inv.groups["ungrouped"].nodes) == 0:
             return None
 
         return inv
@@ -175,6 +179,7 @@ def list_inventory() -> List:
 
 
 if __name__ == "__main__":
+    INVENTORY_PATH = Path("../../ansible/inventory/")
     alma = InventoryNode("alma", "192.168.56.211", "vagrant", "vagrant")
     alma.host_vars = {"selinuxtype": "mls"}
     ubuntu = InventoryNode("ubuntu", "192.168.56.212", "vagrant", "vagrant")
@@ -188,7 +193,8 @@ if __name__ == "__main__":
     alma8 = InventoryNode("alma8", "192.168.56.215", "vagrant", "vagrant")
     alma8.host_vars = {"selinuxtype": "mls"}
 
-    testing = InventoryGroup("testing", [alma])
+    testing = InventoryGroup("testing")
+    testing.add_node(alma)
 
     inv = Inventory("main_inventory")
     inv.add_group(testing)
@@ -196,6 +202,8 @@ if __name__ == "__main__":
     inv.add_node(opensuse, "testing")
     inv.add_node(alma9)
     inv.add_node(alma8)
+    inv.add_node(alma9, "web")
+    inv.add_node(alma8, "db")
     inv.save()
 
     new_inv = Inventory.load("main_inventory")
