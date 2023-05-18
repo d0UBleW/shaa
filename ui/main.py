@@ -1,119 +1,58 @@
 #!/usr/bin/env python3
 
-from typing import Text, List
-import cmd
-from utils import inventory
-
-load_completions = [
-    "inventory",
-    "profile",
-    "preset",
-]
+import argparse
+import cmd2
+from command_sets.inventory import inventory_CS
+from typing import Optional
+from utils.parser import inventory_parser
+from utils.inventory import Inventory
 
 
-class ShaaShell(cmd.Cmd):
-    section = None
-    profile = None
-    inventory = None
+class ShaaShell(cmd2.Cmd):
+    _inventory: Optional[Inventory] = None
 
-    @property
-    def prompt(self):
-        section_prompt = ""
-        if self.section:
-            section_prompt = f"[{self.section}] "
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(
+            *args,
+            persistent_history_file='.shaa_shell_hist',
+            startup_script='.shaa_shell_alias',
+            silence_startup_script=True,
+            auto_load_commands=False,
+            **kwargs,
+        )
+        self.prompt = "shaa> "
+        self.continuation_prompt = "... "
+        self.default_category = "general"
 
-        inventory_prompt = ""
-        if self.inventory:
-            inventory_prompt = f"[I: {self.inventory.name}] "
-
-        return f"\n{section_prompt}{inventory_prompt}\n(shaa) > "
-
-    def do_load(self, args: Text):
-        context, _, subargs = args.partition(' ')
-        if context == "inventory":
-            self.inventory = inventory.Inventory.load(subargs)
+    def _set_prompt(self):
+        if self._inventory is not None:
+            self.prompt = f"\n[I: {self._inventory.name}]\nshaa> "
             return
-        raise Exception("TODO: Not yet implemented")
+        self.prompt = "shaa> "
 
-    def complete_load(self, text, line, begidx, endidx) -> List[Text]:
-        if begidx == 5:
-            return list(filter(lambda s: s.startswith(text), load_completions))
+    def postcmd(self, stop, statement):
+        self._set_prompt()
+        return stop
 
-        context = line.split()[1]
-        if context == "inventory":
-            inventories = inventory.list_inventory()
-            with open('/run/shm/abcd', 'w') as f:
-                f.write(f"{line} {begidx} {endidx}\n")
-                f.write(f"{' '.join(inventories)}\n")
-
-            return list(filter(lambda s: s.startswith(text), inventories))
-
-        return []
-
-    def do_section(self, args):
-        self.section = args
-
-    def do_foobar(self, args: Text):
-        print("Foo Bar")
-
-    def do_back(self, args):
-        self.section = None
-
-    def do_options(self, args):
-        """
-        show available options for chosen section
-        """
-        assert False, "TODO: Not yet implemented"
-
-    def do_quit(self, args):
-        quit()
-
-    def do_exit(self, args):
-        quit()
-
-    def do_EOF(self, args):
-        print("\n\nDo you really want to exit ([y]/n)? ", end="")
-        try:
-            if (_ := input()) == "n":
-                print()
-                return
-        except EOFError:
-            print()
-            pass
-        self.do_quit(args)
-
-    def default(self, args):
-        if args is None:
-            print(" ^C")
+    @cmd2.with_argparser(inventory_parser)
+    @cmd2.with_category('inventory')
+    def do_inventory(self, ns: argparse.Namespace):
+        handler = ns.cmd2_handler.get()
+        if handler is not None:
+            handler(ns)
         else:
-            print(f"*** Unknown syntax: {args}")
-
-    def help_foobar(self):
-        print("Help for foobar")
-
-    def help_quit(self):
-        print("Quit")
-
-    def help_exit(self):
-        print("Exit")
-
-    def complete_section(self, text, line, begidx, endidx) -> List[Text]:
-        return list(filter(lambda s: s.startswith(text), sections))
+            self.poutput("No subcommand was provided")
+            self.do_help('inventory')
 
 
-sections = [
-    "1.1.1.1",
-    "1.1.1.2",
-    "1.1.2",
-    "2.1",
-    "3.1"
-]
+def main():
+    shaa_shell = ShaaShell(command_sets=[inventory_CS()])
+    shaa_shell.disable_command(
+        "run_pyscript",
+        message_to_print=f"{cmd2.COMMAND_NAME} is currently disabled"
+    )
+    shaa_shell.cmdloop()
+
 
 if __name__ == "__main__":
-    print("Welcome to SHAA shell. Type help or ? to list commands.")
-    shell = ShaaShell()
-    while True:
-        try:
-            shell.cmdloop()
-        except KeyboardInterrupt:
-            shell.default(None)
+    main()
