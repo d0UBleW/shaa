@@ -5,7 +5,7 @@ from pathlib import Path
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import TaggedScalar
 from ansible_vault import Vault
-from typing import List, Text, Optional, Dict, Self
+from typing import List, Text, Optional, Dict
 from dataclasses import dataclass, field
 
 yaml = YAML(typ="rt")
@@ -33,7 +33,7 @@ class InventoryNode:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict) -> Optional[Self]:
+    def from_dict(name: Text, data: Dict) -> Optional["InventoryNode"]:
         try:
             n_ip = data.pop("ansible_host")
             n_user = data.pop("ansible_user")
@@ -71,7 +71,7 @@ class InventoryGroup:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict) -> Optional[Self]:
+    def from_dict(name: Text, data: Dict) -> Optional["InventoryGroup"]:
         group = InventoryGroup(name=name)
         for node_name, raw_node in data["hosts"].items():
             node = InventoryNode.from_dict(node_name, raw_node)
@@ -131,7 +131,7 @@ class Inventory:
             yaml.dump(data, f)
 
     @staticmethod
-    def load(name: Text) -> Optional[Self]:
+    def load(name: Text) -> Optional["Inventory"]:
         file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
         try:
             file_path.relative_to(INVENTORY_PATH.resolve())
