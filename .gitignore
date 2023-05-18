@@ -3,3 +3,4 @@
 *.pub
 vagrant/.vagrant/
 __pycache__/
+.shaa_*
