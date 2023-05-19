@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from ansible_vault import Vault
+from ansible_vault import Vault  # type: ignore[import]
 from dataclasses import dataclass, field
 from itertools import product
 import os
@@ -38,7 +38,7 @@ class InventoryNode:
         data = dict()
         data['ansible_host'] = self.ip_address
         data['ansible_user'] = self.user
-        data['ansible_password'] = TaggedScalar(
+        data['ansible_password'] = TaggedScalar(  # type: ignore[assignment]
             value=vault.dump(self.password), tag="!vault")
         data.update(self.host_vars)
         return data
@@ -95,8 +95,11 @@ class InventoryGroup:
         Convert group data into Ansible compatible format
         """
         data: Dict = {
-            "hosts": {},
+            "hosts": None,
         }
+
+        if len(self.nodes) > 0:
+            data["hosts"] = {}
 
         for node in self.nodes.values():
             data["hosts"][node.name] = node.raw()
@@ -147,18 +150,18 @@ class Inventory:
         """
         Delete a group object and its nodes from an inventory
         """
-        if group_name in self.groups.keys():
-            nodes: List[Text] = []
-            for node in self.groups[group_name].nodes.values():
-                nodes.append(node.name)
+        if group_name not in self.groups.keys():
+            return -1
+        nodes: List[Text] = []
+        for node in self.groups[group_name].nodes.values():
+            nodes.append(node.name)
 
-            for node_name in nodes:
-                self.delete_node(node_name, group_name)
+        for node_name in nodes:
+            self.delete_node(node_name, group_name)
 
-            if group_name != "ungrouped":
-                self.groups.pop(group_name)
-            return 0
-        return -1
+        if group_name != "ungrouped":
+            self.groups.pop(group_name)
+        return 0
 
     def list_group(self, pattern: Text = '.*') -> List[InventoryGroup]:
         """
@@ -190,6 +193,9 @@ class Inventory:
         """
         Delete a node object from an inventory
         """
+        if group_name not in self.groups.keys():
+            return -1
+
         nodes = self.groups[group_name].nodes
         if node_name in nodes.keys():
             nodes.pop(node_name)
@@ -221,11 +227,19 @@ class Inventory:
         Dump inventory data into a YAML file which is compatible with Ansible
         inventory format
         """
+        file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
+        try:
+            file_path.relative_to(INVENTORY_PATH.resolve())
+        except ValueError:
+            print("[!] Invalid inventory name")
+            return None
+
         data: Dict = {
-            "all": {
-                "hosts": {}
-            }
+            "all": None
         }
+
+        if len(self.groups["ungrouped"].nodes) > 0:
+            data["all"] = {"hosts": {}}
 
         for node in self.groups["ungrouped"].nodes.values():
             data["all"]["hosts"][node.name] = node.raw()
@@ -238,7 +252,7 @@ class Inventory:
                 continue
             data["all"]["children"][group.name] = group.raw()
 
-        with open(f"{INVENTORY_PATH}/{self.name}.yml", "w") as f:
+        with open(file_path, "w") as f:
             yaml.dump(data, f)
 
     @staticmethod
@@ -264,6 +278,9 @@ class Inventory:
             raise Exception("[!] Invalid inventory file: missing `all` key")
             return
 
+        if data["all"] is None:
+            return inv
+
         # Ungrouped nodes
         if "hosts" in data["all"].keys():
             for node_name, raw_node in data["all"]["hosts"].items():
@@ -282,14 +299,37 @@ class Inventory:
 
         return inv
 
+    @staticmethod
+    def list_inventory(pattern: Text = ".*") -> List:
+        """
+        List inventory based on given pattern
+        """
+        files = INVENTORY_PATH.glob("*.yml")
+        return list(filter(lambda fname: re.match(pattern, fname),
+                    [file.stem for file in files]))
 
-def list_inventory(pattern: Text = ".*") -> List:
-    """
-    List inventory based on given pattern
-    """
-    files = INVENTORY_PATH.glob("*.yml")
-    return list(filter(lambda fname: re.match(pattern, fname),
-                [file.stem for file in files]))
+    @staticmethod
+    def create_inventory(name: Text) -> Optional["Inventory"]:
+        if name in Inventory.list_inventory():
+            return None
+
+        file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
+        try:
+            file_path.relative_to(INVENTORY_PATH.resolve())
+        except ValueError:
+            return None
+
+        inv = Inventory(name)
+        return inv
+
+    def delete_inventory(self) -> None:
+        groups: List[Text] = [group_name for group_name in self.groups.keys()]
+        for group in groups:
+            self.delete_group(group)
+
+        file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
+        Path.unlink(file_path, missing_ok=True)
+        return
 
 
 if __name__ == "__main__":

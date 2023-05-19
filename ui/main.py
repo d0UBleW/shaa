@@ -14,6 +14,7 @@ from utils.inventory import Inventory
 
 class ShaaShell(cmd2.Cmd):
     _inventory: Optional[Inventory] = None
+    _inv_has_changed: bool = False
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
@@ -31,6 +32,7 @@ class ShaaShell(cmd2.Cmd):
         self._inventory_node_subcmd = inv_node_cs.inventory_node_subcmd()
         self._inventory_group_cmd = inv_group_cs.inventory_group_cmd()
         self._inventory_group_subcmd = inv_group_cs.inventory_group_subcmd()
+        self.register_postloop_hook(self.check_if_inv_changed)
 
     def _set_prompt(self):
         if self._inventory is not None:
@@ -54,6 +56,16 @@ class ShaaShell(cmd2.Cmd):
         else:
             self.poutput("No subcommand was provided")
             self.do_help('inventory')
+
+    def check_if_inv_changed(self) -> None:
+        if self._inv_has_changed:
+            prompt = "[*] There are unsaved changes on current inventory.\n"
+            prompt += "[+] Do you want to save? [Y/n] "
+            if (_ := self.read_input(prompt).lower()) != "n":
+                if self._inventory is not None:
+                    self._inventory.save()
+                    self.poutput("[+] Changes have been saved successfully")
+            self._inv_has_changed = False
 
 
 def main():

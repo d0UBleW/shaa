@@ -5,13 +5,13 @@
 - [ ] Global and local options
 
 ```
-set key value target
+set key value [-n node_name] [-g group_name]
 ```
 
-- [ ] inventory create
-- [ ] inventory save
-- [ ] inventory delete
-- [ ] inventory list
+- [x] inventory create
+- [x] inventory save
+- [x] inventory delete
+- [x] inventory list
 - [ ] inventory info
 - [ ] inventory edit
 - [x] group create
