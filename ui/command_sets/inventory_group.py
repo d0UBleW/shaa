@@ -28,10 +28,12 @@ from utils.parser import inventory_group_parser
 class inventory_group_cmd(CommandSet):
 
     @with_argparser(inventory_group_parser)
-    def do_group(self, ns: argparse.Namespace):
+    def do_group(self: CommandSet, ns: argparse.Namespace):
         """
         Manage inventory group
         """
+        if self._cmd is None:
+            return
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)
@@ -44,7 +46,9 @@ class inventory_group_cmd(CommandSet):
 @with_default_category("inventory group")
 class inventory_group_subcmd(CommandSet):
     def _choices_group_name(self) -> List[Text]:
-        inv: Inventory = self._cmd._inventory
+        if self._cmd is None:
+            return []
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         return list(inv.groups.keys())
 
     create_parser = Cmd2ArgumentParser()
@@ -90,36 +94,43 @@ class inventory_group_subcmd(CommandSet):
 
     @as_subcommand_to("group", "create", create_parser,
                       help="create group on current inventory")
-    def inv_group_create(self, ns: argparse.Namespace):
-        inv: Inventory = self._cmd._inventory
+    def inv_group_create(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         group = InventoryGroup(ns.name)
         if inv.add_group(group) == 0:
             self._cmd.poutput("[+] Group has been created successfully")
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
             self._cmd.poutput("[!] Specified group name already existed")
-            self._cmd.poutput("[!] Creation aborted!")
 
     @as_subcommand_to("group", "delete", delete_parser,
                       help="delete group from current inventory")
-    def inv_group_delete(self, ns: argparse.Namespace):
+    def inv_group_delete(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
         if not ns.force:
-            self._cmd.poutput("[*] Deleting this group would also delete all")
+            self._cmd.poutput("[!] Deleting this group would also delete all")
             self._cmd.poutput("    the nodes within this group.")
             self._cmd.poutput("[*] Use -f/--force to skip this prompt")
             if (_ := self._cmd.read_input(
-                    "[*] Do you want to proceed [y/N]? ")) != "y":
+                    "[+] Do you want to proceed [y/N]? ")) != "y":
                 self._cmd.poutput("[!] Deletion aborted")
                 return
-        inv: Inventory = self._cmd._inventory
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         if inv.delete_group(ns.name) == 0:
             self._cmd.poutput("[+] Group has been deleted successfully")
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
             self._cmd.poutput("[!] Specified group name does not exist")
 
     @as_subcommand_to("group", "list", list_parser,
                       help="list groups from current inventory")
-    def inv_group_list(self, ns: argparse.Namespace):
-        inv: Inventory = self._cmd._inventory
+    def inv_group_list(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         groups: List[InventoryGroup] = inv.list_group(ns.pattern)
 
         data_list = []
@@ -141,8 +152,10 @@ class inventory_group_subcmd(CommandSet):
 
     @as_subcommand_to("group", "info", info_parser,
                       help="display group details")
-    def inv_group_info(self, ns: argparse.Namespace):
-        inv: Inventory = self._cmd._inventory
+    def inv_group_info(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         columns: List[Column] = [
             Column("Key", width=16),
             Column("Value", width=64),

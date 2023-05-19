@@ -27,10 +27,12 @@ from utils.parser import inventory_node_parser
 class inventory_node_cmd(CommandSet):
 
     @with_argparser(inventory_node_parser)
-    def do_node(self, ns: argparse.Namespace):
+    def do_node(self: CommandSet, ns: argparse.Namespace):
         """
         Manage inventory node
         """
+        if self._cmd is None:
+            return
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)
@@ -41,16 +43,19 @@ class inventory_node_cmd(CommandSet):
 
 @with_default_category("inventory node")
 class inventory_node_subcmd(CommandSet):
-    def _choices_group_name(self) -> List[Text]:
-        inv: Inventory = self._cmd._inventory
+    def _choices_group_name(self: CommandSet) -> List[Text]:
+        if self._cmd is None:
+            return []
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         return list(inv.groups.keys())
 
     def _choices_node_name(
-        self,
+        self: CommandSet,
         arg_tokens: Dict[Text, List[Text]]
     ) -> List[Text]:
-
-        inv: Inventory = self._cmd._inventory
+        if self._cmd is None:
+            return []
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         group = "ungrouped"
         if "node_group" in arg_tokens:
             group = arg_tokens["node_group"][0]
@@ -172,8 +177,10 @@ out ungrouped nodes)""",
 
     @as_subcommand_to("node", "create", create_parser,
                       help="create node on current inventory")
-    def inv_node_create(self, ns: argparse.Namespace):
-        inv: Inventory = self._cmd._inventory
+    def inv_node_create(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         node = InventoryNode(
             name=ns.node_name,
             ip_address=ns.node_ip,
@@ -183,23 +190,28 @@ out ungrouped nodes)""",
         for group in ns.node_group:
             if inv.add_node(node, group) == 0:
                 self._cmd.poutput("[+] Node has been created successfully")
+                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
             else:
                 self._cmd.poutput("[!] Specified node name already existed")
-                self._cmd.poutput("[!] Creation aborted!")
 
     @as_subcommand_to("node", "delete", delete_parser,
                       help="delete node from current inventory")
-    def inv_node_delete(self, ns: argparse.Namespace):
-        inv: Inventory = self._cmd._inventory
+    def inv_node_delete(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         if inv.delete_node(ns.name, group_name=ns.node_group) == 0:
             self._cmd.poutput("[+] Node has been deleted successfully")
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
             self._cmd.poutput("[!] Specified node name does not exist")
 
     @as_subcommand_to("node", "list", list_parser,
                       help="list nodes from current inventory")
-    def inv_node_list(self, ns: argparse.Namespace):
-        inv: Inventory = self._cmd._inventory
+    def inv_node_list(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         nodes: List[Tuple[InventoryNode, Text]] = inv.list_node(ns.pattern,
                                                                 ns.node_group)
         data_list = []
@@ -219,8 +231,10 @@ out ungrouped nodes)""",
 
     @as_subcommand_to("node", "info", info_parser,
                       help="display node details")
-    def inv_node_info(self, ns: argparse.Namespace):
-        inv: Inventory = self._cmd._inventory
+    def inv_node_info(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
 
         columns: List[Column] = [
             Column("Key", width=16),
