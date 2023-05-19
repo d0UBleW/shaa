@@ -23,9 +23,18 @@ class InventoryNode:
     ip_address: Text
     user: Text
     password: Text
-    host_vars: Dict = field(default_factory=dict)
+    host_vars: Dict[Text, Any] = field(default_factory=dict)
 
-    def raw(self) -> Dict:
+    def set_var(self, key: Text, value: Any) -> None:
+        """
+        Helper function to set `host_vars`
+        """
+        self.host_vars[key] = value
+
+    def raw(self) -> Dict[Text, Any]:
+        """
+        Convert node data into Ansible compatible format
+        """
         data = dict()
         data['ansible_host'] = self.ip_address
         data['ansible_user'] = self.user
@@ -36,6 +45,9 @@ class InventoryNode:
 
     @staticmethod
     def from_dict(name: Text, data: Dict) -> Optional["InventoryNode"]:
+        """
+        Convert Ansible data into Python object format
+        """
         try:
             n_ip = data.pop("ansible_host")
             n_user = data.pop("ansible_user")
@@ -69,6 +81,9 @@ class InventoryGroup:
         self.group_vars[key] = value
 
     def add_node(self, node: Optional[InventoryNode]) -> int:
+        """
+        Add a node object into a group
+        """
         if node and node.name not in self.nodes.keys():
             self.nodes[node.name] = node
             return 0
@@ -76,8 +91,11 @@ class InventoryGroup:
         return -1
 
     def raw(self) -> Dict:
+        """
+        Convert group data into Ansible compatible format
+        """
         data: Dict = {
-            "hosts": {}
+            "hosts": {},
         }
 
         for node in self.nodes.values():
@@ -89,11 +107,13 @@ class InventoryGroup:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict) -> Optional["InventoryGroup"]:
     def from_dict(
         name: Text,
         data: Dict[Text, Dict]
     ) -> Optional["InventoryGroup"]:
+        """
+        Convert Ansible data into Python object format
+        """
         group = InventoryGroup(name=name)
         for node_name, raw_node in data["hosts"].items():
             node = InventoryNode.from_dict(node_name, raw_node)
@@ -115,6 +135,9 @@ class Inventory:
     )
 
     def add_group(self, group: Optional[InventoryGroup]) -> int:
+        """
+        Add a group object into an inventory
+        """
         if group and group.name not in self.groups.keys():
             self.groups[group.name] = group
             return 0
@@ -123,6 +146,9 @@ class Inventory:
     def add_node(self,
                  node: Optional[InventoryNode],
                  group_name: Text = "ungrouped") -> int:
+        """
+        Add a node object into an inventory within the specified group name
+        """
         if node is None:
             return -1
 
@@ -137,6 +163,9 @@ class Inventory:
     def delete_node(self,
                     node_name: Text,
                     group_name: Text = "ungrouped") -> int:
+        """
+        Delete a node object from an inventory
+        """
         nodes = self.groups[group_name].nodes
         if node_name in nodes.keys():
             nodes.pop(node_name)
@@ -148,7 +177,9 @@ class Inventory:
         pattern: Text = '.*',
         groups: Optional[List[Text]] = None
     ) -> List[Tuple[InventoryNode, Text]]:
-
+        """
+        Filter node name based on given pattern and group
+        """
         nodes: List[Tuple[InventoryNode, Text]] = []
 
         for group in self.groups.values():
@@ -162,6 +193,10 @@ class Inventory:
         return nodes
 
     def save(self) -> None:
+        """
+        Dump inventory data into a YAML file which is compatible with Ansible
+        inventory format
+        """
         data: Dict = {
             "all": {
                 "hosts": {}
@@ -184,6 +219,9 @@ class Inventory:
 
     @staticmethod
     def load(name: Text) -> Optional["Inventory"]:
+        """
+        Load Ansible inventory from YAML file to Python object
+        """
         file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
         try:
             file_path.relative_to(INVENTORY_PATH.resolve())
