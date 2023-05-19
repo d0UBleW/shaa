@@ -28,6 +28,9 @@ class inventory_node_cmd(CommandSet):
 
     @with_argparser(inventory_node_parser)
     def do_node(self, ns: argparse.Namespace):
+        """
+        Manage inventory node
+        """
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)

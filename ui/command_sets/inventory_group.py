@@ -29,6 +29,9 @@ class inventory_group_cmd(CommandSet):
 
     @with_argparser(inventory_group_parser)
     def do_group(self, ns: argparse.Namespace):
+        """
+        Manage inventory group
+        """
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)

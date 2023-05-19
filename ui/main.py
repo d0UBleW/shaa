@@ -45,6 +45,9 @@ class ShaaShell(cmd2.Cmd):
     @cmd2.with_argparser(inventory_parser)
     @cmd2.with_category('inventory')
     def do_inventory(self, ns: argparse.Namespace):
+        """
+        Manage inventory
+        """
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)
