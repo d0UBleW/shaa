@@ -6,6 +6,8 @@ from command_sets.inventory import (
     inventory_subcmd,
     inventory_node_cmd,
     inventory_node_subcmd,
+    inventory_group_cmd,
+    inventory_group_subcmd,
 )
 from typing import Optional
 from utils.parser import inventory_parser
@@ -29,6 +31,8 @@ class ShaaShell(cmd2.Cmd):
         self.default_category = "general"
         self._inventory_node_cmd = inventory_node_cmd()
         self._inventory_node_subcmd = inventory_node_subcmd()
+        self._inventory_group_cmd = inventory_group_cmd()
+        self._inventory_group_subcmd = inventory_group_subcmd()
 
     def _set_prompt(self):
         if self._inventory is not None:

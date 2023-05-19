@@ -143,6 +143,30 @@ class Inventory:
             return 0
         return -1
 
+    def delete_group(self, group_name: Text) -> int:
+        """
+        Delete a group object and its nodes from an inventory
+        """
+        if group_name in self.groups.keys():
+            nodes: List[Text] = []
+            for node in self.groups[group_name].nodes.values():
+                nodes.append(node.name)
+
+            for node_name in nodes:
+                self.delete_node(node_name, group_name)
+
+            if group_name != "ungrouped":
+                self.groups.pop(group_name)
+            return 0
+        return -1
+
+    def list_group(self, pattern: Text = '.*') -> List[InventoryGroup]:
+        """
+        Filter group name based on given pattern
+        """
+        return list(filter(lambda group: re.match(pattern, group.name),
+                           self.groups.values()))
+
     def add_node(self,
                  node: Optional[InventoryNode],
                  group_name: Text = "ungrouped") -> int:
