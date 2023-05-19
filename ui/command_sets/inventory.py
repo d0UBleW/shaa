@@ -8,14 +8,18 @@ from cmd2 import (
     with_argparser,
     as_subcommand_to,
 )
-from cmd2.table_creator import BorderedTable, Column
+from cmd2.table_creator import (
+    SimpleTable as BorderedTable,
+    Column,
+    HorizontalAlignment,
+)
 from cmd2.exceptions import CommandSetRegistrationError
 from dataclasses import asdict
 import pprint
 import re
-from typing import List, Any, Text, Tuple, Dict
 from utils.inventory import list_inventory, Inventory, InventoryNode
 from utils.parser import inventory_node_parser
+from typing import List, Text, Tuple, Dict
 
 
 @with_default_category("inventory")
@@ -49,20 +53,16 @@ class inventory_subcmd(CommandSet):
 
     @as_subcommand_to('inventory', 'list', list_parser, help='list inventory')
     def inventory_list(self, ns: argparse.Namespace):
-        data_list: List[List[Any]] = list()
+        data_list = []
 
-        max_width = 0
-        for inv in list_inventory():
-            if re.match(ns.pattern, inv):
-                if max_width < len(inv):
-                    max_width = len(inv)
-                data_list.append([inv])
+        for inv in list_inventory(ns.pattern):
+            data_list.append([inv])
 
         columns: List[Column] = list()
-        columns.append(Column("Name", width=max_width))
+        columns.append(Column("Name", width=64))
         bt = BorderedTable(columns)
-        tbl = bt.generate_table(data_list)
-        self._cmd.poutput(f"{tbl}\n")
+        tbl = bt.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")
 
     @as_subcommand_to('inventory', 'load', load_parser, help='load inventory')
     def inventory_load(self, ns: argparse.Namespace):
@@ -157,7 +157,7 @@ class inventory_node_subcmd(CommandSet):
         nargs='*',
         metavar='group_name',
         type=str,
-        help="""node group name (ungrouped is a reserved group name, \
+        help="""list of node group name (ungrouped is a reserved group name, \
 leaving it blank defaults to ungrouped)""",
         choices_provider=_choices_group_name,
     )
@@ -196,12 +196,12 @@ leaving it blank defaults to ungrouped)""",
     )
 
     info_parser.add_argument(
-        'name',
+        'pattern',
         type=str,
-        metavar="node_name",
-        help="""node name (if group flag is set, tab completion would list \
-out nodes from the specified group, otherwise it would just list \
-out ungrouped nodes)""",
+        metavar="pattern",
+        help="""node name regex pattern (if the group flag is set, tab \
+completion would list out nodes from the specified group, otherwise it would \
+just list out ungrouped nodes)""",
         choices_provider=_choices_node_name,
     )
 
@@ -260,31 +260,36 @@ out ungrouped nodes)""",
                                                                 ns.node_group)
         data_list = []
         for node, group_name in nodes:
-            data_list.append([node.name, group_name, node.ip_address])
+            data_list.append([node.name,
+                              group_name,
+                              f"{node.user}@{node.ip_address}"])
 
         columns: List[Column] = [
             Column("Name", width=16),
             Column("Group", width=16),
-            Column("IP Address", width=16),
+            Column("Connection Info", width=32),
         ]
         bt = BorderedTable(columns)
-        tbl = bt.generate_table(data_list)
-        self._cmd.poutput(f"{tbl}\n")
+        tbl = bt.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")
 
     @as_subcommand_to("node", "info", info_parser)
     def inv_node_info(self, ns: argparse.Namespace):
         inv: Inventory = self._cmd._inventory
-        node = inv.groups[ns.node_group].nodes[ns.name]
-        data_list = list(asdict(node).items())
-        data_list[-1] = (data_list[-1][0],
-                         pprint.pformat(dict(data_list[-1][-1]),
-                                        sort_dicts=False))
 
         columns: List[Column] = [
             Column("Key", width=16),
             Column("Value", width=64),
         ]
+        bt = BorderedTable(columns)
+
+        for node in inv.groups[ns.node_group].nodes.values():
+            if re.match(ns.pattern, node.name):
+                data_list = list(asdict(node).items())
+                data_list[-1] = (data_list[-1][0],
+                                 pprint.pformat(dict(data_list[-1][-1]),
+                                                sort_dicts=False))
+                tbl = bt.generate_table(data_list, row_spacing=0)
+                self._cmd.poutput(f"\n{tbl}\n")
 
         bt = BorderedTable(columns)
-        tbl = bt.generate_table(data_list)
-        self._cmd.poutput(f"{tbl}\n")
