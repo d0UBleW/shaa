@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import TaggedScalar
-from typing import List, Text, Optional, Dict, Tuple
+from typing import List, Text, Optional, Dict, Tuple, Any
 
 yaml = YAML(typ="rt")
 vault_password = os.environ["VAULT_PASSWORD"]
@@ -57,6 +57,16 @@ class InventoryNode:
 class InventoryGroup:
     name: Text
     nodes: Dict[Text, InventoryNode] = field(default_factory=dict)
+    group_vars: Dict[Text, Any] = field(default_factory=dict)
+
+    def set_var(self, key: Text, value: Any) -> None:
+        """
+        Helper function to set `group_vars`
+        """
+        if self.name == "ungrouped":
+            print("[!] This operation is not valid for `ungrouped`")
+            return
+        self.group_vars[key] = value
 
     def add_node(self, node: Optional[InventoryNode]) -> int:
         if node and node.name not in self.nodes.keys():
@@ -73,14 +83,25 @@ class InventoryGroup:
         for node in self.nodes.values():
             data["hosts"][node.name] = node.raw()
 
+        if len(self.group_vars) > 0:
+            data["vars"] = self.group_vars
+
         return data
 
     @staticmethod
     def from_dict(name: Text, data: Dict) -> Optional["InventoryGroup"]:
+    def from_dict(
+        name: Text,
+        data: Dict[Text, Dict]
+    ) -> Optional["InventoryGroup"]:
         group = InventoryGroup(name=name)
         for node_name, raw_node in data["hosts"].items():
             node = InventoryNode.from_dict(node_name, raw_node)
             group.add_node(node)
+
+        if "vars" in data.keys():
+            group.group_vars = data["vars"]
+
         if len(group.nodes) > 0:
             return group
         return None
@@ -194,7 +215,7 @@ class Inventory:
                     name=group_name, data=raw_group)
                 inv.add_group(group)
 
-        if len(inv.groups) == 0 or len(inv.groups["ungrouped"].nodes) == 0:
+        if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
             return None
 
         return inv
@@ -222,6 +243,7 @@ if __name__ == "__main__":
 
     testing = InventoryGroup("testing")
     testing.add_node(alma)
+    testing.group_vars = {"foo": "bar", "nested": {"bar": "foo"}}
 
     inv = Inventory("main_inventory")
     inv.add_group(testing)
