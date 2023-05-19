@@ -221,9 +221,13 @@ class Inventory:
         return inv
 
 
-def list_inventory() -> List:
+def list_inventory(pattern: Text = ".*") -> List:
+    """
+    List inventory based on given pattern
+    """
     files = INVENTORY_PATH.glob("*.yml")
-    return [file.stem for file in files]
+    return list(filter(lambda fname: re.match(pattern, fname),
+                [file.stem for file in files]))
 
 
 if __name__ == "__main__":
