@@ -2,12 +2,10 @@
 
 import argparse
 import cmd2
-from command_sets.inventory import (
-    inventory_subcmd,
-    inventory_node_cmd,
-    inventory_node_subcmd,
-    inventory_group_cmd,
-    inventory_group_subcmd,
+from command_sets import (
+    inventory as inv_cs,
+    inventory_node as inv_node_cs,
+    inventory_group as inv_group_cs,
 )
 from typing import Optional
 from utils.parser import inventory_parser
@@ -29,10 +27,10 @@ class ShaaShell(cmd2.Cmd):
         self.prompt = "shaa> "
         self.continuation_prompt = "... "
         self.default_category = "general"
-        self._inventory_node_cmd = inventory_node_cmd()
-        self._inventory_node_subcmd = inventory_node_subcmd()
-        self._inventory_group_cmd = inventory_group_cmd()
-        self._inventory_group_subcmd = inventory_group_subcmd()
+        self._inventory_node_cmd = inv_node_cs.inventory_node_cmd()
+        self._inventory_node_subcmd = inv_node_cs.inventory_node_subcmd()
+        self._inventory_group_cmd = inv_group_cs.inventory_group_cmd()
+        self._inventory_group_subcmd = inv_group_cs.inventory_group_subcmd()
 
     def _set_prompt(self):
         if self._inventory is not None:
@@ -56,7 +54,7 @@ class ShaaShell(cmd2.Cmd):
 
 
 def main():
-    shaa_shell = ShaaShell(command_sets=[inventory_subcmd()])
+    shaa_shell = ShaaShell(command_sets=[inv_cs.inventory_subcmd()])
     shaa_shell.disable_command(
         "run_pyscript",
         message_to_print=f"{cmd2.COMMAND_NAME} is currently disabled"
