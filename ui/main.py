@@ -19,7 +19,7 @@ class ShaaShell(cmd2.Cmd):
         super().__init__(
             *args,
             persistent_history_file='.shaa_shell_hist',
-            startup_script='.shaa_shell_alias',
+            startup_script='.shaa_shell_rc',
             silence_startup_script=True,
             auto_load_commands=False,
             **kwargs,
