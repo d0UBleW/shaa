@@ -93,6 +93,7 @@ class inventory_group_subcmd(CommandSet):
     )
 
     @as_subcommand_to("group", "create", create_parser,
+                      aliases=["add"],
                       help="create group on current inventory")
     def inv_group_create(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -106,6 +107,7 @@ class inventory_group_subcmd(CommandSet):
             self._cmd.poutput("[!] Specified group name already existed")
 
     @as_subcommand_to("group", "delete", delete_parser,
+                      aliases=["del", "rm"],
                       help="delete group from current inventory")
     def inv_group_delete(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -126,6 +128,7 @@ class inventory_group_subcmd(CommandSet):
             self._cmd.poutput("[!] Specified group name does not exist")
 
     @as_subcommand_to("group", "list", list_parser,
+                      aliases=["ls"],
                       help="list groups from current inventory")
     def inv_group_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:

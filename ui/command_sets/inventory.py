@@ -51,6 +51,7 @@ class inventory_subcmd(CommandSet):
                                   help='new name of duplicated inventory')
 
     @as_subcommand_to('inventory', 'create', create_parser,
+                      aliases=["add"],
                       help='create inventory')
     def inventory_create(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -66,6 +67,7 @@ class inventory_subcmd(CommandSet):
             return self.inventory_load(None, True)
 
     @as_subcommand_to('inventory', 'delete', delete_parser,
+                      aliases=["del", "rm"],
                       help='delete inventory')
     def inventory_delete(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -85,7 +87,9 @@ class inventory_subcmd(CommandSet):
         self._cmd.poutput("[+] Inventory has been deleted successfully")
         self._cmd._inventory = None  # type: ignore[attr-defined]
 
-    @as_subcommand_to('inventory', 'list', list_parser, help='list inventory')
+    @as_subcommand_to('inventory', 'list', list_parser,
+                      aliases=["ls"],
+                      help='list inventory')
     def inventory_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return

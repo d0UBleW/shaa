@@ -176,6 +176,7 @@ out ungrouped nodes)""",
     )
 
     @as_subcommand_to("node", "create", create_parser,
+                      aliases=["add"],
                       help="create node on current inventory")
     def inv_node_create(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -195,6 +196,7 @@ out ungrouped nodes)""",
                 self._cmd.poutput("[!] Specified node name already existed")
 
     @as_subcommand_to("node", "delete", delete_parser,
+                      aliases=["del", "rm"],
                       help="delete node from current inventory")
     def inv_node_delete(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -207,6 +209,7 @@ out ungrouped nodes)""",
             self._cmd.poutput("[!] Specified node name does not exist")
 
     @as_subcommand_to("node", "list", list_parser,
+                      aliases=["ls"],
                       help="list nodes from current inventory")
     def inv_node_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
