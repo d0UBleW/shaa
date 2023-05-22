@@ -12,3 +12,7 @@ inventory_node_parser.add_subparsers(title="action",
 inventory_group_parser = Cmd2ArgumentParser()
 inventory_group_parser.add_subparsers(title="action",
                                       help="action on inventory group")
+
+cis_parser = Cmd2ArgumentParser()
+cis_parser.add_subparsers(title="subcommands",
+                          help="subcommand for cis module")
