@@ -58,6 +58,9 @@ class inventory_subcmd(CommandSet):
             warning_text += "already existed"
             self._cmd.poutput(warning_text)
             return
+        if self._cmd._inventory is None:
+            self._cmd._inventory = inv
+            return self.inventory_load(None, True)
 
     @as_subcommand_to('inventory', 'delete', delete_parser,
                       help='delete inventory')
@@ -95,12 +98,15 @@ class inventory_subcmd(CommandSet):
         self._cmd.poutput(f"\n{tbl}\n")
 
     @as_subcommand_to('inventory', 'load', load_parser, help='load inventory')
-    def inventory_load(self: CommandSet, ns: argparse.Namespace):
+    def inventory_load(self: CommandSet, ns: argparse.Namespace,
+                       empty: bool = False):
         if self._cmd is None:
             return
         self._cmd.check_if_inv_changed()  # type: ignore[attr-defined]
-        inv = Inventory.load(ns.name)
-        self._cmd._inventory = inv  # type: ignore[attr-defined]
+        if not empty:
+            inv = Inventory.load(ns.name)
+            self._cmd._inventory = inv  # type: ignore[attr-defined]
+
         try:
             self._cmd.register_command_set(
                 self._cmd._inventory_node_cmd  # type: ignore[attr-defined]
