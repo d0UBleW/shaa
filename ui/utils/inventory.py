@@ -349,13 +349,6 @@ class Inventory:
         self.name = new_name
         return True
 
-    def duplicate_inventory(self, dup_name: Text) -> Tuple[bool, Text]:
-        if dup_name in Inventory.list_inventory():
-            return (False, "Specified name already existed")
-        if not self.save(dup_name):
-            return (False, "Invalid inventory name")
-        return (True, "")
-
 
 if __name__ == "__main__":
     INVENTORY_PATH = Path("../../ansible/inventory/")

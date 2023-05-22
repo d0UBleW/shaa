@@ -38,6 +38,9 @@ class inventory_subcmd(CommandSet):
     unload_parser = Cmd2ArgumentParser()
 
     save_parser = Cmd2ArgumentParser()
+    save_parser.add_argument("name",
+                             nargs="?",
+                             help="name of inventory")
 
     rename_parser = Cmd2ArgumentParser()
     rename_parser.add_argument('name',
@@ -152,7 +155,7 @@ class inventory_subcmd(CommandSet):
         if inv is None:
             self._cmd.poutput("[!] Currently, there is no inventory loaded")
             return
-        if not inv.save():
+        if not inv.save(ns.name):
             self._cmd.poutput("[!] Invalid inventory name")
             return
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
@@ -173,17 +176,3 @@ class inventory_subcmd(CommandSet):
         self._cmd.poutput("[+] inventory has been renamed")
         self._cmd.poutput(f"[*] old: {old_name}")
         self._cmd.poutput(f"[*] new: {inv.name}")
-
-    @as_subcommand_to('inventory', 'duplicate', duplicate_parser)
-    def inventory_duplicate(self: CommandSet, ns: argparse.Namespace):
-        if self._cmd is None:
-            return
-        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
-        if inv is None:
-            self._cmd.poutput("[!] Currently, there is no inventory loaded")
-            return
-        status, msg = inv.duplicate_inventory(ns.name)
-        if not status:
-            self._cmd.poutput(f"[!] {msg}")
-            return
-        self._cmd.poutput("[+] inventory has been duplicated")
