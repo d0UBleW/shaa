@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 
-from ansible_vault import Vault  # type: ignore[import]
 from dataclasses import dataclass, field
 from itertools import product
-import os
 from pathlib import Path
 import re
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import TaggedScalar
 from typing import List, Text, Optional, Dict, Tuple, Any
+from .vault import vault
 
 yaml = YAML(typ="rt")
-vault_password = os.environ["VAULT_PASSWORD"]
-vault = Vault(vault_password)
 
 INVENTORY_PATH = Path("../ansible/inventory/")
 
