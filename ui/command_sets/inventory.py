@@ -39,6 +39,14 @@ class inventory_subcmd(CommandSet):
 
     save_parser = Cmd2ArgumentParser()
 
+    rename_parser = Cmd2ArgumentParser()
+    rename_parser.add_argument('name',
+                               help='new name of inventory')
+
+    duplicate_parser = Cmd2ArgumentParser()
+    duplicate_parser.add_argument('name',
+                                  help='new name of duplicated inventory')
+
     @as_subcommand_to('inventory', 'create', create_parser,
                       help='create inventory')
     def inventory_create(self: CommandSet, ns: argparse.Namespace):
@@ -81,7 +89,7 @@ class inventory_subcmd(CommandSet):
             data_list.append([inv])
 
         columns: List[Column] = list()
-        columns.append(Column("Name", width=64))
+        columns.append(Column("Name", width=32))
         bt = BorderedTable(columns)
         tbl = bt.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")
@@ -134,7 +142,42 @@ class inventory_subcmd(CommandSet):
     def inventory_save(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
-        inv.save()
+        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+        if inv is None:
+            self._cmd.poutput("[!] Currently, there is no inventory loaded")
+            return
+        if not inv.save():
+            self._cmd.poutput("[!] Invalid inventory name")
+            return
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] inventory has been saved")
+
+    @as_subcommand_to('inventory', 'rename', rename_parser)
+    def inventory_rename(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+        if inv is None:
+            self._cmd.poutput("[!] Currently, there is no inventory loaded")
+            return
+        old_name = inv.name
+        if not inv.rename_inventory(ns.name):
+            self._cmd.poutput("[!] Invalid inventory name")
+            return
+        self._cmd.poutput("[+] inventory has been renamed")
+        self._cmd.poutput(f"[*] old: {old_name}")
+        self._cmd.poutput(f"[*] new: {inv.name}")
+
+    @as_subcommand_to('inventory', 'duplicate', duplicate_parser)
+    def inventory_duplicate(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+        if inv is None:
+            self._cmd.poutput("[!] Currently, there is no inventory loaded")
+            return
+        status, msg = inv.duplicate_inventory(ns.name)
+        if not status:
+            self._cmd.poutput(f"[!] {msg}")
+            return
+        self._cmd.poutput("[+] inventory has been duplicated")

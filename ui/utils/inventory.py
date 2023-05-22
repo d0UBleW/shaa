@@ -222,17 +222,22 @@ class Inventory:
 
         return nodes
 
-    def save(self) -> None:
+    def save(self, file_name: Optional[Text] = None) -> bool:
         """
         Dump inventory data into a YAML file which is compatible with Ansible
         inventory format
         """
-        file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
+        if file_name is None:
+            file_name = self.name
+
+        if "/" in file_name:
+            return False
+
+        file_path = INVENTORY_PATH.joinpath(f"{file_name}.yml").resolve()
         try:
             file_path.relative_to(INVENTORY_PATH.resolve())
         except ValueError:
-            print("[!] Invalid inventory name")
-            return None
+            return False
 
         data: Dict = {
             "all": None
@@ -254,6 +259,8 @@ class Inventory:
 
         with open(file_path, "w") as f:
             yaml.dump(data, f)
+
+        return True
 
     @staticmethod
     def load(name: Text) -> Optional["Inventory"]:
@@ -300,17 +307,20 @@ class Inventory:
         return inv
 
     @staticmethod
-    def list_inventory(pattern: Text = ".*") -> List:
+    def list_inventory(pattern: Text = ".*") -> List[Text]:
         """
         List inventory based on given pattern
         """
         files = INVENTORY_PATH.glob("*.yml")
         return list(filter(lambda fname: re.match(pattern, fname),
-                    [file.stem for file in files]))
+                           [file.stem for file in files]))
 
     @staticmethod
     def create_inventory(name: Text) -> Optional["Inventory"]:
         if name in Inventory.list_inventory():
+            return None
+
+        if "/" in name:
             return None
 
         file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
@@ -330,6 +340,21 @@ class Inventory:
         file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
         return
+
+    def rename_inventory(self, new_name: Text) -> bool:
+        if not self.save(new_name):
+            return False
+        old_file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
+        Path.unlink(old_file_path, missing_ok=True)
+        self.name = new_name
+        return True
+
+    def duplicate_inventory(self, dup_name: Text) -> Tuple[bool, Text]:
+        if dup_name in Inventory.list_inventory():
+            return (False, "Specified name already existed")
+        if not self.save(dup_name):
+            return (False, "Invalid inventory name")
+        return (True, "")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import cmd2
+import cmd2  # type: ignore[import]
 from command_sets import (
     inventory as inv_cs,
     inventory_node as inv_node_cs,
