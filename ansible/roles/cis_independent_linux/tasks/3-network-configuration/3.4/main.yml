@@ -21,7 +21,7 @@
         desc: TIPC
         section_id: 3.4.4
   ansible.builtin.include_tasks:
-    file: ./3.4.x.yml
+    file: ./3.4.1-4.yml
     apply:
       tags:
         - 3.4.1-4
