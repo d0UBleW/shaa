@@ -1,1 +1,8 @@
-__all__ = ["inventory", "preset", "profile"]
+__all__ = [
+    "inventory",
+    "inventory_node",
+    "inventory_group",
+    "cis",
+    "preset",
+    "profile",
+]

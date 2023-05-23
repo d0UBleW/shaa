@@ -1,1 +1,1 @@
-__all__ = ["inventory", "parser"]
+__all__ = ["inventory", "parser", "vault"]

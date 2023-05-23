@@ -7,7 +7,8 @@ from cmd2 import (
     with_default_category,
     as_subcommand_to,
 )
-from utils import cis
+from cmd2.table_creator import SimpleTable, Column
+from utils.cis import cis
 from typing import List, Text
 
 
@@ -34,7 +35,43 @@ class cis_section_cmd(CommandSet):
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        self._cmd.poutput(f"info {ns.section_id}")
+        if not cis.is_valid_section_id(ns.section_id):
+            self._cmd.poutput("[!] Invalid section id")
+            return
+
+        columns = [
+            Column("Key", width=16),
+            Column("Value", width=128),
+        ]
+        st = SimpleTable(columns)
+        section = cis.sections[ns.section_id]
+        data_list = []
+        for key, value in section.items():
+            if key == "vars":
+                continue
+            data_list.append([key, value])
+        tbl = st.generate_table(data_list,
+                                row_spacing=0,
+                                include_header=False)
+        self._cmd.poutput(f"{tbl}\n")
+        if "vars" in section.keys() and section["vars"] is not None:
+            vars_columns = [
+                Column("Key", width=32),
+                Column("Value", width=32),
+                Column("Default", width=32),
+                Column("Description", width=64),
+            ]
+            vars_st = SimpleTable(vars_columns)
+            vars_data_list = []
+            for var in section["vars"]:
+                vars_data_list.append([
+                    var["key"],
+                    var["value"],
+                    var["default"],
+                    var["description"],
+                ])
+            vars_tbl = vars_st.generate_table(vars_data_list)
+            self._cmd.poutput(f"Settable variables:\n\n{vars_tbl}\n")
 
     section_parser = Cmd2ArgumentParser()
 
@@ -55,6 +92,12 @@ class cis_section_cmd(CommandSet):
 
     list_parser = section_subparser.add_parser(
         "list", help="list available section ids")
+    list_parser.add_argument(
+        "section_id",
+        nargs="?",
+        help="""if specified, it would list out corresponding subsections \
+(e.g., 1, 2.1, 3.3.1)"""
+    )
     list_parser.set_defaults(func=cis_section_list)
 
     enable_parser = section_subparser.add_parser(
