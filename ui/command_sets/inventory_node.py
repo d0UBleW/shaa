@@ -251,5 +251,8 @@ out ungrouped nodes)""",
                 data_list[-1] = (data_list[-1][0],
                                  pprint.pformat(dict(data_list[-1][-1]),
                                                 sort_dicts=False))
-                tbl = st.generate_table(data_list, row_spacing=0)
-                self._cmd.poutput(f"\n{tbl}\n")
+                tbl = st.generate_table(data_list,
+                                        row_spacing=0,
+                                        include_header=False)
+                sep = "-" * 16
+                self._cmd.poutput(f"\n{sep}\n{tbl}\n{sep}\n")
