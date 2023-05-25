@@ -2,14 +2,19 @@
 
 from ruamel.yaml import YAML
 from typing import Optional, Text
+from pathlib import Path
 
 yaml = YAML(typ="rt")
-cis_data_file_path = "data/cis.yml"
+cis_data_file_path = "data/default/cis.yml"
 
 
 class CIS:
-    def __init__(self):
-        with open(cis_data_file_path, "r") as f:
+    def __init__(self, name: Optional[Text] = None):
+        if name is None:
+            name = cis_data_file_path
+        else:
+            name = Path("data/custom").joinpath(f"{name}/cis.yml")
+        with open(name, "r") as f:
             data = yaml.load(f)
             if "sections" not in data.keys():
                 raise Exception(
