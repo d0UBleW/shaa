@@ -14,11 +14,14 @@ from utils.parser import (
     cis_parser,
 )
 from utils.inventory import Inventory
+from utils.cis import CIS
 
 
 class ShaaShell(cmd2.Cmd):
     _inventory: Optional[Inventory] = None
     _inv_has_changed: bool = False
+
+    _cis: Optional[CIS] = CIS("test")
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
@@ -36,14 +39,18 @@ class ShaaShell(cmd2.Cmd):
         self._inventory_node_subcmd = inv_node_cs.inventory_node_subcmd()
         self._inventory_group_cmd = inv_group_cs.inventory_group_cmd()
         self._inventory_group_subcmd = inv_group_cs.inventory_group_subcmd()
-        # self._cis_section_cmd = cis_cs.cis_section_cmd()
         self.register_postloop_hook(self.check_if_inv_changed)
 
     def _set_prompt(self):
+        inv_prompt = ""
         if self._inventory is not None:
-            self.prompt = f"\n[I: {self._inventory.name}]\nshaa> "
-            return
-        self.prompt = "shaa> "
+            inv_prompt = f"[inv: {self._inventory.name}] "
+
+        cis_prompt = ""
+        if self._cis is not None:
+            cis_prompt = f"[cis: {self._cis.name}] "
+
+        self.prompt = f"\n{inv_prompt}{cis_prompt}\nshaa> "
 
     def postcmd(self, stop, statement):
         self._set_prompt()

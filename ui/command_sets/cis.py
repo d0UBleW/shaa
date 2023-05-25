@@ -8,14 +8,16 @@ from cmd2 import (
     as_subcommand_to,
 )
 from cmd2.table_creator import SimpleTable, Column
-from utils.cis import cis
+from utils.cis import CIS
 from typing import List, Text
 
 
 @with_default_category("cis")
 class cis_section_cmd(CommandSet):
     def _choices_cis_section(self) -> List[Text]:
-        return cis.list_section()
+        if self._cmd is None:
+            return []
+        return self._cmd._cis.list_section()
 
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -35,6 +37,7 @@ class cis_section_cmd(CommandSet):
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        cis: CIS = self._cmd._cis
         if not cis.is_valid_section_id(ns.section_id):
             self._cmd.poutput("[!] Invalid section id")
             return
@@ -49,6 +52,8 @@ class cis_section_cmd(CommandSet):
         for key, value in section.items():
             if key == "vars":
                 continue
+            if key == "enabled":
+                value = bool(value)
             data_list.append([key, value])
         tbl = st.generate_table(data_list,
                                 row_spacing=0,

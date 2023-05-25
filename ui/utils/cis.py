@@ -1,28 +1,27 @@
 #!/usr/bin/env python3
 
 from ruamel.yaml import YAML
-from typing import Optional, Text
+from typing import Optional, Text, Dict
 from pathlib import Path
 
 yaml = YAML(typ="rt")
-cis_data_file_path = "data/default/cis.yml"
+CIS_PRESET_PATH = Path("data/custom/cis/")
+cis_data_file_path = "data/template/cis.yml"
 
 
 class CIS:
-    def __init__(self, name: Optional[Text] = None):
-        if name is None:
-            name = cis_data_file_path
-        else:
-            name = Path("data/custom").joinpath(f"{name}/cis.yml")
-        with open(name, "r") as f:
-            data = yaml.load(f)
-            if "sections" not in data.keys():
-                raise Exception(
-                    f"Missing `sections` key in {cis_data_file_path}"
-                )
-            self.sections = data["sections"]
-            for section in self.sections.values():
-                section["status"] = "enabled"
+    def __init__(self, name: Text, data: Optional[Dict] = None):
+        self.name = name
+
+        if data is None:
+            with open(cis_data_file_path, "r") as f:
+                data = yaml.load(f)
+
+        if "sections" not in data.keys():
+            raise Exception(
+                f"Missing `sections` key in {cis_data_file_path}"
+            )
+        self.sections = data["sections"]
 
     def is_valid_section_id(self, section_id: Text) -> bool:
         return section_id in self.sections.keys()
