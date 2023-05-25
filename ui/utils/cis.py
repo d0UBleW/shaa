@@ -29,6 +29,26 @@ class CIS:
     def list_section(self, section_id: Optional[Text] = None):
         return list(self.sections.keys())
 
+    @staticmethod
+    def load(name: Text) -> Optional["CIS"]:
+        """
+        Load CIS preset from YAML file to Python object
+        """
+        file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
+        try:
+            file_path.relative_to(CIS_PRESET_PATH.resolve())
+            with open(file_path, "r") as f:
+                data: Dict = yaml.load(f)
+        except ValueError:
+            print("[!] Invalid CIS preset name")
+            return None
+        except FileNotFoundError:
+            print("[!] CIS preset name not found")
+            return None
+
+        cis = CIS(name, data)
+        return cis
+
     # def _filter(file_name: Text):
     #     section = section_id
     #     if section is None:
@@ -42,9 +62,6 @@ class CIS:
     #             break
     #     return True
     # return list(filter(_filter, map(lambda file: file.stem, sections)))
-
-
-cis = CIS()
 
 
 def main():

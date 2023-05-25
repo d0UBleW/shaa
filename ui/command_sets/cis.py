@@ -6,10 +6,26 @@ from cmd2 import (
     CommandSet,
     with_default_category,
     as_subcommand_to,
+    with_argparser,
 )
 from cmd2.table_creator import SimpleTable, Column
 from utils.cis import CIS
+from utils.parser import cis_parser
 from typing import List, Text
+
+
+@with_default_category("cis")
+class cis_cmd(CommandSet):
+    @with_argparser(cis_parser)
+    def do_cis(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        handler = ns.cmd2_handler.get()
+        if handler is not None:
+            handler(ns)
+        else:
+            self._cmd.poutput("No subcommand was provided")
+            self._cmd.do_help("cis")
 
 
 @with_default_category("cis")
@@ -17,7 +33,7 @@ class cis_section_cmd(CommandSet):
     def _choices_cis_section(self) -> List[Text]:
         if self._cmd is None:
             return []
-        return self._cmd._cis.list_section()
+        return self._cmd._cis.list_section()  # type: ignore[attr-defined]
 
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -37,7 +53,7 @@ class cis_section_cmd(CommandSet):
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        cis: CIS = self._cmd._cis
+        cis: CIS = self._cmd._cis  # type: ignore[attr-defined]
         if not cis.is_valid_section_id(ns.section_id):
             self._cmd.poutput("[!] Invalid section id")
             return

@@ -7,11 +7,12 @@ from command_sets import (
     inventory_node as inv_node_cs,
     inventory_group as inv_group_cs,
     cis as cis_cs,
+    preset as pre_cs,
 )
 from typing import Optional
 from utils.parser import (
     inventory_parser,
-    cis_parser,
+    preset_parser,
 )
 from utils.inventory import Inventory
 from utils.cis import CIS
@@ -21,7 +22,7 @@ class ShaaShell(cmd2.Cmd):
     _inventory: Optional[Inventory] = None
     _inv_has_changed: bool = False
 
-    _cis: Optional[CIS] = CIS("test")
+    _cis: Optional[CIS] = None
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
@@ -39,6 +40,10 @@ class ShaaShell(cmd2.Cmd):
         self._inventory_node_subcmd = inv_node_cs.inventory_node_subcmd()
         self._inventory_group_cmd = inv_group_cs.inventory_group_cmd()
         self._inventory_group_subcmd = inv_group_cs.inventory_group_subcmd()
+        self._cis_cmd = cis_cs.cis_cmd()
+        self._cis_section_cmd = cis_cs.cis_section_cmd()
+        self._cis_set_cmd = cis_cs.cis_set_cmd()
+        self._cis_search_cmd = cis_cs.cis_search_cmd()
         self.register_postloop_hook(self.check_if_inv_changed)
 
     def _set_prompt(self):
@@ -69,15 +74,15 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("No subcommand was provided")
             self.do_help('inventory')
 
-    @cmd2.with_argparser(cis_parser)
-    @cmd2.with_category("cis")
-    def do_cis(self, ns: argparse.Namespace):
+    @cmd2.with_argparser(preset_parser)
+    @cmd2.with_category("preset")
+    def do_preset(self, ns: argparse.Namespace):
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)
         else:
             self.poutput("No subcommand was provided")
-            self.do_help("cis")
+            self.do_help("preset")
 
     def check_if_inv_changed(self) -> None:
         if self._inv_has_changed:
@@ -93,9 +98,7 @@ class ShaaShell(cmd2.Cmd):
 def main():
     shaa_shell = ShaaShell(command_sets=[
         inv_cs.inventory_subcmd(),
-        cis_cs.cis_section_cmd(),
-        cis_cs.cis_set_cmd(),
-        cis_cs.cis_search_cmd(),
+        pre_cs.preset_cis_cmd(),
     ])
     shaa_shell.disable_command(
         "run_pyscript",

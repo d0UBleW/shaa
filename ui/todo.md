@@ -20,3 +20,11 @@ set key value [-n node_name] [-g group_name]
 - [x] group info
 - [ ] group edit
 - [ ] node edit
+- [x] preset cis load
+- [ ] preset cis create
+- [ ] preset cis delete
+- [ ] preset cis save
+- [ ] preset cis list
+- [ ] cis section list
+- [ ] cis set
+- [ ] cis search
