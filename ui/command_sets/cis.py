@@ -11,7 +11,7 @@ from cmd2 import (
 from cmd2.table_creator import SimpleTable, Column
 from utils.cis import CIS
 from utils.parser import cis_parser
-from typing import List, Text
+from typing import List, Text, Dict, Optional
 
 
 @with_default_category("cis")
@@ -145,8 +145,46 @@ class cis_section_cmd(CommandSet):
 
 @with_default_category("cis")
 class cis_set_cmd(CommandSet):
+    def _choices_cis_section(self: CommandSet) -> List[Text]:
+        if self._cmd is None:
+            return []
+        return self._cmd._cis.list_section()  # type: ignore[attr-defined]
+
+    def _choices_cis_section_unit(self: CommandSet) -> List[Text]:
+        if self._cmd is None:
+            return []
+        return self._cmd._cis.list_section_unit()  # type: ignore[attr-defined]
+
+    def _choices_cis_option(
+        self: CommandSet,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[Text]:
+        if self._cmd is None:
+            return []
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+        if cis is None:
+            return []
+
+        section_id = None
+        if "section_id" in arg_tokens:
+            section_id = arg_tokens["section_id"][0]
+
+        if section_id is None:
+            return []
+
+        section_vars = cis.sections[section_id]["vars"]
+        return section_vars.keys()
+
     set_parser = Cmd2ArgumentParser()
+    set_parser.add_argument(
+        "-s",
+        "--section-id",
+        dest="section_id",
+        choices_provider=_choices_cis_section_unit,
+        help="narrow down to specific section id for better tab completion"
+    )
     set_parser.add_argument("option_key",
+                            choices_provider=_choices_cis_option,
                             help="name of option to be set")
     set_parser.add_argument("option_value",
                             help="new option value")
@@ -156,7 +194,22 @@ class cis_set_cmd(CommandSet):
     def cis_set(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        self._cmd.poutput(f"set {ns.option_key} {ns.option_value}")
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+        if cis is None:
+            self._cmd.poutput("[!] cis object is non")
+            return
+        if not cis.is_valid_section_id(ns.section_id):
+            self._cmd.poutput("[!] Invalid section id")
+            return
+        if not cis.is_valid_option(ns.section_id, ns.option_key):
+            self._cmd.poutput("[!] Invalid option key")
+            return
+        option = cis.sections[ns.section_id]["vars"][ns.option_key]
+        old_value = option["value"]
+        option["value"] = ns.option_value
+        self._cmd.poutput(f"[+] {ns.option_key}:")
+        self._cmd.poutput(f"    old: {old_value}")
+        self._cmd.poutput(f"    new: {ns.option_value}")
 
 
 @with_default_category("cis")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from ruamel.yaml import YAML
-from typing import Optional, Text, Dict
+from typing import Optional, Text, Dict, List
 from pathlib import Path
 
 yaml = YAML(typ="rt")
@@ -26,8 +26,24 @@ class CIS:
     def is_valid_section_id(self, section_id: Text) -> bool:
         return section_id in self.sections.keys()
 
-    def list_section(self, section_id: Optional[Text] = None):
+    def has_settable_vars(self, section_id: Text) -> bool:
+        section = self.sections[section_id]
+        return "vars" in section.keys() and section["vars"] is not None
+
+    def is_valid_option(self, section_id: Text, option_key: Text) -> bool:
+        section_vars = self.sections[section_id]["vars"]
+        return option_key in section_vars.keys()
+
+    def list_section(self, section_id: Optional[Text] = None) -> List[Text]:
         return list(self.sections.keys())
+
+    def list_section_unit(self,
+                          section_id: Optional[Text] = None) -> List[Text]:
+        section_units = []
+        for s_id in self.sections.keys():
+            if self.has_settable_vars(s_id):
+                section_units.append(s_id)
+        return section_units
 
     @staticmethod
     def load(name: Text) -> Optional["CIS"]:
