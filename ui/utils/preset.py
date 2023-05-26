@@ -2,7 +2,7 @@
 
 import re
 from pathlib import Path
-from typing import Optional, Text, List
+from typing import Text, List
 
 
 def list_preset(_type: Text, pattern: Text = ".*") -> List[Text]:

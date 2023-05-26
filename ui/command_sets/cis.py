@@ -210,6 +210,7 @@ class cis_set_cmd(CommandSet):
         self._cmd.poutput(f"[+] {ns.option_key}:")
         self._cmd.poutput(f"    old: {old_value}")
         self._cmd.poutput(f"    new: {ns.option_value}")
+        self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
 
 
 @with_default_category("cis")

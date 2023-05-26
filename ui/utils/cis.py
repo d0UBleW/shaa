@@ -3,6 +3,7 @@
 from ruamel.yaml import YAML
 from typing import Optional, Text, Dict, List
 from pathlib import Path
+from utils.preset import list_preset
 
 yaml = YAML(typ="rt")
 CIS_PRESET_PATH = Path("data/custom/cis/")
@@ -18,9 +19,7 @@ class CIS:
                 data = yaml.load(f)
 
         if "sections" not in data.keys():
-            raise Exception(
-                f"Missing `sections` key in {cis_data_file_path}"
-            )
+            raise Exception("Missing `sections` key")
         self.sections = data["sections"]
 
     def is_valid_section_id(self, section_id: Text) -> bool:
@@ -45,6 +44,31 @@ class CIS:
                 section_units.append(s_id)
         return section_units
 
+    def save(self, file_name: Optional[Text] = None) -> bool:
+        """
+        Dump CIS data into a YAML file
+        """
+        if file_name is None:
+            file_name = self.name
+
+        if "/" in file_name:
+            return False
+
+        file_path = CIS_PRESET_PATH.joinpath(f"{file_name}.yml").resolve()
+        try:
+            file_path.relative_to(CIS_PRESET_PATH.resolve())
+        except ValueError:
+            return False
+
+        data = {
+            "sections": self.sections
+        }
+
+        with open(file_path, 'w') as f:
+            yaml.dump(data, f)
+
+        return True
+
     @staticmethod
     def load(name: Text) -> Optional["CIS"]:
         """
@@ -65,19 +89,29 @@ class CIS:
         cis = CIS(name, data)
         return cis
 
-    # def _filter(file_name: Text):
-    #     section = section_id
-    #     if section is None:
-    #         return True
-    #     while True:
-    #         num, _, section = section.partition(".")
-    #         file_num, _, file_name = file_name.partition(".")
-    #         if file_num != num:
-    #             return False
-    #         if section == "":
-    #             break
-    #     return True
-    # return list(filter(_filter, map(lambda file: file.stem, sections)))
+    @staticmethod
+    def create(name: Text) -> Optional["CIS"]:
+        """
+        Function wrapper for creating CIS object
+        """
+        if name in list_preset("cis"):
+            return None
+
+        file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
+        try:
+            file_path.relative_to(CIS_PRESET_PATH.resolve())
+        except ValueError:
+            return None
+
+        cis = CIS(name)
+        return cis
+
+    @staticmethod
+    def list_preset(pattern: Text = ".*") -> List[Text]:
+        """
+        List CIS preset based on given pattern
+        """
+        return list_preset("cis", pattern)
 
 
 def main():

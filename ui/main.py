@@ -23,6 +23,7 @@ class ShaaShell(cmd2.Cmd):
     _inv_has_changed: bool = False
 
     _cis: Optional[CIS] = None
+    _cis_has_changed: bool = False
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
@@ -45,6 +46,7 @@ class ShaaShell(cmd2.Cmd):
         self._cis_set_cmd = cis_cs.cis_set_cmd()
         self._cis_search_cmd = cis_cs.cis_search_cmd()
         self.register_postloop_hook(self.check_if_inv_changed)
+        self.register_postloop_hook(self.check_if_cis_changed)
 
     def _set_prompt(self):
         inv_prompt = ""
@@ -91,6 +93,16 @@ class ShaaShell(cmd2.Cmd):
             if (_ := self.read_input(prompt).lower()) != "n":
                 if self._inventory is not None:
                     self._inventory.save()
+                    self.poutput("[+] Changes have been saved successfully")
+            self._inv_has_changed = False
+
+    def check_if_cis_changed(self) -> None:
+        if self._cis_has_changed:
+            prompt = "[*] There are unsaved changes on current CIS preset.\n"
+            prompt += "[+] Do you want to save? [Y/n] "
+            if (_ := self.read_input(prompt).lower()) != "n":
+                if self._cis is not None:
+                    self._cis.save()
                     self.poutput("[+] Changes have been saved successfully")
             self._inv_has_changed = False
 
