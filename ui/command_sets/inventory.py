@@ -8,7 +8,7 @@ from cmd2 import (
     as_subcommand_to,
 )
 from cmd2.table_creator import (
-    SimpleTable as BorderedTable,
+    SimpleTable,
     Column,
 )
 from cmd2.exceptions import CommandSetRegistrationError
@@ -99,8 +99,8 @@ class inventory_subcmd(CommandSet):
 
         columns: List[Column] = list()
         columns.append(Column("Name", width=32))
-        bt = BorderedTable(columns)
-        tbl = bt.generate_table(data_list, row_spacing=0)
+        st = SimpleTable(columns)
+        tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")
 
     @as_subcommand_to('inventory', 'load', load_parser, help='load inventory')
