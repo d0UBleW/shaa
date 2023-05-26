@@ -77,8 +77,8 @@
       {{ file.section_id }} Ensure permissions on {{ file.file_name }} are
       configured
   when:
-    # section_6_1_2___9
-    - critical_files_perms | bool
+    - file.file_name not in critical_files_perms.keys() or
+      (critical_files_perms[file.file_name]) | bool
 
 - name: 6.1.10 Ensure no world writable files exist
   ansible.builtin.import_tasks:

@@ -10,7 +10,15 @@ audit_system_file_perms: "{{ section_6_1_1 }}"
 pkg_verification_file: "/root/pkg_verify"
 
 # 6.1.2-9
-critical_files_perms: "{{ section_6_1_2___9 }}"
+critical_files_perms:
+  "/etc/passwd": "{{ section_6_1_2 }}"
+  "/etc/shadow": "{{ section_6_1_3 }}"
+  "/etc/group": "{{ section_6_1_4 }}"
+  "/etc/gshadow": "{{ section_6_1_5 }}"
+  "/etc/passwd-": "{{ section_6_1_6 }}"
+  "/etc/shadow-": "{{ section_6_1_7 }}"
+  "/etc/group-": "{{ section_6_1_8 }}"
+  "/etc/gshadow-": "{{ section_6_1_9 }}"
 
 # 6.1.10
 no_world_writable_files: "{{ section_6_1_10 }}"
