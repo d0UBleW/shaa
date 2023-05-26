@@ -1,343 +1,342 @@
----
 sections:
-  "1":
+  '1':
     title: Initial Setup
     enabled: true
     subsections:
-      - "1.1"
-      - "1.2"
-      - "1.3"
-      - "1.4"
-      - "1.5"
-      - "1.6"
-      - "1.7"
-      - "1.8"
+    - '1.1'
+    - '1.2'
+    - '1.3'
+    - '1.4'
+    - '1.5'
+    - '1.6'
+    - '1.7'
+    - '1.8'
 
-  "1.1":
+  '1.1':
     title: Filesystem Configuration
     enabled: true
     subsections:
-      - 1.1.1
-      - 1.1.2
-      - 1.1.3
-      - 1.1.4
-      - 1.1.5
-      - 1.1.6
-      - 1.1.7
-      - 1.1.8
-      - 1.1.9
-      - 1.1.10
-      - 1.1.11
-      - 1.1.12
-      - 1.1.13
-      - 1.1.14
-      - 1.1.15
-      - 1.1.16
-      - 1.1.17
-      - 1.1.18
-      - 1.1.19
-      - 1.1.20
-      - 1.1.21
-      - 1.1.22
-      - 1.1.23
+    - 1.1.1
+    - 1.1.2
+    - 1.1.3
+    - 1.1.4
+    - 1.1.5
+    - 1.1.6
+    - 1.1.7
+    - 1.1.8
+    - 1.1.9
+    - 1.1.10
+    - 1.1.11
+    - 1.1.12
+    - 1.1.13
+    - 1.1.14
+    - 1.1.15
+    - 1.1.16
+    - 1.1.17
+    - 1.1.18
+    - 1.1.19
+    - 1.1.20
+    - 1.1.21
+    - 1.1.22
+    - 1.1.23
 
   1.1.1:
     title: Disable unused filesystems
     enabled: true
     subsections:
-      - "1.1.1.1"
-      - "1.1.1.2"
-      - "1.1.1.3"
-      - "1.1.1.4"
-      - "1.1.1.5"
-      - "1.1.1.6"
-      - "1.1.1.7"
-      - "1.1.1.8"
+    - 1.1.1.1
+    - 1.1.1.2
+    - 1.1.1.3
+    - 1.1.1.4
+    - 1.1.1.5
+    - 1.1.1.6
+    - 1.1.1.7
+    - 1.1.1.8
 
   1.1.1.1:
     title: Ensure mounting of cramfs filessytems is disabled
     enabled: true
     profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
+    - Level 1 - Server
+    - Level 1 - Workstation
     vars:
 
   1.1.1.2:
     title: Ensure mounting of freevxfs filesystems is disabled
     enabled: true
     profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
+    - Level 1 - Server
+    - Level 1 - Workstation
     vars:
 
   1.1.1.3:
     title: Ensure mounting of jffs2 filesystems is disabled
     enabled: true
     profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
+    - Level 1 - Server
+    - Level 1 - Workstation
     vars:
 
   1.1.1.4:
     title: Ensure mounting of hfs filesystems is disabled
     enabled: true
     profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
+    - Level 1 - Server
+    - Level 1 - Workstation
     vars:
 
   1.1.1.5:
     title: Ensure mounting of hfsplus filesystems is disabled
     enabled: true
     profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
+    - Level 1 - Server
+    - Level 1 - Workstation
     vars:
 
   1.1.1.6:
     title: Ensure mounting of squashfs filesystems is disabled
     enabled: true
     profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
+    - Level 1 - Server
+    - Level 1 - Workstation
     vars:
 
   1.1.1.7:
     title: Ensure mounting of udf filesystems is disabled
     enabled: true
     profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
+    - Level 1 - Server
+    - Level 1 - Workstation
     vars:
 
   1.1.1.8:
     title: Ensure mounting of FAT filesystems is limited
     enabled: true
     profile:
-      - Level 2 - Server
-      - Level 2 - Workstation
+    - Level 2 - Server
+    - Level 2 - Workstation
     vars:
 
   1.1.2:
     title: Ensure /tmp is configured
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.3:
     title: Ensure nodev option set on /tmp partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.4:
     title: Ensure nosuid option set on /tmp partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.5:
     title: Ensure noexec option set on /tmp partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.6:
     title: Ensure separate partition exists for /var
     enabled: true
     profile:
-      - Level 2 Server
-      - Level 2 Workstation
+    - Level 2 Server
+    - Level 2 Workstation
     vars:
 
   1.1.7:
     title: Ensure separate partition exists for /var/tmp
     enabled: true
     profile:
-      - Level 2 Server
-      - Level 2 Workstation
+    - Level 2 Server
+    - Level 2 Workstation
     vars:
 
   1.1.8:
     title: Ensure nodev option set on /var/tmp partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.9:
     title: Ensure nosuid option set on /var/tmp partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.10:
     title: Ensure noexec option set on /var/tmp partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.11:
     title: Ensure noexec option set on /var/tmp partition
     enabled: true
     profile:
-      - Level 2 Server
-      - Level 2 Workstation
+    - Level 2 Server
+    - Level 2 Workstation
     vars:
 
   1.1.12:
     title: Ensure noexec option set on /var/tmp partition
     enabled: true
     profile:
-      - Level 2 Server
-      - Level 2 Workstation
+    - Level 2 Server
+    - Level 2 Workstation
     vars:
 
   1.1.13:
     title: Ensure separate parition exists for /home
     enabled: true
     profile:
-      - Level 2 Server
-      - Level 2 Workstation
+    - Level 2 Server
+    - Level 2 Workstation
     vars:
 
   1.1.14:
     title: Ensure nodev option set on /home partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.15:
     title: Ensure nodev option set on /dev/shm partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.16:
     title: Ensure nosuid option set on /dev/shm partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.17:
     title: Ensure noexec option set on /dev/shm partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.18:
     title: Ensure nodev option set on removable media partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.19:
     title: Ensure nosuid option set on removable media partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.20:
     title: Ensure noexec option set on removable media partition
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.21:
     title: Ensure sticky bit is set on all world-writable directories
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.1.22:
     title: Disable automounting
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 2 Workstation
+    - Level 1 Server
+    - Level 2 Workstation
     vars:
 
   1.1.23:
     title: Disable USB Storage
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 2 Workstation
+    - Level 1 Server
+    - Level 2 Workstation
     vars:
 
-  "1.2":
+  '1.2':
     title: Configure Software Update
     enabled: true
     subsections:
-      - 1.2.1
-      - 1.2.2
+    - 1.2.1
+    - 1.2.2
 
   1.2.1:
     title: Ensure package manager repositories are configured
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.2.2:
     title: Ensure GPG keys are configured
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
-  "1.3":
+  '1.3':
     title: Filesystem Integrity Checking
     enabled: true
     subsections:
-      - 1.3.1
-      - 1.3.2
+    - 1.3.1
+    - 1.3.2
 
   1.3.1:
     title: Ensure AIDE is installed
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
 
   1.3.2:
     title: Ensure filesystem integrity is regularly checked
     enabled: true
     profile:
-      - Level 1 Server
-      - Level 1 Workstation
+    - Level 1 Server
+    - Level 1 Workstation
     vars:
       aide_cron_user:
         value:
@@ -345,86 +344,86 @@ sections:
         description: user who will run the cron job
       aide_cron_weekday:
         value:
-        default: "*"
+        default: '*'
         description: |-
           cron setting for weekday frequency
           Valid value: 0-7 (0 and 7 is Sunday), * for every weekday
       aide_cron_month:
         value:
-        default: "*"
+        default: '*'
         description: |
           cron setting for month frequency
           Valid value: 1-12, * for every month
       aide_cron_day:
         value:
-        default: "*"
+        default: '*'
         description: |
           cron setting for day frequency
           Valid value: number of days in a month, * for every day
       aide_cron_hour:
         value:
-        default: "1"
+        default: '1'
         description: |
           cron setting for hour frequency
           Valid value: 0-23, * for every hour
       aide_cron_minute:
         value:
-        default: "*"
+        default: '*'
         description: |
           cron setting for minute frequency
           Valid value: 0-59, * for every minute
 
-  "1.4":
+  '1.4':
     title: Secure Boot Settings
     enabled: true
     subsections:
-      - 1.4.1
-      - 1.4.2
-      - 1.4.3
-      - 1.4.4
+    - 1.4.1
+    - 1.4.2
+    - 1.4.3
+    - 1.4.4
 
-  "2":
+  '2':
     title: Services
     enabled: true
     subsections:
-      - "2.1"
-      - "2.2"
-      - "2.3"
+    - '2.1'
+    - '2.2'
+    - '2.3'
 
-  "3":
+  '3':
     title: Network Configuration
     enabled: true
     subsections:
-      - "3.1"
-      - "3.2"
-      - "3.3"
-      - "3.4"
-      - "3.5"
-      - "3.6"
-      - "3.7"
+    - '3.1'
+    - '3.2'
+    - '3.3'
+    - '3.4'
+    - '3.5'
+    - '3.6'
+    - '3.7'
 
-  "4":
+  '4':
     title: Logging and Auditing
     enabled: true
     subsections:
-      - "4.1"
-      - "4.2"
-      - "4.3"
+    - '4.1'
+    - '4.2'
+    - '4.3'
 
-  "5":
+  '5':
     title: Access, Authentication and Authorization
     enabled: true
     subsections:
-      - "5.1"
-      - "5.2"
-      - "5.3"
-      - "5.4"
-      - "5.5"
-      - "5.6"
+    - '5.1'
+    - '5.2'
+    - '5.3'
+    - '5.4'
+    - '5.5'
+    - '5.6'
 
-  "6":
+  '6':
     title: System Maintenance
     enabled: true
     subsections:
-      - "6.1"
-      - "6.2"
+    - '6.1'
+    - '6.2'

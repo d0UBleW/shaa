@@ -11,7 +11,7 @@ from .vault import vault
 
 yaml = YAML(typ="rt")
 
-INVENTORY_PATH = Path("../ansible/inventory/")
+INVENTORY_PATH = Path("data/custom/inventory/")
 
 
 @dataclass(order=True)
@@ -219,7 +219,10 @@ class Inventory:
 
         return nodes
 
-    def save(self, file_name: Optional[Text] = None) -> bool:
+    def save(
+            self,
+            file_name: Optional[Text] = None,
+            inv_path: Path = INVENTORY_PATH) -> bool:
         """
         Dump inventory data into a YAML file which is compatible with Ansible
         inventory format
@@ -230,9 +233,9 @@ class Inventory:
         if "/" in file_name:
             return False
 
-        file_path = INVENTORY_PATH.joinpath(f"{file_name}.yml").resolve()
+        file_path = inv_path.joinpath(f"{file_name}.yml").resolve()
         try:
-            file_path.relative_to(INVENTORY_PATH.resolve())
+            file_path.relative_to(inv_path.resolve())
         except ValueError:
             return False
 
@@ -240,11 +243,16 @@ class Inventory:
             "all": None
         }
 
-        if len(self.groups["ungrouped"].nodes) > 0:
+        default_group = self.groups["ungrouped"]
+
+        if len(default_group.nodes) > 0:
             data["all"] = {"hosts": {}}
 
-        for node in self.groups["ungrouped"].nodes.values():
+        for node in default_group.nodes.values():
             data["all"]["hosts"][node.name] = node.raw()
+
+        if len(default_group.group_vars) > 0:
+            data["all"]["vars"] = default_group.group_vars
 
         if len(self.groups) > 1:
             data["all"]["children"] = {}
