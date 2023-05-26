@@ -43,12 +43,40 @@ class cis_section_cmd(CommandSet):
     def cis_section_enable(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        self._cmd.poutput(f"enable {ns.section_id}")
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+        if cis is None:
+            return
+
+        if ns.section_id != "all" and not cis.is_valid_section_id(
+                ns.section_id):
+            self._cmd.poutput("[!] Invalid section id")
+            return
+
+        for section_id in cis.sections.keys():
+            if section_id.startswith(ns.section_id) or ns.section_id == "all":
+                cis.sections[section_id]["enabled"] = True
+                if ns.verbose:
+                    self._cmd.poutput(f"[+] {section_id} enabled successfully")
+        self._cmd.poutput("[+] Enabled successfully")
 
     def cis_section_disable(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        self._cmd.poutput(f"disable {ns.section_id}")
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+        if cis is None:
+            return
+
+        if not cis.is_valid_section_id(ns.section_id):
+            self._cmd.poutput("[!] Invalid section id")
+            return
+
+        for section_id in cis.sections.keys():
+            if section_id.startswith(ns.section_id):
+                cis.sections[section_id]["enabled"] = False
+                if ns.verbose:
+                    self._cmd.poutput(
+                        f"[+] {section_id} disabled successfully")
+        self._cmd.poutput("[+] Disabled successfully")
 
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -122,17 +150,31 @@ class cis_section_cmd(CommandSet):
     list_parser.set_defaults(func=cis_section_list)
 
     enable_parser = section_subparser.add_parser(
-        "enable", help="enable section id")
-    enable_parser.add_argument("section_id",
-                               choices_provider=_choices_cis_section,
-                               help="section id to be enabled")
+        "enable",
+        help="""enable section id (behave recursively if specified section \
+has subsections)""")
+    enable_parser.add_argument("-v",
+                               "--verbose",
+                               action="store_true",
+                               help="verbose output")
+    enable_parser.add_argument(
+        "section_id",
+        choices_provider=_choices_cis_section,
+        help="section id to be enabled (use `all` for everything)")
     enable_parser.set_defaults(func=cis_section_enable)
 
     disable_parser = section_subparser.add_parser(
-        "disable", help="disable section id")
-    disable_parser.add_argument("section_id",
-                                choices_provider=_choices_cis_section,
-                                help="section id to be disabled")
+        "disable",
+        help="""disable section id (behave recursively if specified section \
+has subsections)""")
+    disable_parser.add_argument("-v",
+                                "--verbose",
+                                action="store_true",
+                                help="verbose output")
+    disable_parser.add_argument(
+        "section_id",
+        choices_provider=_choices_cis_section,
+        help="section id to be disabled (use `all` for everything)")
     disable_parser.set_defaults(func=cis_section_disable)
 
     info_parser = section_subparser.add_parser(
