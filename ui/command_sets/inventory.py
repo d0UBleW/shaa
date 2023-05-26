@@ -62,9 +62,8 @@ class inventory_subcmd(CommandSet):
             warning_text += "already existed"
             self._cmd.poutput(warning_text)
             return
-        if self._cmd._inventory is None:  # type: ignore[attr-defined]
-            self._cmd._inventory = inv  # type: ignore[attr-defined]
-            return self.inventory_load(None, True)  # type: ignore
+        self._cmd._inventory = inv  # type: ignore[attr-defined]
+        return self.inventory_load(None, inv)  # type: ignore[attr-defined]
 
     @as_subcommand_to('inventory', 'delete', delete_parser,
                       aliases=["del", "rm"],
@@ -106,21 +105,17 @@ class inventory_subcmd(CommandSet):
 
     @as_subcommand_to('inventory', 'load', load_parser, help='load inventory')
     def inventory_load(self: CommandSet, ns: argparse.Namespace,
-                       empty: bool = False):
+                       inv: Optional[Inventory] = None):
         if self._cmd is None:
             return
         self._cmd.check_if_inv_changed()  # type: ignore[attr-defined]
-        if not empty:
+        if inv is None:
             inv = Inventory.load(ns.name)
             self._cmd._inventory = inv  # type: ignore[attr-defined]
 
         if inv is None:
             return
 
-        num_of_group = len(inv.groups)
-        num_of_nodes = len(inv.groups["ungrouped"].nodes)
-        if num_of_group == 1 and num_of_nodes == 0:
-            return
         try:
             self._cmd.register_command_set(
                 self._cmd._inventory_node_cmd  # type: ignore[attr-defined]
