@@ -307,7 +307,7 @@ sections:
     enabled: *default
     profile:
       - Level 1 Server
-      - Level 1 - Workstation
+      - Level 1 Workstation
     vars:
 
   1.2.2:
@@ -315,7 +315,7 @@ sections:
     enabled: *default
     profile:
       - Level 1 Server
-      - Level 1 - Workstation
+      - Level 1 Workstation
     vars:
 
   "1.3":
@@ -340,35 +340,35 @@ sections:
       - Level 1 Server
       - Level 1 Workstation
     vars:
-      - key: aide_cron_user
+      aide_cron_user:
         value:
         default: root
         description: user who will run the cron job
-      - key: aide_cron_weekday
+      aide_cron_weekday:
         value:
         default: "*"
         description: |-
           cron setting for weekday frequency
           Valid value: 0-7 (0 and 7 is Sunday), * for every weekday
-      - key: aide_cron_month
+      aide_cron_month:
         value:
         default: "*"
         description: |
           cron setting for month frequency
           Valid value: 1-12, * for every month
-      - key: aide_cron_day
+      aide_cron_day:
         value:
         default: "*"
         description: |
           cron setting for day frequency
           Valid value: number of days in a month, * for every day
-      - key: aide_cron_hour
+      aide_cron_hour:
         value:
         default: "1"
         description: |
           cron setting for hour frequency
           Valid value: 0-23, * for every hour
-      - key: aide_cron_minute
+      aide_cron_minute:
         value:
         default: "*"
         description: |

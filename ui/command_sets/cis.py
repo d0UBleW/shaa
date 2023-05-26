@@ -84,12 +84,12 @@ class cis_section_cmd(CommandSet):
             ]
             vars_st = SimpleTable(vars_columns)
             vars_data_list = []
-            for var in section["vars"]:
+            for var_key, var_value in section["vars"].items():
                 vars_data_list.append([
-                    var["key"],
-                    var["value"],
-                    var["default"],
-                    var["description"],
+                    var_key,
+                    var_value["value"],
+                    var_value["default"],
+                    var_value["description"],
                 ])
             vars_tbl = vars_st.generate_table(vars_data_list)
             self._cmd.poutput(f"Settable variables:\n\n{vars_tbl}\n")
