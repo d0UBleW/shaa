@@ -66,7 +66,8 @@ class cis_section_cmd(CommandSet):
         if cis is None:
             return
 
-        if not cis.is_valid_section_id(ns.section_id):
+        if ns.section_id != "all" and not cis.is_valid_section_id(
+                ns.section_id):
             self._cmd.poutput("[!] Invalid section id")
             return
 
