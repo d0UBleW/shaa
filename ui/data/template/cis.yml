@@ -1437,6 +1437,75 @@ sections:
         description: |
           Persist ip6tables rules
 
+  3.5.2:
+    title: Configure IPv4 ip6tables
+    enabled: true
+    subsections:
+      - 3.5.2.1
+      - 3.5.2.2
+      - 3.5.2.3
+      - 3.5.2.4
+    vars:
+      flush_ip4tables:
+        value:
+        default: true
+        description: |
+          Clean up ip4tables rules before configuring subsequent stuffs
+
+  3.5.2.2:
+    title: Ensure IPv4 loopback traffic is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.5.2.3:
+    title: Ensure IPv4 outbound and established connections are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.5.2.4:
+    title: Ensure IPv4 firewall rules exists for all open ports
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      iptables_rules:
+        value:
+        default:
+          - port: 22
+            protocol: tcp
+          - port: 80
+            protocol: tcp
+        description: |
+          Allow traffic to specified ports and protocols
+      save_iptables_rules:
+        value:
+        default: true
+        description: |
+          Persist iptables rules
+
+  "3.6":
+    title: Ensure wireless interfaces are disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 2 Workstation
+    vars:
+
+  "3.7":
+    title: Disable IPv6
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
   "4":
     title: Logging and Auditing
     enabled: true
@@ -1444,6 +1513,222 @@ sections:
       - "4.1"
       - "4.2"
       - "4.3"
+
+  "4.1":
+    title: Configure System Auditing (auditd)
+    enabled: true
+    subsections:
+      - 4.1.1
+      - 4.1.2
+      - 4.1.3
+      - 4.1.4
+      - 4.1.5
+      - 4.1.6
+      - 4.1.7
+      - 4.1.8
+      - 4.1.9
+      - 4.1.10
+      - 4.1.11
+      - 4.1.12
+      - 4.1.13
+      - 4.1.14
+      - 4.1.15
+      - 4.1.16
+      - 4.1.17
+      - 4.1.18
+      - 4.1.19
+
+  4.1.1:
+    title: Configure System Auditing (auditd)
+    enabled: true
+    subsections:
+      - 4.1.1.1
+      - 4.1.1.2
+      - 4.1.1.3
+
+  4.1.1.1:
+    title: Ensure audit log storage size is configured
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+      max_log_file:
+        value:
+        default: 10
+        description: |
+          Maximum size measured in MB (Megabytes)
+
+  4.1.1.2:
+    title: Ensure system is disabled when audit logs are full
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+      space_left_action:
+        value:
+        default: syslog
+        description: |
+          Tells the system what action to take when the system has detected
+          that it is starting to get low on disk space.
+          Possible values: ignore, syslog, rotate, email, exec, suspend,
+          single, halt
+
+  4.1.1.3:
+    title: Ensure audit logs are not automatically deleted
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.2:
+    title: Ensure auditd is installed
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.3:
+    title: Ensure auditd service is enabled
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.4:
+    title: Enable auditing for processes that start prior to auditd is
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.5:
+    title: Ensure events that modify date and time information are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.6:
+    title: Ensure events that modify user/group information are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.7:
+    title: Ensure events that modify system's network environment are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.8:
+    title: >
+      Ensure events that modify system's Mandatory Access Controls are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.9:
+    title: Ensure login and logout events are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.10:
+    title: Ensure session initiation information is collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.11:
+    title: >
+      Ensure discretionary access control permission configuration events are
+      collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.12:
+    title: Ensure unsuccessful unauthorized file access attempts are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.13:
+    title: Ensure use of privileged commands is collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.14:
+    title: Ensure successful file system mounts are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.15:
+    title: Ensure file deletion events by users are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.16:
+    title: Ensure chanes to system administration scope (sudoers) is collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.17:
+    title: Ensure system adminitration actions (sudolog) are collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.18:
+    title: Ensure kernel module loading and unloading is collected
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  4.1.19:
+    title: Ensure the audit configuration is immutable
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
 
   "5":
     title: Access, Authentication and Authorization
