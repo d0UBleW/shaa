@@ -161,3 +161,9 @@
   when:
     - svc.name not in disable_special_purpose_services.keys() or
       (disable_special_purpose_services[svc.name] | bool)
+
+- name: 2.2.15 Ensure mail transfer agent is configured for local-only mode
+  tags:
+    - 2.2.15
+  ansible.builtin.import_tasks:
+    file: ./2.2.15.yml

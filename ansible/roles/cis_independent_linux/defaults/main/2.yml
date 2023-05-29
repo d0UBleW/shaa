@@ -94,6 +94,7 @@ disable_special_purpose_services:
   rsyncd: "{{ section_2_2_16 }}"
   ypserv: "{{ section_2_2_17_ypserv }}"
   nis: "{{ section_2_2_17_nis }}"
+  nis-domainname: "{{ section_2_2_17_nis_domainname }}"
 
 # 2.2.15
 local_only_mta: "{{ section_2_2_15 }}"

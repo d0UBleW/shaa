@@ -1,5 +1,8 @@
 ---
 - name: 2.2.15
+  tags:
+    - level_1_server
+    - level_1_workstation
   when:
     # section_2_2_15
     - local_only_mta | bool

@@ -3,6 +3,7 @@
   when:
     # section_2_2_2
     - uninstall_x_window_system | bool
+    - level_1_server
   block:
     - name: |
         ---

@@ -10,7 +10,7 @@
   block:
     - name: |
         ---
-        3.1.2 Ensure IP forwarding is disabled
+        3.1.2 Ensure packet redirect sending is disabled
         > Edit /etc/sysctl.d/99-packet-redirect-sending.conf
         ---
       vars:
