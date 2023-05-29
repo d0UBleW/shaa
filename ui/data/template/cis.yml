@@ -383,6 +383,266 @@ sections:
       - 1.4.3
       - 1.4.4
 
+  "1.5":
+    title: Additional Process Hardening
+    enabled: true
+    subsections:
+      - 1.5.1
+      - 1.5.2
+      - 1.5.3
+      - 1.5.4
+
+  1.5.1:
+    title: Ensure core dumps are restricted
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.5.2:
+    title: Ensure XD/NX support is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.5.3:
+    title: Ensure address space layout randomization (ASLR) is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.5.4:
+    title: Ensure prelink is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "1.6":
+    title: Mandatory Access Control
+    enabled: true
+    subsections:
+      - 1.6.1
+      - 1.6.2
+      - 1.6.3
+    vars:
+      debian_mac:
+        value:
+        default: apparmor
+        description: |
+          Mandatory Access Control (MAC) for Debian-based distribution family
+      suse_mac:
+        value:
+        default: selinux
+        description: |
+          Mandatory Access Control (MAC) for Suse-based distribution family
+      redhat_mac:
+        value:
+        default: selinux
+        description: |
+          Mandatory Access Control (MAC) for RedHat-based distribution family
+
+  1.6.1:
+    title: Ensure Mandatory Access Control Software is installed
+    enabled: true
+    subsections:
+      - 1.6.1.1
+    vars:
+
+  1.6.1.1:
+    title: Ensure mounting of cramfs filesystems is disabled
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  1.6.2:
+    title: Configure SELinux
+    enabled: true
+    subsections:
+      - 1.6.2.1
+      - 1.6.2.2
+      - 1.6.2.3
+      - 1.6.2.4
+      - 1.6.2.5
+      - 1.6.2.6
+
+  1.6.2.1:
+    title: Ensure SELinux is not disabled in bootloader configuration
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  1.6.2.2:
+    title: Ensure the SELinux state is enforcing
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  1.6.2.3:
+    title: Ensure SELinux policy is configured
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+      selinuxtype:
+        value:
+        default: "targeted"
+        description: |
+          SELinux type, possible values: targeted, strict, mls
+
+  1.6.2.4:
+    title: Ensure SETroubleshoot is not installed
+    enabled: true
+    profile:
+      - Level 2 Server
+    vars:
+
+  1.6.2.5:
+    title: Ensure the MCS Translation Service (mcstrans) is not installed
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  1.6.2.6:
+    title: Ensure no unconfined daemon exist
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  1.6.3:
+    title: Configure AppArmor
+    enabled: true
+    subsections:
+      - 1.6.3.1
+      - 1.6.3.2
+
+  1.6.3.1:
+    title: Ensure AppArmor is not disabled in bootloader configuration
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  1.6.3.2:
+    title: Ensure AppArmor is not disabled in bootloader configuration
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  "1.7":
+    title: Warning Banners
+    enabled: true
+    subsections:
+      - 1.7.1
+      - 1.7.2
+
+  1.7.1:
+    title: Command Line Warning Banners
+    enabled: true
+    subsections:
+      - 1.7.1.1
+      - 1.7.1.2
+      - 1.7.1.3
+      - 1.7.1.4
+      - 1.7.1.5
+      - 1.7.1.6
+
+  1.7.1.1:
+    title: Ensure message of the day is configured properly
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      etc_motd:
+        value:
+        default: "Hello"
+        description: |
+          Content of /etc/motd
+
+  1.7.1.2:
+    title: Ensure local login warning banner is configured properly
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.7.1.3:
+    title: Ensure remote login warning banner is configured properly
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.7.1.4:
+    title: Ensure permissions on /etc/motd are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.7.1.5:
+    title: Ensure permissions on /etc/issue are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.7.1.6:
+    title: Ensure permissions on /etc/issue.net are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.7.2:
+    title: Ensure GDM login banner is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      gdm_banner_message:
+        value:
+        default: >-
+          Authorized uses only. All activity may be monitored and reported
+        description: |
+          Content of gdm banner
+
+  "1.8":
+    title: >-
+      Ensure update, patches, and additional security software are installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
   "2":
     title: Services
     enabled: true
@@ -390,6 +650,479 @@ sections:
       - "2.1"
       - "2.2"
       - "2.3"
+
+  "2.1":
+    title: inetd Services
+    enabled: true
+    subsections:
+      - 2.1.1
+      - 2.1.2
+      - 2.1.3
+      - 2.1.4
+      - 2.1.5
+      - 2.1.6
+      - 2.1.7
+      - 2.1.8
+      - 2.1.9
+      - 2.1.10
+
+  2.1.1:
+    title: Ensure chargen services are not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.2:
+    title: Ensure daytime services are not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.3:
+    title: Ensure discard services are not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.4:
+    title: Ensure echo services are not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.5:
+    title: Ensure time services are not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.6:
+    title: Ensure rsh server is not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.7:
+    title: Ensure talk server is not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.8:
+    title: Ensure telnet server is not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.9:
+    title: Ensure tftp server is not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.1.10:
+    title: Ensure xinetd is not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "2.2":
+    title: Special Purpose Services
+    enabled: true
+    subsections:
+      - 2.2.1
+      - 2.2.2
+      - 2.2.3
+      - 2.2.4
+      - 2.2.5
+      - 2.2.6
+      - 2.2.7
+      - 2.2.8
+      - 2.2.9
+      - 2.2.10
+      - 2.2.11
+      - 2.2.12
+      - 2.2.13
+      - 2.2.14
+      - 2.2.15
+      - 2.2.16
+      - 2.2.17
+
+  2.2.1:
+    title: Time Synchronization
+    enabled: true
+    subsections:
+      - 2.2.1.1
+      - 2.2.1.2
+      - 2.2.1.3
+      - 2.2.1.4
+
+  2.2.1.1:
+    title: Ensure time synchronization is in use
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+      time_synchronization:
+        value:
+        default: systemd-timesyncd
+        description: |
+          Time synchronization service name,
+          possible values: ntp, chrony, systemd-timesyncd
+
+  2.2.1.2:
+    title: Ensure ntp is configured
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+      time_sync_remote_server:
+        value:
+        default: "time1.google.com"
+        description: |
+          NTP remote server to sync with
+      ntp_options:
+        value:
+        default:
+          - kod
+          - nomodify
+          - notrap
+          - nopeer
+          - noquery
+        description: |
+          NTP remote server to sync with
+
+  2.2.1.3:
+    title: Ensure chrony is configured
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.1.4:
+    title: Ensure systemd-timesyncd is configured
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+      systemd_timesyncd.main_ntp:
+        value:
+        default:
+          - time1.google.com
+          - time2.google.com
+        description: |
+          Main NTP remote servers to sync with
+      systemd_timesyncd.fallback_ntp:
+        value:
+        default:
+          - time3.google.com
+          - time4.google.com
+        description: |
+          Fallback NTP remote servers to sync with
+      systemd_timesyncd.root_distance_max:
+        value:
+        default: 1
+        description: |
+          Maximum acceptable root distance, i.e. the maximum estimated time
+          (in seconds) required for a packet to travel to the server we are
+          connected to from the server with the reference clock.
+
+  2.2.2:
+    title: Ensure X Window System is not installed
+    enabled: true
+    profile:
+      - Level 1 - Server
+    vars:
+
+  2.2.3:
+    title: Ensure Avahi Server is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.4:
+    title: Ensure CUPS is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.5:
+    title: Ensure DHCP Server is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.6:
+    title: Ensure LDAP Server is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.7_nfs:
+    title: Ensure NFS is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.7_rpcbind:
+    title: Ensure RPC is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.8:
+    title: Ensure DNS Server is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.9:
+    title: Ensure FTP Server is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.10_httpd:
+    title: Ensure HTTP Server (httpd) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.10_nginx:
+    title: Ensure HTTP Server (nginx) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.10_apache:
+    title: Ensure HTTP Server (apache) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.10_apache2:
+    title: Ensure HTTP Server (apache2) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.10_lighttpd:
+    title: Ensure HTTP Server (lighttpd) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.11_dovecot:
+    title: Ensure IMAP and POP3 Server (dovecot) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.11_courier_imap:
+    title: Ensure IMAP and POP3 Server (courier-imap) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.11_cyrus_imap:
+    title: Ensure IMAP and POP3 Server (cyrus-imap) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.12_smb:
+    title: Ensure Samba (smb) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.12_samba:
+    title: Ensure Samba (samba) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.13:
+    title: Ensure HTTP Proxy Server is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.14:
+    title: Ensure SNMP Server is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.15:
+    title: Ensure mail transfer agent is configured for local-only mode
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.16:
+    title: Ensure rsync service is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.17_ypserv:
+    title: Ensure NIS Server (ypserv) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.17_nis:
+    title: Ensure NIS Server (nis) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  2.2.17_nis_domainname:
+    title: Ensure NIS Server (nis-domainname) is not enabled
+    enabled: true
+    profile:
+      - Level 1 - Server
+      - Level 1 - Workstation
+    vars:
+
+  "2.3":
+    title: Service Clients
+    enabled: true
+    subsections:
+      - 2.3.1
+      - 2.3.2
+      - 2.3.3
+      - 2.3.4
+      - 2.3.5
+
+  2.3.1:
+    title: Ensure NIS client is not installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.3.2:
+    title: Ensure rsh client is not installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.3.3:
+    title: Ensure talk client is not installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.3.4:
+    title: Ensure telnet client is not installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.3.5_openldap_clients:
+    title: Ensure LDAP client (openldap-clients) is not installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.3.5_openldap2_clients:
+    title: Ensure LDAP client (openldap2-clients) is not installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  2.3.5_ldap_utils:
+    title: Ensure LDAP client (ldap-utils) is not installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
 
   "3":
     title: Network Configuration
@@ -402,6 +1135,307 @@ sections:
       - "3.5"
       - "3.6"
       - "3.7"
+
+  "3.1":
+    title: Network Parameters (Host Only)
+    enabled: true
+    subsections:
+      - 3.1.1
+      - 3.1.2
+
+  3.1.1:
+    title: Ensure IP forwarding is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.1.2:
+    title: Ensure packet redirect sending is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "3.2":
+    title: Network Parameters (Host and Router)
+    enabled: true
+    subsections:
+      - 3.2.1
+      - 3.2.2
+      - 3.2.3
+      - 3.2.4
+      - 3.2.5
+      - 3.2.6
+      - 3.2.7
+      - 3.2.8
+      - 3.2.9
+
+  3.2.1:
+    title: Ensure source routed packets are not accepted
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.2:
+    title: Ensure ICMP redirects are not accepted
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.3:
+    title: Ensure secure ICMP redirects are not accepted
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.4:
+    title: Ensure suspicious packets are logged
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.5:
+    title: Ensure broadcast ICMP requests are ignored
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.6:
+    title: Ensure bogus ICMP responses are ignored
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.7:
+    title: Ensure Reverse Path Filtering is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.8:
+    title: Ensure TCP SYN Cookies is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.2.9:
+    title: Ensure IPv6 router advertisements are not accepted
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "3.3":
+    title: TCP Wrappers
+    enabled: true
+    subsections:
+      - 3.3.1
+      - 3.3.2
+      - 3.3.3
+      - 3.3.4
+
+  3.3.1:
+    title: Ensure TCP Wrappers is installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  # TODO:
+  3.3.2:
+    title: Ensure /etc/hosts.allow is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      hosts_allow:
+        value:
+        default:
+          "ALL EXCEPT in.fingerd":
+            - 192.168.0.0/255.255.255.0
+            - 192.168.1.0/24
+            - 192.168.2.*
+            - .example.com
+          "sshd":
+            - "10."
+            - 192.168.0.0/16
+            - 172.16.0.0/12
+        description: |
+          TCP wrappers rule for allowing hosts
+      hosts_allow_cleanup:
+        value:
+        default: true
+        description: |
+          Clean up unspecified rules
+
+  3.3.3:
+    title: Ensure /etc/hosts.deny is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      hosts_deny:
+        value:
+        default:
+          ALL:
+            - ALL
+        description: |
+          TCP wrappers rule for denying hosts
+      hosts_deny_cleanup:
+        value:
+        default: true
+        description: |
+          Clean up unspecified rules
+
+  3.3.4:
+    title: Ensure permissions on /etc/hosts.allow are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.3.5:
+    title: Ensure permissions on /etc/hosts.deny are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "3.4":
+    title: Uncommon Network Protocols
+    enabled: true
+    subsections:
+      - 3.4.1
+      - 3.4.2
+      - 3.4.3
+      - 3.4.4
+
+  3.4.1:
+    title: Ensure dccp module is disabled
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  3.4.2:
+    title: Ensure sctp module is disabled
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  3.4.3:
+    title: Ensure rds module is disabled
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  3.4.4:
+    title: Ensure tipc module is disabled
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+
+  "3.5":
+    title: Firewall Configuration
+    enabled: true
+    subsections:
+      - 3.5.1
+      - 3.5.2
+      - 3.5.3
+      - 3.5.4
+
+  3.5.1:
+    title: Configure IPv6 ip6tables
+    enabled: true
+    subsections:
+      - 3.5.1.1
+      - 3.5.1.2
+      - 3.5.1.3
+      - 3.5.1.4
+    vars:
+      flush_ip6tables:
+        value:
+        default: true
+        description: |
+          Clean up ip6tables rules before configuring subsequent stuffs
+
+  3.5.1.1:
+    title: Ensure IPv6 default deny firewall policy
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.5.1.2:
+    title: Ensure IPv6 loopback traffic is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.5.1.3:
+    title: Ensure IPv6 outbound and established connections are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  3.5.1.4:
+    title: Ensure IPv6 firewall rules exists for all open ports
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      ip6tables_rules:
+        value:
+        default:
+          - port: 22
+            protocol: tcp
+          - port: 80
+            protocol: tcp
+        description: |
+          Allow traffic to specified ports and protocols
+      save_ip6tables_rules:
+        value:
+        default: true
+        description: |
+          Persist ip6tables rules
 
   "4":
     title: Logging and Auditing
