@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from ruamel.yaml import YAML
-from typing import Optional, Text, Dict, List
+from typing import Optional, Text, Dict, List, Tuple
 from pathlib import Path
 from utils.preset import list_preset
 
@@ -36,8 +36,22 @@ class CIS:
     def list_section(self, section_id: Optional[Text] = None) -> List[Text]:
         return list(self.sections.keys())
 
+    def list_section_and_details(self) -> List[Tuple[Text, Text]]:
+        data: List[Tuple[Text, Text]] = []
+        for section_id, section in self.sections.items():
+            data.append((section_id, section["title"]))
+        return data
+
     def list_section_unit(self,
                           section_id: Optional[Text] = None) -> List[Text]:
+        section_units = []
+        for s_id in self.sections.keys():
+            if self.has_settable_vars(s_id):
+                section_units.append(s_id)
+        return section_units
+
+    def list_section_unit_and_details(
+            self, section_id: Optional[Text] = None) -> List[Text]:
         section_units = []
         for s_id in self.sections.keys():
             if self.has_settable_vars(s_id):

@@ -7,6 +7,7 @@ from cmd2 import (
     with_default_category,
     as_subcommand_to,
     with_argparser,
+    CompletionItem,
 )
 from cmd2.table_creator import SimpleTable, Column
 from utils.cis import CIS
@@ -30,10 +31,11 @@ class cis_cmd(CommandSet):
 
 @with_default_category("cis")
 class cis_section_cmd(CommandSet):
-    def _choices_cis_section(self) -> List[Text]:
+    def _choices_cis_section_details(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
-        return self._cmd._cis.list_section()  # type: ignore[attr-defined]
+        data = self._cmd._cis.list_section_and_details()  # type: ignore
+        return [CompletionItem(s_id, title) for s_id, title in data]
 
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -160,7 +162,8 @@ has subsections)""")
                                help="verbose output")
     enable_parser.add_argument(
         "section_id",
-        choices_provider=_choices_cis_section,
+        choices_provider=_choices_cis_section_details,
+        descriptive_header="Title",
         help="section id to be enabled (use `all` for everything)")
     enable_parser.set_defaults(func=cis_section_enable)
 
@@ -174,29 +177,26 @@ has subsections)""")
                                 help="verbose output")
     disable_parser.add_argument(
         "section_id",
-        choices_provider=_choices_cis_section,
+        choices_provider=_choices_cis_section_details,
+        descriptive_header="Title",
         help="section id to be disabled (use `all` for everything)")
     disable_parser.set_defaults(func=cis_section_disable)
 
     info_parser = section_subparser.add_parser(
         "info", help="info section id")
     info_parser.add_argument("section_id",
-                             choices_provider=_choices_cis_section,
+                             choices_provider=_choices_cis_section_details,
+                             descriptive_header="Title",
                              help="section id whose details to be displayed")
     info_parser.set_defaults(func=cis_section_info)
 
 
 @with_default_category("cis")
 class cis_set_cmd(CommandSet):
-    def _choices_cis_section(self: CommandSet) -> List[Text]:
+    def _choices_cis_section_unit_and_details(self: CommandSet) -> List[Text]:
         if self._cmd is None:
             return []
-        return self._cmd._cis.list_section()  # type: ignore[attr-defined]
-
-    def _choices_cis_section_unit(self: CommandSet) -> List[Text]:
-        if self._cmd is None:
-            return []
-        return self._cmd._cis.list_section_unit()  # type: ignore[attr-defined]
+        return self._cmd._cis.list_section_unit_and_details()  # type: ignore
 
     def _choices_cis_option(
         self: CommandSet,
@@ -223,8 +223,9 @@ class cis_set_cmd(CommandSet):
         "-s",
         "--section-id",
         dest="section_id",
-        choices_provider=_choices_cis_section_unit,
-        help="narrow down to specific section id for better tab completion"
+        choices_provider=_choices_cis_section_unit_and_details,
+        help="""narrow down to specific section id with settable vars for \
+better tab completion"""
     )
     set_parser.add_argument("option_key",
                             choices_provider=_choices_cis_option,
