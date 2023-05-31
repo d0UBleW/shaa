@@ -129,7 +129,7 @@ sshd_deny_users:
   - bar@10.0.0.1
 
 sshd_deny_groups:
-  - bad
+  - sudo
 
 # 5.2.19
 sshd_banner_conf: "{{ section_5_2_19 }}"

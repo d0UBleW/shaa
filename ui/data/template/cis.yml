@@ -1482,6 +1482,8 @@ sections:
             protocol: tcp
           - port: 80
             protocol: tcp
+          - port: 514
+            protocol: tcp
         description: |
           Allow traffic to specified ports and protocols
       save_iptables_rules:
@@ -1730,6 +1732,142 @@ sections:
       - Level 2 Workstation
     vars:
 
+  "4.2":
+    title: Configure Logging
+    enabled: true
+    subsections:
+      - 4.2.1
+      - 4.2.2
+      - 4.2.3
+
+  4.2.1:
+    title: Configure rsyslog
+    enabled: true
+    subsections:
+      - 4.2.1.1
+      - 4.2.1.2
+      - 4.2.1.3
+      - 4.2.1.4
+      - 4.2.1.5
+      - 4.2.1.6
+
+  4.2.1.1:
+    title: Ensure rsyslog is installed
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  4.2.1.2:
+    title: Ensure rsyslog Service is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  4.2.1.3:
+    title: Ensure logging is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  4.2.1.4:
+    title: Ensure rsyslog default file permissions configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  4.2.1.5:
+    title: Ensure rsyslog is configured to send logs to a remote host
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      rsyslog_remote_host:
+        value:
+        default: loghost.example.com
+        description: |
+          The target remote host to send logs to
+
+  4.2.1.6:
+    title: |
+      Ensure remote syslog messages are only accepted on designated log hosts
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      rsyslog_is_log_hosts:
+        value:
+        default: true
+        description: |
+          Denotes that the host is listening for remote logs
+      rsyslog_log_hosts_listen_port:
+        value:
+        default: 514
+        description: |
+          Specify the port to listen for remote logs
+
+  4.2.2:
+    title: Configure journald
+    enabled: true
+    subsections:
+      - 4.2.1.1
+      - 4.2.1.2
+      - 4.2.1.3
+      - 4.2.1.4
+      - 4.2.1.5
+      - 4.2.1.6
+
+  4.2.2.1:
+    title: Ensure journald is configured to send logs to rsyslog
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  4.2.2.2:
+    title: Ensure journald is configured to compress large log files
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  4.2.2.3:
+    title: Ensure journald is configured to write logfiles to persistent disk
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  4.2.3:
+    title: Ensure permissions on all logfiles are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "4.3":
+    title: Ensure logrotate is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      rotate_period:
+        value:
+        default: yearly
+        description: |
+          How frequent should log files be rotated
+          Possible values: hourly, daily, weekly, monthly, yearly
+
   "5":
     title: Access, Authentication and Authorization
     enabled: true
@@ -1740,6 +1878,639 @@ sections:
       - "5.4"
       - "5.5"
       - "5.6"
+
+  "5.1":
+    title: Configure Cron
+    enabled: true
+    subsections:
+      - 5.1.1
+      - 5.1.2
+      - 5.1.3
+      - 5.1.4
+      - 5.1.5
+      - 5.1.6
+      - 5.1.7
+      - 5.1.8
+
+  5.1.1:
+    title: Ensure cron daemon is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.1.2:
+    title: Ensure permissions on /etc/crontab are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.1.3:
+    title: Ensure permissions on /etc/cron.hourly are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.1.4:
+    title: Ensure permissions on /etc/cron.daily are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.1.5:
+    title: Ensure permissions on /etc/cron.weekly are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.1.6:
+    title: Ensure permissions on /etc/cron.monthly are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.1.7:
+    title: Ensure permissions on /etc/cron.d are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.1.8:
+    title: Ensure at/cron is restricted to authorized users
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "5.2":
+    title: SSH Server Configuration
+    enabled: true
+    subsections:
+      - 5.2.1
+      - 5.2.2
+      - 5.2.3
+      - 5.2.4
+      - 5.2.5
+      - 5.2.6
+      - 5.2.7
+      - 5.2.8
+      - 5.2.9
+      - 5.2.10
+      - 5.2.11
+      - 5.2.12
+      - 5.2.13
+      - 5.2.14
+      - 5.2.15
+      - 5.2.16
+      - 5.2.17
+      - 5.2.18
+      - 5.2.19
+      - 5.2.20
+      - 5.2.21
+      - 5.2.22
+      - 5.2.23
+
+  5.2.1:
+    title: Ensure permisisons on /etc/ssh/sshd_config are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.2:
+    title: Ensure permissions on SSH private host key files are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.3:
+    title: Ensure permissions on SSH public host key files are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.4:
+    title: Ensure SSH Protocol is set to 2
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.5:
+    title: Ensure SSH LogLevel is appropriate
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_log_level:
+        value:
+        default: "verbose"
+        description: |
+          Possible values: verbose, info
+
+  5.2.6:
+    title: Ensure SSH X11 forwarding is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.7:
+    title: Ensure SSH MaxAuthTries is set to 4 or less
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      ssh_max_auth_tries:
+        value:
+        default: 4
+        description: |
+          Number of authentication attempts allowed for each connection
+
+  5.2.8:
+    title: Ensure SSH IgnoreRhosts is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.9:
+    title: Ensure SSH HostbasedAuthentication is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.10:
+    title: Ensure SSH root login is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.11:
+    title: Ensure SSH PermitEmptyPasswords is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.12:
+    title: Ensure SSH PermitUserEnvironment is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.13:
+    title: Ensure only strong Ciphers are used
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_ciphers:
+        value:
+        default:
+          - aes256-ctr
+          - aes192-ctr
+          - aes128-ctr
+        description: |
+          Possible values: aes256-ctr, aes192-ctr, aes128-ctr
+
+  5.2.14:
+    title: Ensure only strong MAC algorithms are used
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_mac_algs:
+        value:
+        default:
+          - hmac-sha2-256
+          - hmac-sha2-512
+        description: |
+          Possible values: hmac-sha2-256, hmac-sha2-512
+
+  5.2.15:
+    title: Ensure only strong Key Exchange algorithms are used
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_kex_algs:
+        value:
+        default:
+          - ecdh-sha2-nistp256
+          - ecdh-sha2-nistp384
+          - ecdh-sha2-nistp521
+          - diffie-hellman-group-exchange-sha256
+          - diffie-hellman-group16-sha512
+          - diffie-hellman-group18-sha512
+          - diffie-hellman-group14-sha256
+        description: |
+          Possible values: ecdh-sha2-nistp256, ecdh-sha2-nistp384,
+            ecdh-sha2-nistp521, diffie-hellman-group-exchange-sha256,
+            diffie-hellman-group16-sha512, diffie-hellman-group18-sha512,
+            diffie-hellman-group14-sha256
+
+  5.2.16:
+    title: Ensure SSH Idle Timeout Interval is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_idle_timeout:
+        value:
+        default: 300
+        description: |
+          Duration of idle measured in seconds.
+          After certain amount of seconds, the ssh connection would be closed
+      sshd_idle_timeout_msg:
+        value:
+        default: 0
+        description: |
+          Number of warnings before terminating the ssh connection.
+          0 means terminate session instantly without any warning message
+
+  5.2.17:
+    title: Ensure SSH LoginGraceTime is set to one minute or less
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_login_grace_time:
+        value:
+        default: 60
+        description: |
+          Number of seconds before login attempt is terminated
+
+  5.2.18:
+    title: Ensure SSH access is limited
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_allow_users:
+        value:
+        default:
+          - "*"
+        description: |
+          List of allowed usernames to login through ssh.
+          Asterisk (*) is a wildcard which means any users
+      sshd_allow_groups:
+        value:
+        default:
+          - "*"
+        description: |
+          List of allowed groups to login through ssh.
+          Asterisk (*) is a wildcard which means any groups
+      sshd_deny_users:
+        value:
+        default:
+          - root
+          - bar@10.0.0.1
+        description: |
+          List of denied usernames to login through ssh.
+          Asterisk (*) is a wildcard which means any users
+      sshd_deny_groups:
+        value:
+        default:
+          - sudo
+        description: |
+          List of denied groups to login through ssh.
+          Asterisk (*) is a wildcard which means any groups
+
+  5.2.19:
+    title: Ensure SSH warning banner is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_banner:
+        value:
+        default: "/etc/issue.net"
+        description: |
+          Path to file used for displaying warning banner
+
+  5.2.20:
+    title: Ensure SSH PAM is enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.21:
+    title: Ensure SSH AllowTcpForwarding is disabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.2.22:
+    title: Ensure SSH MaxStartups is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_max_startups:
+        value:
+        default: "10:30:60"
+        description: |
+          Specifies the maximum number of concurrent unauthenticated connections
+          to the SSH daemon. Additional connections will be dropped until
+          authentication succeeds or the LoginGraceTime expires for a
+          connection.
+          Alternatively, random early drop can be enabled by specifying the
+          three colon separated values "start:rate:full" (e.g. "10:30:60").
+          sshd(8) will refuse connection attempts with a probability of
+          "rate/100" (30%) if there are currently "start" (10) unauthenticated
+          connections. The probability increases linearly and all connection
+          attempts are refused if the number of unauthenticated connections
+          reaches "full" (60).
+
+  5.2.23:
+    title: Ensure SSH MaxSessions is set to 4 or less
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      sshd_max_sessions:
+        value:
+        default: 4
+        description: |
+          Specify the max number of authenticated sessions.
+
+  "5.3":
+    title: Configure PAM
+    enabled: true
+    subsections:
+      - 5.3.1
+      - 5.3.2
+      - 5.3.3
+      - 5.3.4
+
+  5.3.1:
+    title: Configure PAM
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      pwquality_retry:
+        value:
+        default: 3
+        description: |
+          Number of password change attempts
+      pwquality_minlen:
+        value:
+        default: 14
+        description: |
+          Minimal length of new password
+      pwquality_dcredit:
+        value:
+        default: -1
+        description: |
+          Number of digit in new password
+          Negative is minum, positive is maximum, 0 is disable
+      pwquality_ucredit:
+        value:
+        default: -1
+        description: |
+          Number of uppercase letter in new password
+          Negative is minum, positive is maximum, 0 is disable
+      pwquality_ocredit:
+        value:
+        default: -1
+        description: |
+          Number of special symbol in new password
+          Negative is minum, positive is maximum, 0 is disable
+      pwquality_lcredit:
+        value:
+        default: -1
+        description: |
+          Number of lowercase letter in new password
+          Negative is minum, positive is maximum, 0 is disable
+
+  5.3.2:
+    title: Ensure lockout for failed password attempts is configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      pam_auth_fail_try:
+        value:
+        default: 2
+        description: |
+          Number of authentication attempts before getting locked out
+      pam_auth_lock_time:
+        value:
+        default: 10
+        description: |
+          Lockout period measured in seconds
+
+  5.3.3:
+    title: Ensure password reuse is limited
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      pam_password_reuse_history:
+        value:
+        default: 5
+        description: |
+          Prevent reuse of last N passwords
+
+  5.3.4:
+    title: Ensure password hashing algorithm is SHA-512
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      force_password_change:
+        value:
+        default: true
+        description: |
+          Force password change on non system users
+
+  "5.4":
+    title: User Accounts and Environment
+    enabled: true
+    subsections:
+      - 5.4.1
+      - 5.4.2
+      - 5.4.3
+      - 5.4.4
+      - 5.4.5
+
+  5.4.1:
+    title: Set Shadow Password Suite Parameters
+    enabled: true
+    subsections:
+      - 5.4.1.1
+      - 5.4.1.2
+      - 5.4.1.3
+      - 5.4.1.4
+      - 5.4.1.5
+
+  5.4.1.1:
+    title: Ensure password expiration is 365 days or less
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      pass_max_days:
+        value:
+        default: 365
+        description: |
+          Password lifetime
+
+  5.4.1.2:
+    title: Ensure minimum days between password change is 7 or more
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      pass_min_days:
+        value:
+        default: 7
+        description: |
+          Minimum days before a password could be changed again
+
+  5.4.1.3:
+    title: Ensure password expiration warning days is 7 or more
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      pass_warn_age:
+        value:
+        default: 14
+        description: |
+          Number of days before warning on password expiration is given
+
+  5.4.1.4:
+    title: Ensure inactive password lock is 30 days or less
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      inactive_days:
+        value:
+        default: 30
+        description: |
+          Number of inactive days before the password is locked out
+
+  5.4.1.5:
+    title: Ensure all users last password change date is in the past
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.4.2:
+    title: Ensure system accounts are secured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.4.3:
+    title: Ensure default group for the root account is GID 0
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  5.4.4:
+    title: Ensure default user umask is 027 or more restrictive
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      user_umask:
+        value:
+        default: "027"
+        description: |
+          umask value
+
+  5.4.5:
+    title: Ensure default user shell timeout is 900 seconds or less
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      user_shell_timeout:
+        value:
+        default: 900
+        description: |
+          Number of idle seconds before a user is logged out from the shell
+
+  "5.5":
+    title: Ensure root login is restricted to system console
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  "5.6":
+    title: Ensure access to the su command is restricted
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
 
   "6":
     title: System Maintenance

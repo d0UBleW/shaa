@@ -3,7 +3,7 @@
   ansible.builtin.import_tasks:
     file: ./4.2.1.1.yml
 
-- name: 4.2.1.2 Ensure rsyslog is installed
+- name: 4.2.1.2 Ensure rsyslog Service is enabled
   ansible.builtin.import_tasks:
     file: ./4.2.1.2.yml
 
