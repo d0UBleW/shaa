@@ -48,10 +48,10 @@
   ansible.builtin.import_tasks:
     file: ./6.2.12.yml
 
-- name: 6.2.13 Ensure no users have .netrc files
+- name: 6.2.13 Ensure users' .netrc Files are not group or world accessible
   ansible.builtin.import_tasks:
     file: ./6.2.13.yml
 
-- name: 6.2.14 Ensure no users have .netrc files
+- name: 6.2.14 Ensure no users have .rhosts files
   ansible.builtin.import_tasks:
     file: ./6.2.14.yml

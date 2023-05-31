@@ -1793,7 +1793,7 @@ sections:
           The target remote host to send logs to
 
   4.2.1.6:
-    title: |
+    title: >
       Ensure remote syslog messages are only accepted on designated log hosts
     enabled: true
     profile:
@@ -2517,4 +2517,267 @@ sections:
     enabled: true
     subsections:
       - "6.1"
-      - "6.2"
+
+  "6.1":
+    title: System File Permissions
+    enabled: true
+    subsections:
+      - 6.1.1
+      - 6.1.2
+      - 6.1.3
+      - 6.1.4
+      - 6.1.5
+      - 6.1.6
+      - 6.1.7
+      - 6.1.8
+      - 6.1.9
+      - 6.1.10
+      - 6.1.11
+      - 6.1.12
+      - 6.1.13
+
+  6.1.1:
+    title: System File Permissions
+    enabled: true
+    profile:
+      - Level 2 Server
+      - Level 2 Workstation
+    vars:
+      pkg_verification_file:
+        value:
+        default: /root/pkg_verify
+        description: |
+
+  6.1.2:
+    title: Ensure permissions on /etc/passwd are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.3:
+    title: Ensure permissions on /etc/shadow are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.4:
+    title: Ensure permissions on /etc/group are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.5:
+    title: Ensure permissions on /etc/gshadow are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.6:
+    title: Ensure permissions on /etc/passwd- are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.7:
+    title: Ensure permissions on /etc/shadow- are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.8:
+    title: Ensure permissions on /etc/group- are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.9:
+    title: Ensure permissions on /etc/gshadow- are configured
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.10:
+    title: Ensure no world writable files exist
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.11:
+    title: Ensure no unowned files or directories exist
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      create_dummy_user:
+        value:
+        default: true
+        description: |
+          Create dummy user to own the unowned files or directories
+      dummy_username:
+        value:
+        default: foobar
+        description: |
+
+  6.1.12:
+    title: Ensure no ungrouped files or directories exist
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      create_dummy_group:
+        value:
+        default: true
+        description: |
+          Create dummy group to own the unowned files or directories
+      dummy_groupname:
+        value:
+        default: foobar
+        description: |
+
+  6.1.13:
+    title: Audit SUID executables
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.1.14:
+    title: Audit SGID executables
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  "6.2":
+    title: System File Permissions
+    enabled: true
+    subsections:
+      - 6.2.1
+      - 6.2.2
+      - 6.2.3
+      - 6.2.4
+      - 6.2.5
+      - 6.2.6
+      - 6.2.7
+      - 6.2.8
+      - 6.2.9
+      - 6.2.10
+      - 6.2.11
+      - 6.2.12
+      - 6.2.13
+
+  6.2.1:
+    title: Ensure password fields are not empty
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.2:
+    title: Ensure no legacy "+" entries exist in /etc/passwd
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.3:
+    title: Ensure no legacy "+" entries exist in /etc/shadow
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.4:
+    title: Ensure no legacy "+" entries exist in /etc/group
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.5:
+    title: Ensure root is the only UID 0 account
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.6:
+    title: Ensure root PATH integrity
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.7:
+    title: Ensure all users' home directories exist
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.8:
+    title: >
+      Ensure users' home directories permissions are 750 or more restrictive
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      home_dir_perms:
+        value:
+        default: "0700"
+        description: |
+
+  6.2.9:
+    title: Ensure users own their home directories
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.10:
+    title: Ensure users' dot files are not group or world writable
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.11:
+    title: Ensure no users have .forward files
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.12:
+    title: Ensure no users have .netrc files
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.13:
+    title: Ensure users' .netrc Files are not group or world accessible
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+
+  6.2.14:
+    title: Ensure no users have .rhosts files
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:

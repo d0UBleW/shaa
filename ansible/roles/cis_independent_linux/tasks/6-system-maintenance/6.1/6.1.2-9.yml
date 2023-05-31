@@ -7,6 +7,7 @@
     - name: |
         ---
         {{ file.section_id }} Ensure permissions on {{ file.file_name }} are
+        configured
         > Check if {{ file.file_name }} exists
         ---
       ansible.builtin.stat:
@@ -16,6 +17,7 @@
     - name: |
         ---
         {{ file.section_id }} Ensure permissions on {{ file.file_name }} are
+        configured
         > Set permissions to {{ file.owner }}:{{ file.group }} {{ file.mode }}
         ---
       when:
