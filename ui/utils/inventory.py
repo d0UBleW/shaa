@@ -8,6 +8,7 @@ from ruamel.yaml import YAML  # type: ignore[import]
 from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
 from typing import List, Text, Optional, Dict, Tuple, Any
 from utils.vault import vault
+from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
 
 yaml = YAML(typ="rt")
 
@@ -59,6 +60,13 @@ class InventoryNode:
             return node
         except KeyError as ex:
             print(f"[{name}] Key not found: {ex}")
+            return None
+        except AnsibleVaultError as ex:
+            if "no vault secrets were found that could decrypt" in ex.message:
+                print("[!] Invalid vault password", end=" ")
+                print(f"unable to decrypt node {name}")
+            else:
+                print(f"AnsibleVaultError: {ex}")
             return None
 
 
