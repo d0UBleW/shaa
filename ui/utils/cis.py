@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from ruamel.yaml import YAML
-from typing import Optional, Text, Dict, List, Tuple
+from typing import Optional, Text, Dict, List, Tuple, Any
 from pathlib import Path
 from utils.preset import list_preset
 
@@ -22,6 +22,16 @@ class CIS:
             raise Exception("Missing `sections` key")
         self.sections = data["sections"]
 
+    @staticmethod
+    def is_subsection(parent: Text, child: Text) -> bool:
+        while True:
+            p_id, _, parent = parent.partition(".")
+            c_id, _, child = child.partition(".")
+            if p_id != c_id:
+                return False
+            if parent == "":
+                return True
+
     def is_valid_section_id(self, section_id: Text) -> bool:
         return section_id in self.sections.keys()
 
@@ -36,10 +46,17 @@ class CIS:
     def list_section(self, section_id: Optional[Text] = None) -> List[Text]:
         return list(self.sections.keys())
 
-    def list_section_and_details(self) -> List[Tuple[Text, Text]]:
+    def list_section_and_details(
+        self,
+        section_id: Optional[Text] = None
+    ) -> List[Tuple[Text, Any]]:
         data: List[Tuple[Text, Text]] = []
-        for section_id, section in self.sections.items():
-            data.append((section_id, section["title"]))
+        for s_id, section in self.sections.items():
+            if section_id is None:
+                data.append((s_id, section))
+                continue
+            if CIS.is_subsection(section_id, s_id):
+                data.append((s_id, section))
         return data
 
     def list_section_unit(self,

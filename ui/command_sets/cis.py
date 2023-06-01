@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from cmd2 import (
+from cmd2 import (  # type: ignore[import]
     Cmd2ArgumentParser,
     CommandSet,
     with_default_category,
@@ -9,7 +9,7 @@ from cmd2 import (
     with_argparser,
     CompletionItem,
 )
-from cmd2.table_creator import SimpleTable, Column
+from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
 from utils.cis import CIS
 from utils.parser import cis_parser
 from typing import List, Text, Dict, Optional
@@ -31,16 +31,36 @@ class cis_cmd(CommandSet):
 
 @with_default_category("cis")
 class cis_section_cmd(CommandSet):
-    def _choices_cis_section_details(self) -> List[CompletionItem]:
+    def _choices_cis_section_title(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
         data = self._cmd._cis.list_section_and_details()  # type: ignore
-        return [CompletionItem(s_id, title) for s_id, title in data]
+        return [CompletionItem(s_id, s["title"]) for s_id, s in data]
 
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        self._cmd.poutput("list")
+        data = self._cmd._cis.list_section_and_details(
+            ns.section_id)  # type: ignore
+        columns = [
+            Column("Section ID", width=10),
+            Column("Enabled", width=8),
+            Column("Title", width=96),
+        ]
+        st = SimpleTable(columns)
+        data_list = []
+        for s_id, s in data:
+            if ns.status == "all":
+                data_list.append([s_id, s["enabled"], s["title"]])
+                continue
+            if ns.status == "enabled" and s["enabled"]:
+                data_list.append([s_id, s["enabled"], s["title"]])
+                continue
+            if not s["enabled"]:
+                data_list.append([s_id, s["enabled"], s["title"]])
+
+        tbl = st.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")
 
     def cis_section_enable(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -49,16 +69,17 @@ class cis_section_cmd(CommandSet):
         if cis is None:
             return
 
-        if ns.section_id != "all" and not cis.is_valid_section_id(
-                ns.section_id):
+        arg_s_id = ns.section_id
+
+        if arg_s_id != "all" and not cis.is_valid_section_id(arg_s_id):
             self._cmd.poutput("[!] Invalid section id")
             return
 
-        for section_id in cis.sections.keys():
-            if section_id.startswith(ns.section_id) or ns.section_id == "all":
-                cis.sections[section_id]["enabled"] = True
+        for s_id in cis.sections.keys():
+            if CIS.is_subsection(arg_s_id, s_id) or arg_s_id == "all":
+                cis.sections[s_id]["enabled"] = True
                 if ns.verbose:
-                    self._cmd.poutput(f"[+] {section_id} enabled successfully")
+                    self._cmd.poutput(f"[+] {s_id} enabled successfully")
         self._cmd.poutput("[+] Enabled successfully")
 
     def cis_section_disable(self: CommandSet, ns: argparse.Namespace):
@@ -68,17 +89,17 @@ class cis_section_cmd(CommandSet):
         if cis is None:
             return
 
-        if ns.section_id != "all" and not cis.is_valid_section_id(
-                ns.section_id):
+        arg_s_id = ns.section_id
+
+        if arg_s_id != "all" and not cis.is_valid_section_id(arg_s_id):
             self._cmd.poutput("[!] Invalid section id")
             return
 
-        for section_id in cis.sections.keys():
-            if section_id.startswith(ns.section_id):
-                cis.sections[section_id]["enabled"] = False
+        for s_id in cis.sections.keys():
+            if CIS.is_subsection(arg_s_id, s_id) or arg_s_id == "all":
+                cis.sections[s_id]["enabled"] = False
                 if ns.verbose:
-                    self._cmd.poutput(
-                        f"[+] {section_id} disabled successfully")
+                    self._cmd.poutput(f"[+] {s_id} disabled successfully")
         self._cmd.poutput("[+] Disabled successfully")
 
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):
@@ -145,8 +166,16 @@ class cis_section_cmd(CommandSet):
     list_parser = section_subparser.add_parser(
         "list", help="list available section ids")
     list_parser.add_argument(
+        "--status",
+        nargs="?",
+        choices=["enabled", "disabled", "all"],
+        default="all",
+        help="filter sections based on their status"
+    )
+    list_parser.add_argument(
         "section_id",
         nargs="?",
+        choices_provider=_choices_cis_section_title,
         help="""if specified, it would list out corresponding subsections \
 (e.g., 1, 2.1, 3.3.1)"""
     )
@@ -162,7 +191,7 @@ has subsections)""")
                                help="verbose output")
     enable_parser.add_argument(
         "section_id",
-        choices_provider=_choices_cis_section_details,
+        choices_provider=_choices_cis_section_title,
         descriptive_header="Title",
         help="section id to be enabled (use `all` for everything)")
     enable_parser.set_defaults(func=cis_section_enable)
@@ -177,7 +206,7 @@ has subsections)""")
                                 help="verbose output")
     disable_parser.add_argument(
         "section_id",
-        choices_provider=_choices_cis_section_details,
+        choices_provider=_choices_cis_section_title,
         descriptive_header="Title",
         help="section id to be disabled (use `all` for everything)")
     disable_parser.set_defaults(func=cis_section_disable)
@@ -185,7 +214,7 @@ has subsections)""")
     info_parser = section_subparser.add_parser(
         "info", help="info section id")
     info_parser.add_argument("section_id",
-                             choices_provider=_choices_cis_section_details,
+                             choices_provider=_choices_cis_section_title,
                              descriptive_header="Title",
                              help="section id whose details to be displayed")
     info_parser.set_defaults(func=cis_section_info)
@@ -193,10 +222,11 @@ has subsections)""")
 
 @with_default_category("cis")
 class cis_set_cmd(CommandSet):
-    def _choices_cis_section_unit_and_details(self: CommandSet) -> List[Text]:
+    def _choices_cis_section_unit_and_title(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
-        return self._cmd._cis.list_section_unit_and_details()  # type: ignore
+        data = self._cmd._cis.list_section_and_details()  # type: ignore
+        return [CompletionItem(s_id, s["title"]) for s_id, s in data]
 
     def _choices_cis_option(
         self: CommandSet,
@@ -223,7 +253,7 @@ class cis_set_cmd(CommandSet):
         "-s",
         "--section-id",
         dest="section_id",
-        choices_provider=_choices_cis_section_unit_and_details,
+        choices_provider=_choices_cis_section_unit_and_title,
         help="""narrow down to specific section id with settable vars for \
 better tab completion"""
     )
