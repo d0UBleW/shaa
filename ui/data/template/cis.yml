@@ -890,16 +890,8 @@ sections:
       - Level 1 - Workstation
     vars:
 
-  2.2.7_nfs:
-    title: Ensure NFS is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.7_rpcbind:
-    title: Ensure RPC is not enabled
+  2.2.7:
+    title: Ensure NFS and RPC is not enabled
     enabled: true
     profile:
       - Level 1 - Server
@@ -922,80 +914,24 @@ sections:
       - Level 1 - Workstation
     vars:
 
-  2.2.10_httpd:
-    title: Ensure HTTP Server (httpd) is not enabled
+  2.2.10:
+    title: Ensure HTTP Server is not enabled
     enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
     vars:
 
-  2.2.10_nginx:
-    title: Ensure HTTP Server (nginx) is not enabled
+  2.2.11:
+    title: Ensure IMAP and POP3 Server is not enabled
     enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
     vars:
 
-  2.2.10_apache:
-    title: Ensure HTTP Server (apache) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.10_apache2:
-    title: Ensure HTTP Server (apache2) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.10_lighttpd:
-    title: Ensure HTTP Server (lighttpd) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.11_dovecot:
-    title: Ensure IMAP and POP3 Server (dovecot) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.11_courier_imap:
-    title: Ensure IMAP and POP3 Server (courier-imap) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.11_cyrus_imap:
-    title: Ensure IMAP and POP3 Server (cyrus-imap) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.12_smb:
-    title: Ensure Samba (smb) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.12_samba:
-    title: Ensure Samba (samba) is not enabled
+  2.2.12:
+    title: Ensure Samba is not enabled
     enabled: true
     profile:
       - Level 1 - Server
@@ -1034,24 +970,8 @@ sections:
       - Level 1 - Workstation
     vars:
 
-  2.2.17_ypserv:
-    title: Ensure NIS Server (ypserv) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.17_nis:
-    title: Ensure NIS Server (nis) is not enabled
-    enabled: true
-    profile:
-      - Level 1 - Server
-      - Level 1 - Workstation
-    vars:
-
-  2.2.17_nis_domainname:
-    title: Ensure NIS Server (nis-domainname) is not enabled
+  2.2.17:
+    title: Ensure NIS Server is not enabled
     enabled: true
     profile:
       - Level 1 - Server
@@ -1100,24 +1020,8 @@ sections:
       - Level 1 Workstation
     vars:
 
-  2.3.5_openldap_clients:
-    title: Ensure LDAP client (openldap-clients) is not installed
-    enabled: true
-    profile:
-      - Level 1 Server
-      - Level 1 Workstation
-    vars:
-
-  2.3.5_openldap2_clients:
-    title: Ensure LDAP client (openldap2-clients) is not installed
-    enabled: true
-    profile:
-      - Level 1 Server
-      - Level 1 Workstation
-    vars:
-
-  2.3.5_ldap_utils:
-    title: Ensure LDAP client (ldap-utils) is not installed
+  2.3.5:
+    title: Ensure LDAP client is not installed
     enabled: true
     profile:
       - Level 1 Server
