@@ -40,15 +40,11 @@ class inventory_subcmd(CommandSet):
     save_parser = Cmd2ArgumentParser()
     save_parser.add_argument("name",
                              nargs="?",
-                             help="name of inventory")
+                             help="(save as) name of inventory")
 
     rename_parser = Cmd2ArgumentParser()
     rename_parser.add_argument('name',
                                help='new name of inventory')
-
-    duplicate_parser = Cmd2ArgumentParser()
-    duplicate_parser.add_argument('name',
-                                  help='new name of duplicated inventory')
 
     @as_subcommand_to('inventory', 'create', create_parser,
                       aliases=["add"],
@@ -67,7 +63,7 @@ class inventory_subcmd(CommandSet):
 
     @as_subcommand_to('inventory', 'delete', delete_parser,
                       aliases=["del", "rm"],
-                      help='delete inventory')
+                      help='delete current inventory')
     def inventory_delete(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -167,7 +163,8 @@ class inventory_subcmd(CommandSet):
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] inventory has been saved")
 
-    @as_subcommand_to('inventory', 'rename', rename_parser)
+    @as_subcommand_to('inventory', 'rename', rename_parser,
+                      help="rename inventory name")
     def inventory_rename(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -180,5 +177,5 @@ class inventory_subcmd(CommandSet):
             self._cmd.poutput("[!] Invalid inventory name")
             return
         self._cmd.poutput("[+] inventory has been renamed")
-        self._cmd.poutput(f"[*] old: {old_name}")
-        self._cmd.poutput(f"[*] new: {inv.name}")
+        self._cmd.poutput(f"    old: {old_name}")
+        self._cmd.poutput(f"    new: {inv.name}")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML  # type: ignore[import]
 from typing import Optional, Text, Dict, List, Tuple, Any
 from pathlib import Path
 from utils.preset import list_preset
@@ -19,7 +19,7 @@ class CIS:
                 data = yaml.load(f)
 
         if "sections" not in data.keys():
-            raise Exception("Missing `sections` key")
+            print("[!] Invalid CIS preset file: missing `sections` key")
         self.sections = data["sections"]
 
     @staticmethod
@@ -115,6 +115,10 @@ class CIS:
             return None
         except FileNotFoundError:
             print("[!] CIS preset name not found")
+            return None
+
+        if "sections" not in data.keys():
+            print("[!] Invalid CIS preset file: missing `sections` key")
             return None
 
         cis = CIS(name, data)

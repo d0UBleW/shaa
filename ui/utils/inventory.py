@@ -4,10 +4,10 @@ from dataclasses import dataclass, field
 from itertools import product
 from pathlib import Path
 import re
-from ruamel.yaml import YAML
-from ruamel.yaml.comments import TaggedScalar
+from ruamel.yaml import YAML  # type: ignore[import]
+from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
 from typing import List, Text, Optional, Dict, Tuple, Any
-from .vault import vault
+from utils.vault import vault
 
 yaml = YAML(typ="rt")
 
@@ -287,8 +287,8 @@ class Inventory:
         inv = Inventory(name)
 
         if "all" not in data.keys():
-            raise Exception("[!] Invalid inventory file: missing `all` key")
-            return
+            print("[!] Invalid inventory file: missing `all` key")
+            return None
 
         if data["all"] is None:
             return inv
