@@ -20,3 +20,7 @@ preset_parser.add_subparsers(title="action",
 cis_parser = Cmd2ArgumentParser()
 cis_parser.add_subparsers(title="subcommands",
                           help="subcommand for cis module")
+
+profile_parser = Cmd2ArgumentParser()
+profile_parser.add_subparsers(title="subcommands",
+                              help="subcommand for profile module")

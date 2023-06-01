@@ -1,9 +1,5 @@
 # TODO
 
-- [ ] Create profile module
-- [ ] Create inventory module under profile
-- [ ] Global and local options
-
 ```
 set key value [-n node_name] [-g group_name]
 ```
@@ -25,6 +21,18 @@ set key value [-n node_name] [-g group_name]
 - [ ] preset cis delete
 - [x] preset cis save
 - [x] preset cis list
-- [ ] cis section list
+- [x] cis section list
 - [ ] cis set
 - [ ] cis search
+- [x] cis enable disable
+- [ ] cis enable disable level profile
+- [x] profile create
+- [x] profile delete
+- [x] profile list
+- [x] profile load
+- [x] profile set/unset inventory
+- [x] profile set/unset cis
+- [x] profile set/unset oscap
+- [x] profile set/unset extra
+- [ ] run
+- [ ] add description for inventory, presets, and profile

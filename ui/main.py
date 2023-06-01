@@ -8,14 +8,17 @@ from command_sets import (
     inventory_group as inv_group_cs,
     cis as cis_cs,
     preset as pre_cs,
+    profile as pro_cs,
 )
 from typing import Optional
 from utils.parser import (
     inventory_parser,
     preset_parser,
+    profile_parser,
 )
 from utils.inventory import Inventory
 from utils.cis import CIS
+from utils.profile import Profile
 
 
 class ShaaShell(cmd2.Cmd):
@@ -24,6 +27,9 @@ class ShaaShell(cmd2.Cmd):
 
     _cis: Optional[CIS] = None
     _cis_has_changed: bool = False
+
+    _profile: Optional[Profile] = None
+    _profile_has_changed: bool = False
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
@@ -47,6 +53,7 @@ class ShaaShell(cmd2.Cmd):
         self._cis_search_cmd = cis_cs.cis_search_cmd()
         self.register_postloop_hook(self.check_if_inv_changed)
         self.register_postloop_hook(self.check_if_cis_changed)
+        self.register_postloop_hook(self.check_if_profile_changed)
 
     def _set_prompt(self):
         inv_prompt = ""
@@ -57,7 +64,11 @@ class ShaaShell(cmd2.Cmd):
         if self._cis is not None:
             cis_prompt = f"[cis: {self._cis.name}] "
 
-        self.prompt = f"\n{inv_prompt}{cis_prompt}\nshaa> "
+        profile_prompt = ""
+        if self._profile is not None:
+            profile_prompt = f"[pro: {self._profile.name}] "
+
+        self.prompt = f"\n{profile_prompt}{inv_prompt}{cis_prompt}\nshaa> "
 
     def postcmd(self, stop, statement):
         self._set_prompt()
@@ -86,6 +97,16 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("No subcommand was provided")
             self.do_help("preset")
 
+    @cmd2.with_argparser(profile_parser)
+    @cmd2.with_category("profile")
+    def do_profile(self, ns: argparse.Namespace):
+        handler = ns.cmd2_handler.get()
+        if handler is not None:
+            handler(ns)
+        else:
+            self.poutput("No subcommand was provided")
+            self.do_help("profile")
+
     def check_if_inv_changed(self) -> None:
         if self._inv_has_changed:
             prompt = "[*] There are unsaved changes on current inventory.\n"
@@ -106,11 +127,22 @@ class ShaaShell(cmd2.Cmd):
                     self.poutput("[+] Changes have been saved successfully")
             self._inv_has_changed = False
 
+    def check_if_profile_changed(self) -> None:
+        if self._profile_has_changed:
+            prompt = "[*] There are unsaved changes on current profile.\n"
+            prompt += "[+] Do you want to save? [Y/n] "
+            if (_ := self.read_input(prompt).lower()) != "n":
+                if self._profile is not None:
+                    self._profile.save()
+                    self.poutput("[+] Changes have been saved successfully")
+            self._profile_has_changed = False
+
 
 def main():
     shaa_shell = ShaaShell(command_sets=[
         inv_cs.inventory_subcmd(),
         pre_cs.preset_cis_cmd(),
+        pro_cs.profile_subcmd(),
     ])
     shaa_shell.disable_command(
         "run_pyscript",
