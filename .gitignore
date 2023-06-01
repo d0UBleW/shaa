@@ -1,3 +1,4 @@
+.env
 .vault_pass
 *.key
 *.pub
