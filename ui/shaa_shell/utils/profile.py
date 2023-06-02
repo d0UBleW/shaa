@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+from __future__ import annotations
 
 from typing import List, Text, Dict, Optional
 from pathlib import Path
@@ -31,7 +31,7 @@ class Profile:
                            [file.stem for file in files]))
 
     @staticmethod
-    def create(name: Text) -> Optional["Profile"]:
+    def create(name: Text) -> Optional[Profile]:
         if name in Profile.list_profile():
             return None
 
@@ -42,7 +42,7 @@ class Profile:
         return profile
 
     @staticmethod
-    def load(name: Text) -> Optional["Profile"]:
+    def load(name: Text) -> Optional[Profile]:
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
             print("[!] Invalid profile name")
             return None

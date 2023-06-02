@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+from __future__ import annotations
 
 from ruamel.yaml import YAML  # type: ignore[import]
 from typing import Optional, Text, Dict, List, Tuple, Any
@@ -99,7 +99,7 @@ class CIS:
         return True
 
     @staticmethod
-    def load(name: Text) -> Optional["CIS"]:
+    def load(name: Text) -> Optional[CIS]:
         """
         Load CIS preset from YAML file to Python object
         """
@@ -123,7 +123,7 @@ class CIS:
         return cis
 
     @staticmethod
-    def create(name: Text) -> Optional["CIS"]:
+    def create(name: Text) -> Optional[CIS]:
         """
         Function wrapper for creating CIS object
         """

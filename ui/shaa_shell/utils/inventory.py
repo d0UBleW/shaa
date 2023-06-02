@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from itertools import product
@@ -41,7 +41,7 @@ class InventoryNode:
         return data
 
     @staticmethod
-    def from_dict(name: Text, data: Dict) -> Optional["InventoryNode"]:
+    def from_dict(name: Text, data: Dict) -> Optional[InventoryNode]:
         """
         Convert Ansible data into Python object format
         """
@@ -117,7 +117,7 @@ class InventoryGroup:
     def from_dict(
         name: Text,
         data: Dict[Text, Dict]
-    ) -> Optional["InventoryGroup"]:
+    ) -> Optional[InventoryGroup]:
         """
         Convert Ansible data into Python object format
         """
@@ -271,7 +271,7 @@ class Inventory:
         return True
 
     @staticmethod
-    def load(name: Text) -> Optional["Inventory"]:
+    def load(name: Text) -> Optional[Inventory]:
         """
         Load Ansible inventory from YAML file to Python object
         """
@@ -324,7 +324,7 @@ class Inventory:
                            [file.stem for file in files]))
 
     @staticmethod
-    def create_inventory(name: Text) -> Optional["Inventory"]:
+    def create_inventory(name: Text) -> Optional[Inventory]:
         if name in Inventory.list_inventory():
             return None
 
