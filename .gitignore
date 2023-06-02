@@ -1,3 +1,5 @@
+.envrc
+*.egg-info
 .env
 .vault_pass
 *.key
@@ -6,3 +8,4 @@ vagrant/.vagrant/
 __pycache__/
 .shaa_*
 .mypy_cache/
+venv/
