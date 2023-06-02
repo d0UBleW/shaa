@@ -2,12 +2,11 @@
 
 from typing import List, Text, Dict, Optional
 from pathlib import Path
-from ruamel.yaml import YAML  # type: ignore[import]
+from ruamel.yaml import YAML
 import re
+from shaa_shell.utils.path import PROFILE_PATH, is_valid_file_path
 
 yaml = YAML(typ="rt")
-
-PROFILE_PATH = Path("shaa_shell/data/custom/profile/")
 
 
 class Profile:
@@ -36,13 +35,7 @@ class Profile:
         if name in Profile.list_profile():
             return None
 
-        if "/" in name:
-            return None
-
-        file_path = PROFILE_PATH.joinpath(f"{name}.yml").resolve()
-        try:
-            file_path.relative_to(PROFILE_PATH.resolve())
-        except ValueError:
+        if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
             return None
 
         profile = Profile(name)
@@ -50,17 +43,17 @@ class Profile:
 
     @staticmethod
     def load(name: Text) -> Optional["Profile"]:
-        file_path = PROFILE_PATH.joinpath(f"{name}.yml").resolve()
-        try:
-            file_path.relative_to(PROFILE_PATH.resolve())
-            with open(file_path, "r") as f:
-                data: Dict = yaml.load(f)
-        except ValueError:
+        if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
             print("[!] Invalid profile name")
             return None
-        except FileNotFoundError:
+
+        if name not in Profile.list_profile():
             print("[!] Profile name not found")
             return None
+
+        file_path = PROFILE_PATH.joinpath(f"{name}.yml").resolve()
+        with open(file_path, "r") as f:
+            data: Dict = yaml.load(f)
 
         if "inventory" not in data.keys():
             print("[!] Invalid profile file: missing `inventory` key")
@@ -80,14 +73,10 @@ class Profile:
         if file_name is None:
             file_name = self.name
 
-        if "/" in file_name:
+        if not is_valid_file_path(PROFILE_PATH, f"{file_name}.yml"):
             return False
 
         file_path = PROFILE_PATH.joinpath(f"{file_name}.yml").resolve()
-        try:
-            file_path.relative_to(PROFILE_PATH.resolve())
-        except ValueError:
-            return False
 
         data = {
             "inventory": self.inv_name,

@@ -2,12 +2,14 @@
 
 from ruamel.yaml import YAML  # type: ignore[import]
 from typing import Optional, Text, Dict, List, Tuple, Any
-from pathlib import Path
 from shaa_shell.utils.preset import list_preset
+from shaa_shell.utils.path import (
+    CIS_PRESET_PATH,
+    CIS_TEMPLATE_FILE,
+    is_valid_file_path,
+)
 
 yaml = YAML(typ="rt")
-CIS_PRESET_PATH = Path("shaa_shell/data/custom/cis/")
-cis_data_file_path = "shaa_shell/data/template/cis.yml"
 
 
 class CIS:
@@ -15,7 +17,7 @@ class CIS:
         self.name = name
 
         if data is None:
-            with open(cis_data_file_path, "r") as f:
+            with open(CIS_TEMPLATE_FILE, "r") as f:
                 data = yaml.load(f)
 
         if "sections" not in data.keys():
@@ -82,14 +84,10 @@ class CIS:
         if file_name is None:
             file_name = self.name
 
-        if "/" in file_name:
+        if not is_valid_file_path(CIS_PRESET_PATH, f"{file_name}.yml"):
             return False
 
         file_path = CIS_PRESET_PATH.joinpath(f"{file_name}.yml").resolve()
-        try:
-            file_path.relative_to(CIS_PRESET_PATH.resolve())
-        except ValueError:
-            return False
 
         data = {
             "sections": self.sections
@@ -105,17 +103,17 @@ class CIS:
         """
         Load CIS preset from YAML file to Python object
         """
-        file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
-        try:
-            file_path.relative_to(CIS_PRESET_PATH.resolve())
-            with open(file_path, "r") as f:
-                data: Dict = yaml.load(f)
-        except ValueError:
+        if not is_valid_file_path(CIS_PRESET_PATH, f"{name}.yml"):
             print("[!] Invalid CIS preset name")
             return None
-        except FileNotFoundError:
+
+        if name not in CIS.list_preset():
             print("[!] CIS preset name not found")
             return None
+
+        file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
+        with open(file_path, "r") as f:
+            data: Dict = yaml.load(f)
 
         if "sections" not in data.keys():
             print("[!] Invalid CIS preset file: missing `sections` key")
@@ -129,13 +127,10 @@ class CIS:
         """
         Function wrapper for creating CIS object
         """
-        if name in list_preset("cis"):
+        if name in CIS.list_preset():
             return None
 
-        file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
-        try:
-            file_path.relative_to(CIS_PRESET_PATH.resolve())
-        except ValueError:
+        if not is_valid_file_path(CIS_PRESET_PATH, f"{name}.yml"):
             return None
 
         cis = CIS(name)

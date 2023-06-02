@@ -9,10 +9,9 @@ from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
 from typing import List, Text, Optional, Dict, Tuple, Any
 from shaa_shell.utils.vault import vault
 from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
+from shaa_shell.utils.path import INVENTORY_PATH, is_valid_file_path
 
 yaml = YAML(typ="rt")
-
-INVENTORY_PATH = Path("shaa_shell/data/custom/inventory/")
 
 
 @dataclass(order=True)
@@ -238,14 +237,10 @@ class Inventory:
         if file_name is None:
             file_name = self.name
 
-        if "/" in file_name:
+        if not is_valid_file_path(inv_path, f"{file_name}.yml"):
             return False
 
         file_path = inv_path.joinpath(f"{file_name}.yml").resolve()
-        try:
-            file_path.relative_to(inv_path.resolve())
-        except ValueError:
-            return False
 
         data: Dict = {
             "all": None
@@ -280,17 +275,17 @@ class Inventory:
         """
         Load Ansible inventory from YAML file to Python object
         """
-        file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
-        try:
-            file_path.relative_to(INVENTORY_PATH.resolve())
-            with open(file_path, "r") as f:
-                data: Dict = yaml.load(f)
-        except ValueError:
+        if not is_valid_file_path(INVENTORY_PATH, f"{name}.yml"):
             print("[!] Invalid inventory name")
             return None
-        except FileNotFoundError:
+
+        if name not in Inventory.list_inventory():
             print("[!] Inventory name not found")
             return None
+
+        file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
+        with open(file_path, "r") as f:
+            data: Dict = yaml.load(f)
 
         inv = Inventory(name)
 
@@ -333,13 +328,7 @@ class Inventory:
         if name in Inventory.list_inventory():
             return None
 
-        if "/" in name:
-            return None
-
-        file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
-        try:
-            file_path.relative_to(INVENTORY_PATH.resolve())
-        except ValueError:
+        if not is_valid_file_path(INVENTORY_PATH, f"{name}.yml"):
             return None
 
         inv = Inventory(name)
@@ -364,7 +353,6 @@ class Inventory:
 
 
 if __name__ == "__main__":
-    INVENTORY_PATH = Path("../../ansible/inventory/")
     alma = InventoryNode("alma", "192.168.56.211", "vagrant", "vagrant")
     alma.host_vars = {"selinuxtype": "mls"}
     ubuntu = InventoryNode("ubuntu", "192.168.56.212", "vagrant", "vagrant")

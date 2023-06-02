@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
 from ruamel.yaml import YAML
-from pathlib import Path
 from typing import Text, Dict, Any
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.path import (
+    PLAYBOOK_PATH,
+    ANSIBLE_INV_PATH,
+)
 
 yaml = YAML(typ="rt")
 
@@ -40,7 +43,7 @@ def generate_playbook(name: Text):
         print("inv is None")
         return
     inv.groups["ungrouped"].group_vars = cis_vars
-    inv.save(name, Path("../../ansible/inventory"))
+    inv.save(name, ANSIBLE_INV_PATH)
 
     data = [{
         "name": name,
@@ -52,7 +55,7 @@ def generate_playbook(name: Text):
         }]
     }]
 
-    playbook_fpath = Path("../../ansible").joinpath(f"{name}.yml").resolve()
+    playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()
 
     with open(playbook_fpath, "w") as f:
         yaml.dump(data, f)

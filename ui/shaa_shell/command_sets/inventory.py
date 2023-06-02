@@ -55,7 +55,7 @@ class inventory_subcmd(CommandSet):
         inv = Inventory.create_inventory(ns.name)
         if inv is None:
             warning_text = "[!] Invalid name or specified inventory name"
-            warning_text += "already existed"
+            warning_text += " already existed"
             self._cmd.poutput(warning_text)
             return
         self._cmd._inventory = inv  # type: ignore[attr-defined]
