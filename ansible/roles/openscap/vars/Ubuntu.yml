@@ -1,0 +1,16 @@
+---
+openscap_pkgs:
+  - libopenscap8
+
+ver: "{{ ansible_distribution_major_version }}04"
+xccdf_name: "ubuntu{{ ver }}"
+
+oscap_profiles:
+  - name: cis_level1_server
+    out: "oscap_report_cis_level1_server.html"
+  - name: cis_level1_workstation
+    out: "oscap_report_cis_level1_workstation.html"
+  - name: cis_level2_server
+    out: "oscap_report_cis_level2_server.html"
+  - name: cis_level2_workstation
+    out: "oscap_report_cis_level2_workstation.html"

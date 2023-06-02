@@ -1,0 +1,16 @@
+---
+openscap_pkgs:
+  - openscap-scanner
+  - ssg-*
+
+xccdf_name: "ubuntu2004"
+
+oscap_profiles:
+  - name: cis_level1_server
+    out: "oscap_report_cis_level1_server.html"
+  - name: cis_level1_workstation
+    out: "oscap_report_cis_level1_workstation.html"
+  - name: cis_level2_server
+    out: "oscap_report_cis_level2_server.html"
+  - name: cis_level2_workstation
+    out: "oscap_report_cis_level2_workstation.html"

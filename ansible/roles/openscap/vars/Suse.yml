@@ -1,0 +1,16 @@
+---
+openscap_pkgs:
+  - openscap-utils
+  - scap-security-guide
+
+xccdf_name: "sle15"
+
+oscap_profiles:
+  - name: cis_server_l1
+    out: "oscap_report_cis_level1_server.html"
+  - name: cis_workstation_l1
+    out: "oscap_report_cis_level1_workstation.html"
+  - name: cis
+    out: "oscap_report_cis_level2_server.html"
+  - name: cis_workstation_l2
+    out: "oscap_report_cis_level2_workstation.html"
