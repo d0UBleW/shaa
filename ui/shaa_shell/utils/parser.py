@@ -26,3 +26,5 @@ cis_parser.add_subparsers(title="subcommands",
 profile_parser = Cmd2ArgumentParser()
 profile_parser.add_subparsers(title="subcommands",
                               help="subcommand for profile module")
+
+play_parser = Cmd2ArgumentParser()

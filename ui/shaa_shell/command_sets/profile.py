@@ -108,6 +108,11 @@ class profile_subcmd(CommandSet):
         if self._cmd is None:
             return
         self._cmd.check_if_profile_changed()  # type: ignore
+
+        if profile is not None:
+            self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
+
+        arg_profile = profile
         if profile is None:
             profile = Profile.load(ns.name)
             self._cmd._profile = profile  # type: ignore
@@ -117,10 +122,12 @@ class profile_subcmd(CommandSet):
 
         _profile: Profile = self._cmd._profile  # type: ignore
         inv_name = _profile.inv_name
-        if inv_name is not None:
+        if inv_name is not None and arg_profile is None:
             self._cmd.do_inventory(f"load {inv_name}")  # type: ignore
 
         for pre_key, pre_val in _profile.presets.items():
+            if arg_profile is not None:
+                break
             if pre_val is None:
                 continue
             self._cmd.do_preset(f"{pre_key} load {pre_val}")  # type: ignore

@@ -11,3 +11,7 @@ __pycache__/
 venv/
 ui/shaa_shell/data/custom/*
 !ui/shaa_shell/data/custom/**/example.yml
+ansible/*.yml
+!ansible/main.yml
+ansible/inventory/*.yml
+!ansible/inventory/main.yml

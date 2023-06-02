@@ -105,6 +105,10 @@ class inventory_subcmd(CommandSet):
         if self._cmd is None:
             return
         self._cmd.check_if_inv_changed()  # type: ignore[attr-defined]
+
+        if inv is not None:
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+
         if inv is None:
             inv = Inventory.load(ns.name)
             self._cmd._inventory = inv  # type: ignore[attr-defined]

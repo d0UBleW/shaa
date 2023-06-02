@@ -4,6 +4,7 @@ from ruamel.yaml import YAML
 from typing import Text, Dict, Any
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.profile import Profile
 from shaa_shell.utils.path import (
     PLAYBOOK_PATH,
     ANSIBLE_INV_PATH,
@@ -33,16 +34,23 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
     return vars
 
 
-def generate_playbook(name: Text):
-    with open(f"shaa_shell/data/custom/profile/{name}.yml") as f:
-        data = yaml.load(f)
+def generate_playbook(profile: Profile) -> bool:
+    name = profile.name
+    presets = profile.presets
 
-    cis_vars = convert_cis_to_ansible_vars(data["cis"])
-    inv = Inventory.load(data["inventory"])
+    all_vars = {}
+    if "cis" in presets.keys() and presets["cis"] is not None:
+        cis_vars = convert_cis_to_ansible_vars(presets["cis"])
+        all_vars.update(cis_vars)
+
+    inv_name = profile.inv_name
+    if inv_name is not None:
+        inv = Inventory.load(inv_name)
+
     if inv is None:
-        print("inv is None")
-        return
-    inv.groups["ungrouped"].group_vars = cis_vars
+        return False
+
+    inv.groups["ungrouped"].group_vars = all_vars
     inv.save(name, ANSIBLE_INV_PATH)
 
     data = [{
@@ -59,3 +67,5 @@ def generate_playbook(name: Text):
 
     with open(playbook_fpath, "w") as f:
         yaml.dump(data, f)
+
+    return True

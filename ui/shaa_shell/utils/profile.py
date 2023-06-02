@@ -35,6 +35,10 @@ class Profile:
         if name in Profile.list_profile():
             return None
 
+        if name == "_shaa_unnamed_profile":
+            print("[!] Reserved profile name")
+            return None
+
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
             return None
 

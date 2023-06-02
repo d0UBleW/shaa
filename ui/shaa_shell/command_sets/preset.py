@@ -91,6 +91,9 @@ class preset_cis_cmd(CommandSet):
 
         self._cmd.check_if_cis_changed()  # type: ignore[attr-defined]
 
+        if cis is not None:
+            self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
+
         if cis is None:
             cis = CIS.load(ns.name)
             self._cmd._cis = cis  # type: ignore[attr-defined]

@@ -1,5 +1,7 @@
 import argparse
 import cmd2
+from typing import Optional
+
 from shaa_shell.command_sets import (
     inventory as inv_cs,
     inventory_node as inv_node_cs,
@@ -8,16 +10,17 @@ from shaa_shell.command_sets import (
     preset as pre_cs,
     profile as pro_cs,
 )
-from typing import Optional
 from shaa_shell.utils.parser import (
     inventory_parser,
     preset_parser,
     profile_parser,
+    play_parser,
     clear_parser,
 )
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.profile import Profile
+from shaa_shell.utils import play
 
 
 class ShaaShell(cmd2.Cmd):
@@ -106,6 +109,43 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("No subcommand was provided")
             self.do_help("profile")
 
+    @cmd2.with_argparser(play_parser)
+    @cmd2.with_category("play")
+    def do_play(self, ns: argparse.Namespace):
+        """
+        Start hardening based on current loaded profile
+        If no profile is loaded, current inventory and presets are used instead
+
+        Note: only saved inventory and presets data are used, unsaved changes
+        are ignored
+        """
+        inv = self._inventory
+        if inv is None:
+            self.poutput("[!] No inventory is loaded, aborting!")
+            return
+
+        # TODO: check if at least one preset is set
+        cis = self._cis
+        if cis is None:
+            self.poutput("[!] No CIS preset is loaded, aborting!")
+            return
+
+        profile = self._profile
+        if profile is None:
+            profile = Profile(name="_shaa_unnamed_profile")
+            profile.inv_name = inv.name
+            profile.presets["cis"] = cis.name
+
+        self.check_if_inv_changed()
+        self.check_if_cis_changed()
+
+        self.poutput("[+] Generating playbook ...")
+        if not play.generate_playbook(profile):
+            self.poutput("[!] Error in generating playbook")
+            self.poutput("    Inventory data is empty, try to save it first")
+            return
+        self.poutput("[+] Done")
+
     @cmd2.with_argparser(clear_parser)
     @cmd2.with_category("general")
     def do_clear(self, ns: argparse.Namespace):
@@ -122,7 +162,7 @@ class ShaaShell(cmd2.Cmd):
                 if self._inventory is not None:
                     self._inventory.save()
                     self.poutput("[+] Changes have been saved successfully")
-            self._inv_has_changed = False
+                    self._inv_has_changed = False
 
     def check_if_cis_changed(self) -> None:
         if self._cis_has_changed:
@@ -132,7 +172,7 @@ class ShaaShell(cmd2.Cmd):
                 if self._cis is not None:
                     self._cis.save()
                     self.poutput("[+] Changes have been saved successfully")
-            self._inv_has_changed = False
+                    self._cis_has_changed = False
 
     def check_if_profile_changed(self) -> None:
         if self._profile_has_changed:
@@ -142,7 +182,7 @@ class ShaaShell(cmd2.Cmd):
                 if self._profile is not None:
                     self._profile.save()
                     self.poutput("[+] Changes have been saved successfully")
-            self._profile_has_changed = False
+                    self._profile_has_changed = False
 
 
 def main():
