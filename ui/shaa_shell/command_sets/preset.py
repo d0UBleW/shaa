@@ -10,7 +10,7 @@ from cmd2 import (
 from cmd2.table_creator import SimpleTable, Column
 from cmd2.exceptions import CommandSetRegistrationError
 from typing import List, Text, Optional
-from utils.cis import CIS
+from shaa_shell.utils.cis import CIS
 
 
 @with_default_category("preset")

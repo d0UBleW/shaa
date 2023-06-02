@@ -10,8 +10,8 @@ from cmd2 import (  # type: ignore[import]
     CompletionItem,
 )
 from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
-from utils.cis import CIS
-from utils.parser import cis_parser
+from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.parser import cis_parser
 from typing import List, Text, Dict, Optional
 
 

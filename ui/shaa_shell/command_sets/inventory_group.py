@@ -17,11 +17,11 @@ from dataclasses import asdict
 import pprint
 import re
 from typing import List, Text
-from utils.inventory import (
+from shaa_shell.utils.inventory import (
     Inventory,
     InventoryGroup,
 )
-from utils.parser import inventory_group_parser
+from shaa_shell.utils.parser import inventory_group_parser
 
 
 @with_default_category("inventory group")

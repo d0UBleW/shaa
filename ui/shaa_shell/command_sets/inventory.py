@@ -13,7 +13,7 @@ from cmd2.table_creator import (
 )
 from cmd2.exceptions import CommandSetRegistrationError
 from typing import List, Text, Optional
-from utils.inventory import Inventory
+from shaa_shell.utils.inventory import Inventory
 
 
 @with_default_category("inventory")

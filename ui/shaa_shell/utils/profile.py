@@ -7,7 +7,7 @@ import re
 
 yaml = YAML(typ="rt")
 
-PROFILE_PATH = Path("data/custom/profile/")
+PROFILE_PATH = Path("shaa_shell/data/custom/profile/")
 
 
 class Profile:

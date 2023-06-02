@@ -7,12 +7,12 @@ import re
 from ruamel.yaml import YAML  # type: ignore[import]
 from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
 from typing import List, Text, Optional, Dict, Tuple, Any
-from utils.vault import vault
+from shaa_shell.utils.vault import vault
 from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
 
 yaml = YAML(typ="rt")
 
-INVENTORY_PATH = Path("data/custom/inventory/")
+INVENTORY_PATH = Path("shaa_shell/data/custom/inventory/")
 
 
 @dataclass(order=True)

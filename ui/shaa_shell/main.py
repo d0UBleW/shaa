@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-
 import argparse
-import cmd2  # type: ignore[import]
-from command_sets import (
+import cmd2
+from shaa_shell.command_sets import (
     inventory as inv_cs,
     inventory_node as inv_node_cs,
     inventory_group as inv_group_cs,
@@ -11,14 +9,14 @@ from command_sets import (
     profile as pro_cs,
 )
 from typing import Optional
-from utils.parser import (
+from shaa_shell.utils.parser import (
     inventory_parser,
     preset_parser,
     profile_parser,
 )
-from utils.inventory import Inventory
-from utils.cis import CIS
-from utils.profile import Profile
+from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.profile import Profile
 
 
 class ShaaShell(cmd2.Cmd):
@@ -34,8 +32,8 @@ class ShaaShell(cmd2.Cmd):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
             *args,
-            persistent_history_file='.shaa_shell_hist',
-            startup_script='.shaa_shell_rc',
+            persistent_history_file='~/.shaa_shell_hist',
+            startup_script='~/.shaa_shell_rc',
             silence_startup_script=True,
             auto_load_commands=False,
             **kwargs,

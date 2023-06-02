@@ -3,11 +3,11 @@
 from ruamel.yaml import YAML  # type: ignore[import]
 from typing import Optional, Text, Dict, List, Tuple, Any
 from pathlib import Path
-from utils.preset import list_preset
+from shaa_shell.utils.preset import list_preset
 
 yaml = YAML(typ="rt")
-CIS_PRESET_PATH = Path("data/custom/cis/")
-cis_data_file_path = "data/template/cis.yml"
+CIS_PRESET_PATH = Path("shaa_shell/data/custom/cis/")
+cis_data_file_path = "shaa_shell/data/template/cis.yml"
 
 
 class CIS:

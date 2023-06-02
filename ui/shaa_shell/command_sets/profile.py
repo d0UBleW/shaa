@@ -12,10 +12,10 @@ from cmd2.table_creator import (  # type: ignore[import]
     SimpleTable,
     Column,
 )
-from utils.profile import Profile
-from utils.inventory import Inventory
-from utils.preset import list_preset
-from utils.cis import CIS
+from shaa_shell.utils.profile import Profile
+from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.preset import list_preset
+from shaa_shell.utils.cis import CIS
 
 
 @with_default_category("profile")

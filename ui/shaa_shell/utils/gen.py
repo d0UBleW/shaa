@@ -3,8 +3,8 @@
 from ruamel.yaml import YAML
 from pathlib import Path
 from typing import Text, Dict, Any
-from utils.cis import CIS
-from utils.inventory import Inventory
+from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.inventory import Inventory
 
 yaml = YAML(typ="rt")
 
@@ -31,7 +31,7 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
 
 
 def generate_playbook(name: Text):
-    with open(f"data/custom/profile/{name}.yml") as f:
+    with open(f"shaa_shell/data/custom/profile/{name}.yml") as f:
         data = yaml.load(f)
 
     cis_vars = convert_cis_to_ansible_vars(data["cis"])
@@ -40,7 +40,7 @@ def generate_playbook(name: Text):
         print("inv is None")
         return
     inv.groups["ungrouped"].group_vars = cis_vars
-    inv.save(name, Path("../ansible/inventory"))
+    inv.save(name, Path("../../ansible/inventory"))
 
     data = [{
         "name": name,
@@ -52,7 +52,7 @@ def generate_playbook(name: Text):
         }]
     }]
 
-    playbook_file_path = Path("../ansible").joinpath(f"{name}.yml").resolve()
+    playbook_fpath = Path("../../ansible").joinpath(f"{name}.yml").resolve()
 
-    with open(playbook_file_path, "w") as f:
+    with open(playbook_fpath, "w") as f:
         yaml.dump(data, f)

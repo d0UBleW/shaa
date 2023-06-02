@@ -16,11 +16,11 @@ from dataclasses import asdict
 import pprint
 import re
 from typing import List, Text, Tuple, Dict
-from utils.inventory import (
+from shaa_shell.utils.inventory import (
     Inventory,
     InventoryNode,
 )
-from utils.parser import inventory_node_parser
+from shaa_shell.utils.parser import inventory_node_parser
 
 
 @with_default_category("inventory node")
