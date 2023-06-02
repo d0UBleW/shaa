@@ -40,8 +40,8 @@ class cis_section_cmd(CommandSet):
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        data = self._cmd._cis.list_section_and_details(
-            ns.section_id)  # type: ignore
+        data = self._cmd._cis.list_section_and_details(  # type: ignore
+            ns.section_id)
         columns = [
             Column("Section ID", width=10),
             Column("Enabled", width=8),

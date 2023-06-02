@@ -12,11 +12,11 @@ yaml = YAML(typ="rt")
 class Profile:
     def __init__(self, name: Text,
                  inv_name: Optional[Text] = None,
-                 presets: Dict = {}):
+                 presets: Dict[Text, Optional[Text]] = {}):
         self.name: Text = name
         self.inv_name: Optional[Text] = inv_name
         if len(presets.keys()) == 0:
-            self.presets = {
+            self.presets: Dict[Text, Optional[Text]] = {
                 "cis": None,
                 "oscap": None,
                 "extra": None,

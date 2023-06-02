@@ -89,16 +89,16 @@ class profile_subcmd(CommandSet):
             warning_text += "already existed"
             self._cmd.poutput(warning_text)
             return
-        self._cmd._profile = profile
+        self._cmd._profile = profile  # type: ignore
 
-        inv: Optional[Inventory] = self._cmd._inventory
-        cis: Optional[CIS] = self._cmd._cis
+        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore
         if inv is not None:
             profile.inv_name = inv.name
         if cis is not None:
             profile.presets["cis"] = cis.name
 
-        return self.profile_load(None, profile)
+        return self.profile_load(None, profile)  # type: ignore
 
     @as_subcommand_to("profile", "load", load_parser,
                       help="load profile")
@@ -107,31 +107,31 @@ class profile_subcmd(CommandSet):
                      profile: Optional[Profile] = None):
         if self._cmd is None:
             return
-        self._cmd.check_if_profile_changed()
+        self._cmd.check_if_profile_changed()  # type: ignore
         if profile is None:
             profile = Profile.load(ns.name)
-            self._cmd._profile = profile
+            self._cmd._profile = profile  # type: ignore
 
         if profile is None:
             return
 
-        _profile: Profile = self._cmd._profile
+        _profile: Profile = self._cmd._profile  # type: ignore
         inv_name = _profile.inv_name
         if inv_name is not None:
-            self._cmd.do_inventory(f"load {inv_name}")
+            self._cmd.do_inventory(f"load {inv_name}")  # type: ignore
 
         for pre_key, pre_val in _profile.presets.items():
             if pre_val is None:
                 continue
-            self._cmd.do_preset(f"{pre_key} load {pre_val}")
+            self._cmd.do_preset(f"{pre_key} load {pre_val}")  # type: ignore
 
     @as_subcommand_to("profile", "unload", unload_parser,
                       help="unload profile")
     def profile_unload(self: CommandSet, _):
         if self._cmd is None:
             return
-        self._cmd.check_if_profile_changed()
-        self._cmd._profile = None
+        self._cmd.check_if_profile_changed()  # type: ignore
+        self._cmd._profile = None  # type: ignore
 
     @as_subcommand_to("profile", "list", list_parser,
                       aliases=["ls"],
@@ -157,7 +157,7 @@ class profile_subcmd(CommandSet):
     def profile_save(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        profile: Optional[Profile] = self._cmd._profile
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
             self._cmd.poutput("[!] Currently, there is no profile loaded")
             return
@@ -165,7 +165,7 @@ class profile_subcmd(CommandSet):
             self._cmd.poutput("[!] Invalid profile name")
             return
 
-        self._cmd._profile_has_changed = False
+        self._cmd._profile_has_changed = False  # type: ignore
         self._cmd.poutput("[+] Profile has been saved")
 
     @as_subcommand_to("profile", "rename", rename_parser,
@@ -173,7 +173,7 @@ class profile_subcmd(CommandSet):
     def profile_rename(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        profile: Optional[Profile] = self._cmd._profile
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
             self._cmd.poutput("[!] Currently, there is no profile loaded")
             return
@@ -192,7 +192,7 @@ class profile_subcmd(CommandSet):
         if self._cmd is None:
             return
 
-        profile: Optional[Profile] = self._cmd._profile
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
             self._cmd.poutput("[!] Currently, there is no profile loaded")
             return
@@ -205,17 +205,17 @@ class profile_subcmd(CommandSet):
         if self._cmd is None:
             return
 
-        profile: Optional[Profile] = self._cmd._profile
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
             self._cmd.poutput("[!] Currently, there is no profile loaded")
             return
 
         if ns.config == "inventory":
             profile.inv_name = None
-            self._cmd.do_inventory("unload")
+            self._cmd.do_inventory("unload")  # type: ignore
         else:
             profile.presets[ns.config] = None
-            self._cmd.do_preset(f"{ns.config} unload")
+            self._cmd.do_preset(f"{ns.config} unload")  # type: ignore
 
         self._cmd.poutput(f"[+] {ns.config} unset successfully")
 
@@ -225,7 +225,7 @@ class profile_subcmd(CommandSet):
         if self._cmd is None:
             return
 
-        profile: Optional[Profile] = self._cmd._profile
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
             self._cmd.poutput("[!] Currently, there is no profile loaded")
             return
@@ -237,7 +237,7 @@ class profile_subcmd(CommandSet):
                 return
             old_name = profile.inv_name
             profile.inv_name = ns.name
-            self._cmd.do_inventory(f"load {ns.name}")
+            self._cmd.do_inventory(f"load {ns.name}")  # type: ignore
             self._cmd.poutput("\n[+] Inventory set successfully")
         elif ns.config == "cis":
             if ns.name not in list_preset("cis"):
@@ -246,7 +246,7 @@ class profile_subcmd(CommandSet):
             if "cis" in profile.presets.keys():
                 old_name = profile.presets["cis"]
             profile.presets["cis"] = ns.name
-            self._cmd.do_preset(f"cis load {ns.name}")
+            self._cmd.do_preset(f"cis load {ns.name}")  # type: ignore
             self._cmd.poutput("\n[+] CIS preset set successfully")
         elif ns.config == "oscap":
             if ns.name not in list_preset("oscap"):
@@ -255,7 +255,7 @@ class profile_subcmd(CommandSet):
             if "oscap" in profile.presets.keys():
                 old_name = profile.presets["oscap"]
             profile.presets["oscap"] = ns.name
-            self._cmd.do_preset(f"oscap load {ns.name}")
+            self._cmd.do_preset(f"oscap load {ns.name}")  # type: ignore
             self._cmd.poutput("\n[+] OSCAP preset set successfully")
         elif ns.config == "extra":
             if ns.name not in list_preset("extra"):
@@ -264,7 +264,7 @@ class profile_subcmd(CommandSet):
             if "extra" in profile.presets.keys():
                 old_name = profile.presets["extra"]
             profile.presets["extra"] = ns.name
-            self._cmd.do_preset(f"extra load {ns.name}")
+            self._cmd.do_preset(f"extra load {ns.name}")  # type: ignore
             self._cmd.poutput("\n[+] Extra preset set successfully")
 
         if old_name is None:
@@ -272,4 +272,4 @@ class profile_subcmd(CommandSet):
 
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {ns.name}")
-        self._cmd._profile_has_changed = True
+        self._cmd._profile_has_changed = True  # type: ignore
