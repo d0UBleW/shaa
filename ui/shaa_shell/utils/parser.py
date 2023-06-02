@@ -2,6 +2,8 @@
 
 from cmd2 import Cmd2ArgumentParser
 
+clear_parser = Cmd2ArgumentParser()
+
 inventory_parser = Cmd2ArgumentParser()
 inventory_parser.add_subparsers(title="action", help="action on inventory")
 

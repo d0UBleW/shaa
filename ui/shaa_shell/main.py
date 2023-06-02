@@ -13,6 +13,7 @@ from shaa_shell.utils.parser import (
     inventory_parser,
     preset_parser,
     profile_parser,
+    clear_parser,
 )
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.cis import CIS
@@ -104,6 +105,14 @@ class ShaaShell(cmd2.Cmd):
         else:
             self.poutput("No subcommand was provided")
             self.do_help("profile")
+
+    @cmd2.with_argparser(clear_parser)
+    @cmd2.with_category("general")
+    def do_clear(self, ns: argparse.Namespace):
+        """
+        Clear screen
+        """
+        self.do_shell("clear -x")
 
     def check_if_inv_changed(self) -> None:
         if self._inv_has_changed:
