@@ -9,3 +9,5 @@ __pycache__/
 .shaa_*
 .mypy_cache/
 venv/
+ui/shaa_shell/data/custom/*
+!ui/shaa_shell/data/custom/**/example.yml

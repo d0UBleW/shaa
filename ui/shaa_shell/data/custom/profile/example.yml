@@ -1,0 +1,5 @@
+inventory: example
+presets:
+  cis: example
+  oscap:
+  extra:
