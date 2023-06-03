@@ -37,6 +37,24 @@ class cis_section_cmd(CommandSet):
         data = self._cmd._cis.list_section_and_details()  # type: ignore
         return [CompletionItem(s_id, s["title"]) for s_id, s in data]
 
+    def _choices_cis_section_enable(self) -> List[CompletionItem]:
+        if self._cmd is None:
+            return []
+        data = self._cmd._cis.list_section_and_details()  # type: ignore
+        cmp = [CompletionItem(s_id, s["title"]) for s_id, s in data]
+        cmp.append(CompletionItem("all", "Everything"))
+        cmp.append(CompletionItem("level_1_server", "Level 1 Server profile"))
+        cmp.append(CompletionItem("level_2_server", "Level 2 Server profile"))
+        cmp.append(
+            CompletionItem(
+                "level_1_workstation",
+                "Level 1 Workstation profile"))
+        cmp.append(
+            CompletionItem(
+                "level_2_workstation",
+                "Level 2 Workstation profile"))
+        return cmp
+
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -69,17 +87,35 @@ class cis_section_cmd(CommandSet):
         if cis is None:
             return
 
-        arg_s_id = ns.section_id
+        arg_sid: Text = ns.section_id
 
-        if arg_s_id != "all" and not cis.is_valid_section_id(arg_s_id):
+        valid_sid = [
+            "all",
+            "level_1_server",
+            "level_2_server",
+            "level_1_workstation",
+            "level_2_workstation",
+        ]
+
+        if arg_sid not in valid_sid and not cis.is_valid_section_id(arg_sid):
             self._cmd.poutput("[!] Invalid section id")
             return
 
         for s_id in cis.sections.keys():
-            if CIS.is_subsection(arg_s_id, s_id) or arg_s_id == "all":
+            is_sub = CIS.is_subsection(arg_sid, s_id)
+            if not is_sub and arg_sid not in valid_sid:
+                continue
+            if arg_sid.startswith("level_"):
+                section = cis.sections[s_id]
+                if "profile" not in section.keys():
+                    continue
+                s_profile = arg_sid.replace("_", " ").title()
+                if s_profile in section["profile"]:
+                    cis.sections[s_id]["enabled"] = True
+            else:
                 cis.sections[s_id]["enabled"] = True
-                if ns.verbose:
-                    self._cmd.poutput(f"[+] {s_id} enabled successfully")
+            if ns.verbose:
+                self._cmd.poutput(f"[+] {s_id} enabled successfully")
         self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Enabled successfully")
 
@@ -209,7 +245,7 @@ has subsections)""")
                                help="verbose output")
     enable_parser.add_argument(
         "section_id",
-        choices_provider=_choices_cis_section_title,
+        choices_provider=_choices_cis_section_enable,
         descriptive_header="Title",
         help="section id to be enabled (use `all` for everything)")
     enable_parser.set_defaults(func=cis_section_enable)
