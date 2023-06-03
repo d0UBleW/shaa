@@ -176,7 +176,8 @@ class profile_subcmd(CommandSet):
         self._cmd.poutput("[+] Profile has been saved")
 
     @as_subcommand_to("profile", "rename", rename_parser,
-                      help="rename profile name")
+                      help="""rename profile name (save current changes \
+automatically)""")
     def profile_rename(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -188,6 +189,7 @@ class profile_subcmd(CommandSet):
         if not profile.rename(ns.name):
             self._cmd.poutput("[!] Invalid profile name")
             return
+        self._cmd._profile_has_changed = False  # type: ignore
         self._cmd.poutput("[+] Profile has been renamed")
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {profile.name}")
@@ -205,6 +207,8 @@ class profile_subcmd(CommandSet):
             return
         profile.delete()
         self._cmd.poutput("[+] Profile has been deleted successfully")
+        self._cmd._profile_has_changed = False  # type: ignore
+        self.profile_unload(None)  # type: ignore[attr-defined]
 
     @as_subcommand_to("profile", "unset", unset_parser,
                       help="unset profile config")

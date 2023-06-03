@@ -80,7 +80,8 @@ class inventory_subcmd(CommandSet):
             return
         inv.delete_inventory()
         self._cmd.poutput("[+] Inventory has been deleted successfully")
-        self._cmd._inventory = None  # type: ignore[attr-defined]
+        self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
+        self.inventory_unload(None)  # type: ignore[attr-defined]
 
     @as_subcommand_to('inventory', 'list', list_parser,
                       aliases=["ls"],
@@ -168,7 +169,8 @@ class inventory_subcmd(CommandSet):
         self._cmd.poutput("[+] inventory has been saved")
 
     @as_subcommand_to('inventory', 'rename', rename_parser,
-                      help="rename inventory name")
+                      help="""rename inventory name (save current changes \
+automatically)""")
     def inventory_rename(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -180,6 +182,7 @@ class inventory_subcmd(CommandSet):
         if not inv.rename_inventory(ns.name):
             self._cmd.poutput("[!] Invalid inventory name")
             return
+        self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] inventory has been renamed")
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {inv.name}")
