@@ -18,12 +18,14 @@ set key value [-n node_name] [-g group_name]
 - [ ] node edit
 - [x] preset cis load
 - [x] preset cis create
-- [ ] preset cis delete
+- [x] preset cis delete
 - [x] preset cis save
 - [x] preset cis list
+- [x] preset cis rename
 - [x] cis section list
-- [ ] cis set
-- [ ] cis search
+- [x] cis set
+- [ ] cis set (edge cases)
+- [x] cis search
 - [x] cis enable disable
 - [ ] cis enable disable level profile
 - [x] profile create
