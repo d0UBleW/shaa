@@ -234,12 +234,12 @@ class Inventory:
         Dump inventory data into a YAML file which is compatible with Ansible
         inventory format
         """
-        if file_name is None:
-            file_name = self.name
-
-        if file_name in Inventory.list_inventory():
+        if file_name is not None and file_name in Inventory.list_inventory():
             print("[!] Specified inventory name exists")
             return False
+
+        if file_name is None:
+            file_name = self.name
 
         if not is_valid_file_path(inv_path, f"{file_name}.yml"):
             return False

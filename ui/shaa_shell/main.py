@@ -160,7 +160,8 @@ class ShaaShell(cmd2.Cmd):
             prompt += "[+] Do you want to save? [Y/n] "
             if (_ := self.read_input(prompt).lower()) != "n":
                 if self._inventory is not None:
-                    self._inventory.save()
+                    if not self._inventory.save():
+                        return
                     self.poutput("[+] Changes have been saved successfully")
                     self._inv_has_changed = False
 
@@ -170,7 +171,8 @@ class ShaaShell(cmd2.Cmd):
             prompt += "[+] Do you want to save? [Y/n] "
             if (_ := self.read_input(prompt).lower()) != "n":
                 if self._cis is not None:
-                    self._cis.save()
+                    if not self._cis.save():
+                        return
                     self.poutput("[+] Changes have been saved successfully")
                     self._cis_has_changed = False
 
@@ -180,7 +182,8 @@ class ShaaShell(cmd2.Cmd):
             prompt += "[+] Do you want to save? [Y/n] "
             if (_ := self.read_input(prompt).lower()) != "n":
                 if self._profile is not None:
-                    self._profile.save()
+                    if not self._profile.save():
+                        return
                     self.poutput("[+] Changes have been saved successfully")
                     self._profile_has_changed = False
 

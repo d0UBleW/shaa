@@ -89,12 +89,12 @@ class CIS:
         """
         Dump CIS data into a YAML file
         """
-        if file_name is None:
-            file_name = self.name
-
-        if file_name in CIS.list_preset():
+        if file_name is not None and file_name in CIS.list_preset():
             print("[!] Specified CIS preset name exists")
             return False
+
+        if file_name is None:
+            file_name = self.name
 
         if not is_valid_file_path(CIS_PRESET_PATH, f"{file_name}.yml"):
             return False
