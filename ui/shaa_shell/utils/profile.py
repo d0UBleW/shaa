@@ -27,7 +27,7 @@ class Profile:
     @staticmethod
     def list_profile(pattern: Text = ".*") -> List[Text]:
         files = PROFILE_PATH.glob("*.yml")
-        return list(filter(lambda fname: re.match(pattern, fname),
+        return list(filter(lambda fname: re.search(pattern, fname),
                            [file.stem for file in files]))
 
     @staticmethod

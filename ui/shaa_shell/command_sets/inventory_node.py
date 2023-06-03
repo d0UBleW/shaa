@@ -246,7 +246,7 @@ out ungrouped nodes)""",
         st = SimpleTable(columns)
 
         for node in inv.groups[ns.node_group].nodes.values():
-            if re.match(ns.pattern, node.name):
+            if re.search(ns.pattern, node.name):
                 data_list = list(asdict(node).items())
                 data_list[-1] = (data_list[-1][0],
                                  pprint.pformat(dict(data_list[-1][-1]),

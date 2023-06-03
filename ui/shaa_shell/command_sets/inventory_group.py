@@ -165,7 +165,7 @@ class inventory_group_subcmd(CommandSet):
         ]
         st = SimpleTable(columns)
         for group in inv.groups.values():
-            if re.match(ns.pattern, group.name):
+            if re.search(ns.pattern, group.name):
                 data_list = list(asdict(group).items())
                 data_list[1] = (data_list[1][0],
                                 pprint.pformat(dict(data_list[1][1]),

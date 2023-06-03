@@ -171,7 +171,7 @@ class Inventory:
         """
         Filter group name based on given pattern
         """
-        return list(filter(lambda group: re.match(pattern, group.name),
+        return list(filter(lambda group: re.search(pattern, group.name),
                            self.groups.values()))
 
     def add_node(self,
@@ -219,7 +219,7 @@ class Inventory:
         for group in self.groups.values():
             if groups is None or group.name in groups:
                 nodes += product(
-                    list(filter(lambda node: re.match(pattern, node.name),
+                    list(filter(lambda node: re.search(pattern, node.name),
                                 group.nodes.values())),
                     [group.name]
                 )
@@ -320,7 +320,7 @@ class Inventory:
         List inventory based on given pattern
         """
         files = INVENTORY_PATH.glob("*.yml")
-        return list(filter(lambda fname: re.match(pattern, fname),
+        return list(filter(lambda fname: re.search(pattern, fname),
                            [file.stem for file in files]))
 
     @staticmethod

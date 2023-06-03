@@ -17,5 +17,5 @@ def list_preset(_type: Text, pattern: Text = ".*") -> List[Text]:
         raise ValueError(f"preset type `{_type}` does not exist")
 
     files = preset_path.glob("*.yml")
-    return list(filter(lambda fname: re.match(pattern, fname),
+    return list(filter(lambda fname: re.search(pattern, fname),
                        [file.stem for file in files]))
