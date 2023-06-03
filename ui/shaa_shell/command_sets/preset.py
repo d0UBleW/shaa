@@ -38,7 +38,7 @@ class preset_cis_cmd(CommandSet):
         cis: Optional[CIS] = CIS.create(ns.name)
         if cis is None:
             warning_text = "[!] Invalid name or specified CIS preset name"
-            warning_text += "already existed"
+            warning_text += " already existed"
             self._cmd.poutput(warning_text)
             return
         self._cmd._cis = cis  # type: ignore[attr-defined]

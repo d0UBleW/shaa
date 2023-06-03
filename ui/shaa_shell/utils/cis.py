@@ -84,6 +84,10 @@ class CIS:
         if file_name is None:
             file_name = self.name
 
+        if file_name in CIS.list_preset():
+            print("[!] Specified CIS preset name exists")
+            return False
+
         if not is_valid_file_path(CIS_PRESET_PATH, f"{file_name}.yml"):
             return False
 

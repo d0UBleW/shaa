@@ -77,6 +77,10 @@ class Profile:
         if file_name is None:
             file_name = self.name
 
+        if file_name in Profile.list_profile():
+            print("[!] Specified profile name exists")
+            return False
+
         if not is_valid_file_path(PROFILE_PATH, f"{file_name}.yml"):
             return False
 

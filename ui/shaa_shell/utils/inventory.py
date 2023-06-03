@@ -237,6 +237,10 @@ class Inventory:
         if file_name is None:
             file_name = self.name
 
+        if file_name in Inventory.list_inventory():
+            print("[!] Specified inventory name exists")
+            return False
+
         if not is_valid_file_path(inv_path, f"{file_name}.yml"):
             return False
 
