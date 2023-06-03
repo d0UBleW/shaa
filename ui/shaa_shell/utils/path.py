@@ -23,8 +23,9 @@ ANSIBLE_INV_PATH = ROOT_PATH.joinpath("../../ansible/inventory/")
 
 
 def is_valid_file_path(parent: Path, file_name: Text) -> bool:
-    if "/" in file_name:
-        return False
+    for c in file_name:
+        if c in "/~`!@#$%^&*()+='\";:{}[]":
+            return False
 
     file_path = parent.joinpath(file_name).resolve()
     try:
