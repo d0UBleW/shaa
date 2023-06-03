@@ -55,7 +55,7 @@ sections:
       - "1.1.1.8"
 
   1.1.1.1:
-    title: Ensure mounting of cramfs filessytems is disabled
+    title: Ensure mounting of cramfs filesytems is disabled
     enabled: true
     profile:
       - Level 1 - Server
@@ -343,36 +343,63 @@ sections:
         value:
         default: root
         description: user who will run the cron job
+        value_type: single
+        valid:
       aide_cron_weekday:
         value:
         default: "*"
         description: |-
           cron setting for weekday frequency
-          Valid value: 0-7 (0 and 7 is Sunday), * for every weekday
+          Possible value: 0-7 (0 and 7 is Sunday), * for every weekday
+        value_type: range
+        range_start: 0
+        range_end: 7
+        valid:
+          - "*"
       aide_cron_month:
         value:
         default: "*"
         description: |
           cron setting for month frequency
-          Valid value: 1-12, * for every month
+          Possible value: 1-12, * for every month
+        value_type: range
+        range_start: 1
+        range_end: 12
+        valid:
+          - "*"
       aide_cron_day:
         value:
         default: "*"
         description: |
           cron setting for day frequency
-          Valid value: number of days in a month, * for every day
+          Possible value: number of days in a month, * for every day
+        value_type: range
+        range_start: 1
+        range_end: 31
+        valid:
+          - "*"
       aide_cron_hour:
         value:
         default: "1"
         description: |
           cron setting for hour frequency
-          Valid value: 0-23, * for every hour
+          Possible value: 0-23, * for every hour
+        value_type: range
+        range_start: 0
+        range_end: 23
+        valid:
+          - "*"
       aide_cron_minute:
         value:
         default: "*"
         description: |
           cron setting for minute frequency
-          Valid value: 0-59, * for every minute
+          Possible value: 0-59, * for every minute
+        value_type: range
+        range_start: 0
+        range_end: 59
+        valid:
+          - "*"
 
   "1.4":
     title: Secure Boot Settings
@@ -437,16 +464,27 @@ sections:
         default: apparmor
         description: |
           Mandatory Access Control (MAC) for Debian-based distribution family
+        value_type: choice
+        valid:
+          - apparmor
+          - selinux
       suse_mac:
         value:
         default: selinux
         description: |
           Mandatory Access Control (MAC) for Suse-based distribution family
+        value_type: choice
+        valid:
+          - apparmor
+          - selinux
       redhat_mac:
         value:
         default: selinux
         description: |
           Mandatory Access Control (MAC) for RedHat-based distribution family
+        value_type: choice
+        valid:
+          - selinux
 
   1.6.1:
     title: Ensure Mandatory Access Control Software is installed
@@ -502,6 +540,11 @@ sections:
         default: "targeted"
         description: |
           SELinux type, possible values: targeted, strict, mls
+        value_type: choice
+        valid:
+          - targeted
+          - strict
+          - mls
 
   1.6.2.4:
     title: Ensure SETroubleshoot is not installed
@@ -579,6 +622,8 @@ sections:
         default: "Hello"
         description: |
           Content of /etc/motd
+        value_type: single
+        valid:
 
   1.7.1.2:
     title: Ensure local login warning banner is configured properly
@@ -633,6 +678,8 @@ sections:
           Authorized uses only. All activity may be monitored and reported
         description: |
           Content of gdm banner
+        value_type: single
+        valid:
 
   "1.8":
     title: >-
@@ -791,6 +838,13 @@ sections:
           Time synchronization service name,
           possible values: ntp, chrony, systemd-timesyncd
 
+          Note: AlmaLinux only has chrony
+        value_type: choice
+        valid:
+          - ntp
+          - chrony
+          - systemd-timesyncd
+
   2.2.1.2:
     title: Ensure ntp is configured
     enabled: true
@@ -803,6 +857,8 @@ sections:
         default: "time1.google.com"
         description: |
           NTP remote server to sync with
+        value_type: single
+        valid:
       ntp_options:
         value:
         default:
@@ -813,6 +869,13 @@ sections:
           - noquery
         description: |
           NTP remote server to sync with
+        value_type: list_choice
+        valid:
+          - kod
+          - nomodify
+          - notrap
+          - nopeer
+          - noquery
 
   2.2.1.3:
     title: Ensure chrony is configured
@@ -836,6 +899,8 @@ sections:
           - time2.google.com
         description: |
           Main NTP remote servers to sync with
+        value_type: list
+        valid:
       systemd_timesyncd.fallback_ntp:
         value:
         default:
@@ -843,13 +908,19 @@ sections:
           - time4.google.com
         description: |
           Fallback NTP remote servers to sync with
+        value_type: list
+        valid:
       systemd_timesyncd.root_distance_max:
         value:
-        default: 1
+        default: "1"
         description: |
           Maximum acceptable root distance, i.e. the maximum estimated time
           (in seconds) required for a packet to travel to the server we are
           connected to from the server with the reference clock.
+        value_type: range
+        range_start: 1
+        range_end:
+        valid:
 
   2.2.2:
     title: Ensure X Window System is not installed
@@ -1188,11 +1259,15 @@ sections:
             - 172.16.0.0/12
         description: |
           TCP wrappers rule for allowing hosts
+        value_type: dict
+        valid:
       hosts_allow_cleanup:
         value:
         default: true
         description: |
           Clean up unspecified rules
+        value_type: bool
+        valid:
 
   3.3.3:
     title: Ensure /etc/hosts.deny is configured
@@ -1208,11 +1283,15 @@ sections:
             - ALL
         description: |
           TCP wrappers rule for denying hosts
+        value_type: dict
+        valid:
       hosts_deny_cleanup:
         value:
         default: true
         description: |
           Clean up unspecified rules
+        value_type: bool
+        valid:
 
   3.3.4:
     title: Ensure permissions on /etc/hosts.allow are configured
@@ -1294,6 +1373,8 @@ sections:
         default: true
         description: |
           Clean up ip6tables rules before configuring subsequent stuffs
+        value_type: bool
+        valid:
 
   3.5.1.1:
     title: Ensure IPv6 default deny firewall policy
@@ -1335,14 +1416,18 @@ sections:
             protocol: tcp
         description: |
           Allow traffic to specified ports and protocols
+        value_type: list_dict
+        valid:
       save_ip6tables_rules:
         value:
         default: true
         description: |
           Persist ip6tables rules
+        value_type: bool
+        valid:
 
   3.5.2:
-    title: Configure IPv4 ip6tables
+    title: Configure IPv4 iptables
     enabled: true
     subsections:
       - 3.5.2.1
@@ -1350,11 +1435,13 @@ sections:
       - 3.5.2.3
       - 3.5.2.4
     vars:
-      flush_ip4tables:
+      flush_iptables:
         value:
         default: true
         description: |
-          Clean up ip4tables rules before configuring subsequent stuffs
+          Clean up iptables rules before configuring subsequent stuffs
+        value_type: bool
+        valid:
 
   3.5.2.2:
     title: Ensure IPv4 loopback traffic is configured
@@ -1390,11 +1477,15 @@ sections:
             protocol: tcp
         description: |
           Allow traffic to specified ports and protocols
+        value_type: list_dict
+        valid:
       save_iptables_rules:
         value:
         default: true
         description: |
           Persist iptables rules
+        value_type: bool
+        valid:
 
   "3.6":
     title: Ensure wireless interfaces are disabled
@@ -1464,6 +1555,10 @@ sections:
         default: 10
         description: |
           Maximum size measured in MB (Megabytes)
+        value_type: range
+        range_start: 1
+        range_end:
+        valid:
 
   4.1.1.2:
     title: Ensure system is disabled when audit logs are full
@@ -1480,6 +1575,14 @@ sections:
           that it is starting to get low on disk space.
           Possible values: ignore, syslog, rotate, email, exec, suspend,
           single, halt
+        value_type: choice
+        valid:
+          - ignore
+          - syslog
+          - rotate
+          - email
+          - exec
+          - suspend
 
   4.1.1.3:
     title: Ensure audit logs are not automatically deleted
@@ -1695,6 +1798,8 @@ sections:
         default: loghost.example.com
         description: |
           The target remote host to send logs to
+        value_type: single
+        valid:
 
   4.2.1.6:
     title: >
@@ -1709,11 +1814,17 @@ sections:
         default: true
         description: |
           Denotes that the host is listening for remote logs
+        value_type: bool
+        valid:
       rsyslog_log_hosts_listen_port:
         value:
         default: 514
         description: |
           Specify the port to listen for remote logs
+        value_type: range
+        range_start: 1
+        range_end: 65535
+        valid:
 
   4.2.2:
     title: Configure journald
@@ -1771,6 +1882,13 @@ sections:
         description: |
           How frequent should log files be rotated
           Possible values: hourly, daily, weekly, monthly, yearly
+        value_type: choice
+        valid:
+          - hourly
+          - daily
+          - weekly
+          - monthly
+          - yearly
 
   "5":
     title: Access, Authentication and Authorization
@@ -1932,6 +2050,10 @@ sections:
         default: "verbose"
         description: |
           Possible values: verbose, info
+        value_type: choice
+        valid:
+          - verbose
+          - info
 
   5.2.6:
     title: Ensure SSH X11 forwarding is disabled
@@ -1953,6 +2075,10 @@ sections:
         default: 4
         description: |
           Number of authentication attempts allowed for each connection
+        value_type: range
+        range_start: 1
+        range_end: 4
+        valid:
 
   5.2.8:
     title: Ensure SSH IgnoreRhosts is enabled
@@ -2009,6 +2135,11 @@ sections:
           - aes128-ctr
         description: |
           Possible values: aes256-ctr, aes192-ctr, aes128-ctr
+        value_type: list_choice
+        valid:
+          - aes256-ctr
+          - aes192-ctr
+          - aes128-ctr
 
   5.2.14:
     title: Ensure only strong MAC algorithms are used
@@ -2024,6 +2155,10 @@ sections:
           - hmac-sha2-512
         description: |
           Possible values: hmac-sha2-256, hmac-sha2-512
+        value_type: list_choice
+        valid:
+          - hmac-sha2-256
+          - hmac-sha2-512
 
   5.2.15:
     title: Ensure only strong Key Exchange algorithms are used
@@ -2047,6 +2182,15 @@ sections:
             ecdh-sha2-nistp521, diffie-hellman-group-exchange-sha256,
             diffie-hellman-group16-sha512, diffie-hellman-group18-sha512,
             diffie-hellman-group14-sha256
+        value_type: list_choice
+        valid:
+          - ecdh-sha2-nistp256
+          - ecdh-sha2-nistp384
+          - ecdh-sha2-nistp521
+          - diffie-hellman-group-exchange-sha256
+          - diffie-hellman-group16-sha512
+          - diffie-hellman-group18-sha512
+          - diffie-hellman-group14-sha256
 
   5.2.16:
     title: Ensure SSH Idle Timeout Interval is configured
@@ -2061,12 +2205,20 @@ sections:
         description: |
           Duration of idle measured in seconds.
           After certain amount of seconds, the ssh connection would be closed
+        value_type: range
+        range_start: 30
+        range_end:
+        valid:
       sshd_idle_timeout_msg:
         value:
         default: 0
         description: |
           Number of warnings before terminating the ssh connection.
           0 means terminate session instantly without any warning message
+        value_type: range
+        range_start: 0
+        range_end:
+        valid:
 
   5.2.17:
     title: Ensure SSH LoginGraceTime is set to one minute or less
@@ -2080,6 +2232,10 @@ sections:
         default: 60
         description: |
           Number of seconds before login attempt is terminated
+        value_type: range
+        range_start: 0
+        range_end: 60
+        valid:
 
   5.2.18:
     title: Ensure SSH access is limited
@@ -2095,6 +2251,8 @@ sections:
         description: |
           List of allowed usernames to login through ssh.
           Asterisk (*) is a wildcard which means any users
+        value_type: list
+        valid:
       sshd_allow_groups:
         value:
         default:
@@ -2102,6 +2260,8 @@ sections:
         description: |
           List of allowed groups to login through ssh.
           Asterisk (*) is a wildcard which means any groups
+        value_type: list
+        valid:
       sshd_deny_users:
         value:
         default:
@@ -2110,6 +2270,8 @@ sections:
         description: |
           List of denied usernames to login through ssh.
           Asterisk (*) is a wildcard which means any users
+        value_type: list
+        valid:
       sshd_deny_groups:
         value:
         default:
@@ -2117,6 +2279,8 @@ sections:
         description: |
           List of denied groups to login through ssh.
           Asterisk (*) is a wildcard which means any groups
+        value_type: list
+        valid:
 
   5.2.19:
     title: Ensure SSH warning banner is configured
@@ -2130,6 +2294,8 @@ sections:
         default: "/etc/issue.net"
         description: |
           Path to file used for displaying warning banner
+        value_type: single
+        valid:
 
   5.2.20:
     title: Ensure SSH PAM is enabled
@@ -2169,6 +2335,8 @@ sections:
           connections. The probability increases linearly and all connection
           attempts are refused if the number of unauthenticated connections
           reaches "full" (60).
+        value_type: single
+        valid:
 
   5.2.23:
     title: Ensure SSH MaxSessions is set to 4 or less
@@ -2182,6 +2350,10 @@ sections:
         default: 4
         description: |
           Specify the max number of authenticated sessions.
+        value_type: range
+        range_start: 1
+        range_end: 4
+        valid:
 
   "5.3":
     title: Configure PAM
@@ -2204,35 +2376,59 @@ sections:
         default: 3
         description: |
           Number of password change attempts
+        value_type: range
+        range_start: 1
+        range_end: 3
+        valid:
       pwquality_minlen:
         value:
         default: 14
         description: |
           Minimal length of new password
+        value_type: range
+        range_start: 8
+        range_end:
+        valid:
       pwquality_dcredit:
         value:
         default: -1
         description: |
           Number of digit in new password
           Negative is minum, positive is maximum, 0 is disable
+        value_type: range
+        range_start:
+        range_end:
+        valid:
       pwquality_ucredit:
         value:
         default: -1
         description: |
           Number of uppercase letter in new password
           Negative is minum, positive is maximum, 0 is disable
+        value_type: range
+        range_start:
+        range_end:
+        valid:
       pwquality_ocredit:
         value:
         default: -1
         description: |
           Number of special symbol in new password
           Negative is minum, positive is maximum, 0 is disable
+        value_type: range
+        range_start:
+        range_end:
+        valid:
       pwquality_lcredit:
         value:
         default: -1
         description: |
           Number of lowercase letter in new password
           Negative is minum, positive is maximum, 0 is disable
+        value_type: range
+        range_start:
+        range_end:
+        valid:
 
   5.3.2:
     title: Ensure lockout for failed password attempts is configured
@@ -2246,11 +2442,19 @@ sections:
         default: 2
         description: |
           Number of authentication attempts before getting locked out
+        value_type: range
+        range_start: 1
+        range_end:
+        valid:
       pam_auth_lock_time:
         value:
         default: 10
         description: |
           Lockout period measured in seconds
+        value_type: range
+        range_start: 10
+        range_end:
+        valid:
 
   5.3.3:
     title: Ensure password reuse is limited
@@ -2264,6 +2468,10 @@ sections:
         default: 5
         description: |
           Prevent reuse of last N passwords
+        value_type: range
+        range_start: 0
+        range_end:
+        valid:
 
   5.3.4:
     title: Ensure password hashing algorithm is SHA-512
@@ -2277,6 +2485,8 @@ sections:
         default: true
         description: |
           Force password change on non system users
+        value_type: bool
+        valid:
 
   "5.4":
     title: User Accounts and Environment
@@ -2310,6 +2520,10 @@ sections:
         default: 365
         description: |
           Password lifetime
+        value_type: range
+        range_start: 1
+        range_end: 365
+        valid:
 
   5.4.1.2:
     title: Ensure minimum days between password change is 7 or more
@@ -2323,6 +2537,10 @@ sections:
         default: 7
         description: |
           Minimum days before a password could be changed again
+        value_type: range
+        range_start: 7
+        range_end:
+        valid:
 
   5.4.1.3:
     title: Ensure password expiration warning days is 7 or more
@@ -2336,6 +2554,10 @@ sections:
         default: 14
         description: |
           Number of days before warning on password expiration is given
+        value_type: range
+        range_start: 7
+        range_end:
+        valid:
 
   5.4.1.4:
     title: Ensure inactive password lock is 30 days or less
@@ -2349,6 +2571,10 @@ sections:
         default: 30
         description: |
           Number of inactive days before the password is locked out
+        value_type: range
+        range_start: 1
+        range_end: 30
+        valid:
 
   5.4.1.5:
     title: Ensure all users last password change date is in the past
@@ -2386,6 +2612,8 @@ sections:
         default: "027"
         description: |
           umask value
+        value_type: single
+        valid:
 
   5.4.5:
     title: Ensure default user shell timeout is 900 seconds or less
@@ -2399,6 +2627,10 @@ sections:
         default: 900
         description: |
           Number of idle seconds before a user is logged out from the shell
+        value_type: range
+        range_start: 60
+        range_end: 900
+        valid:
 
   "5.5":
     title: Ensure root login is restricted to system console
@@ -2451,6 +2683,9 @@ sections:
         value:
         default: /root/pkg_verify
         description: |
+          Output of package verification command in remote hosts
+        value_type: single
+        valid:
 
   6.1.2:
     title: Ensure permissions on /etc/passwd are configured
@@ -2527,10 +2762,15 @@ sections:
         default: true
         description: |
           Create dummy user to own the unowned files or directories
+        value_type: bool
+        valid:
       dummy_username:
         value:
         default: foobar
         description: |
+          Username of dummy user to own unowned files or directories
+        value_type: single
+        valid:
 
   6.1.12:
     title: Ensure no ungrouped files or directories exist
@@ -2544,10 +2784,15 @@ sections:
         default: true
         description: |
           Create dummy group to own the unowned files or directories
+        value_type: bool
+        valid:
       dummy_groupname:
         value:
         default: foobar
         description: |
+          Group name of dummy group to own unowned files or directories
+        value_type: single
+        valid:
 
   6.1.13:
     title: Audit SUID executables
@@ -2642,6 +2887,9 @@ sections:
         value:
         default: "0700"
         description: |
+          Desired permissions for users' home directories
+        value_type: single
+        valid:
 
   6.2.9:
     title: Ensure users own their home directories

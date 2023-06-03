@@ -74,12 +74,12 @@ class Profile:
         return Profile(name=name, inv_name=inv_name, presets=presets)
 
     def save(self, file_name: Optional[Text] = None) -> bool:
-        if file_name is None:
-            file_name = self.name
-
-        if file_name in Profile.list_profile():
+        if file_name is not None and file_name in Profile.list_profile():
             print("[!] Specified profile name exists")
             return False
+
+        if file_name is None:
+            file_name = self.name
 
         if not is_valid_file_path(PROFILE_PATH, f"{file_name}.yml"):
             return False

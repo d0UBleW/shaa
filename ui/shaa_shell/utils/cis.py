@@ -44,9 +44,57 @@ class CIS:
         section = self.sections[section_id]
         return "vars" in section.keys() and section["vars"] is not None
 
-    def is_valid_option(self, section_id: Text, option_key: Text) -> bool:
+    def is_valid_option_key(self, section_id: Text, option_key: Text) -> bool:
         section_vars = self.sections[section_id]["vars"]
         return option_key in section_vars.keys()
+
+    def is_valid_option_val(self,
+                            section_id: Text,
+                            option_key: Text,
+                            option_val: List[Text]) -> bool:
+        option = self.sections[section_id]["vars"][option_key]
+        valid = option["valid"]
+        value_type = option["value_type"]
+        if value_type == "single":
+            return True
+        if value_type == "dict":
+            return True
+        if value_type == "list_dict":
+            return True
+        if value_type == "range":
+            range_start = option["range_start"]
+            range_end = option["range_end"]
+            val = option_val[0]
+            try:
+                val = int(val)  # type: ignore[assignment]
+            except ValueError:
+                print("[!] Invalid value, number is expected")
+                return False
+            if valid is not None and val in valid:
+                return True
+            if val < range_start:
+                print("[!] Supplied value is lower than allowed value")
+                print(f"    Min: {range_start}")
+                return False
+            if range_end is not None and val > range_end:
+                print("[!] Supplied value is higher than allowed value")
+                print(f"    Max: {range_end}")
+                return False
+            return True
+        if value_type == "choice":
+            val = option_val[0]
+            if val not in valid:
+                return False
+            return True
+        if value_type == "list_choice":
+            option_val_s = set(option_val)
+            valid_s = set(valid)
+            diff = option_val_s - valid_s
+            if len(diff) > 0:
+                print("[!] Invalid value provided")
+                print(f"    {diff}")
+                return False
+        return True
 
     def list_section(self, section_id: Optional[Text] = None) -> List[Text]:
         return list(self.sections.keys())
