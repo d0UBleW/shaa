@@ -2,6 +2,7 @@
 - name: Save ip6tables rules
   when:
     - save_ip6tables_rules | bool
+    - section_3_5_1_1 or section_3_5_1_2 or section_3_5_1_3 or section_3_5_1_4
     - 'ansible_os_family != "Suse"'
   block:
     - name: Install iptables persistence package

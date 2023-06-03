@@ -2,6 +2,7 @@
 - name: Save iptables rules
   when:
     - save_iptables_rules | bool
+    - section_3_5_2_1 or section_3_5_2_2 or section_3_5_2_3 or section_3_5_2_4
     - 'ansible_os_family != "Suse"'
   block:
     - name: Install iptables persistence package
@@ -14,6 +15,7 @@
     - name: Save iptables rules
       ansible.builtin.shell: >
         iptables-save > {{ iptables_data }}
+      changed_when: false
 
     - name: Enable iptables persistence service
       when:

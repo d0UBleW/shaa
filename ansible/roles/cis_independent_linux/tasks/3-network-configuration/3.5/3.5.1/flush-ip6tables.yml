@@ -2,6 +2,7 @@
 - name: Flush IPv6 ip6tables
   when:
     - flush_ip6tables | bool
+    - section_3_5_1_1 or section_3_5_1_2 or section_3_5_1_3 or section_3_5_1_4
     - 'ansible_os_family != "Suse"'
   block:
     - name: Flush IPv6 ip6tables

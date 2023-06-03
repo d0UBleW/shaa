@@ -2,6 +2,7 @@
 - name: Flush IPv4 ip6tables
   when:
     - flush_iptables | bool
+    - section_3_5_2_1 or section_3_5_2_2 or section_3_5_2_3 or section_3_5_2_4
     - 'ansible_os_family != "Suse"'
   block:
     - name: Flush IPv4 iptables
