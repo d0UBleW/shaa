@@ -3,6 +3,8 @@ from __future__ import annotations
 import re
 from ruamel.yaml import YAML  # type: ignore[import]
 from typing import Optional, Text, Dict, List, Tuple, Any
+from pathlib import Path
+
 from shaa_shell.utils.preset import list_preset
 from shaa_shell.utils.path import (
     CIS_PRESET_PATH,
@@ -106,6 +108,18 @@ class CIS:
         with open(file_path, 'w') as f:
             yaml.dump(data, f)
 
+        return True
+
+    def delete(self) -> None:
+        file_path = CIS_PRESET_PATH.joinpath(f"{self.name}.yml").resolve()
+        Path.unlink(file_path, missing_ok=True)
+
+    def rename(self, new_name: Text) -> bool:
+        if not self.save(new_name):
+            return False
+
+        self.delete()
+        self.name = new_name
         return True
 
     @staticmethod

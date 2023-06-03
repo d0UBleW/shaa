@@ -58,7 +58,37 @@ class preset_cis_cmd(CommandSet):
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] CIS preset has been saved")
 
-    def preset_cis_unload(self, ns: argparse.Namespace):
+    def preset_cis_rename(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+        if cis is None:
+            self._cmd.poutput("[!] Currently, there is no CIS preset loaded")
+            return
+        old_name = cis.name
+        if not cis.rename(ns.name):
+            self._cmd.poutput("[!] Invalid CIS preset name")
+            return
+        self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
+        self._cmd.poutput("[+] CIS preset has been renamed")
+        self._cmd.poutput(f"    old: {old_name}")
+        self._cmd.poutput(f"    new: {cis.name}")
+
+    def preset_cis_delete(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+        if cis is None:
+            self._cmd.poutput("[!] Currently, there is no CIS preset loaded")
+            return
+        cis.delete()
+        self._cmd.poutput("[+] CIS preset has been deleted successfully")
+        self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
+        self.preset_cis_unload(None)
+
+    def preset_cis_unload(self, _):
         if self._cmd is None:
             return
         self._cmd.check_if_cis_changed()  # type: ignore[attr-defined]
@@ -175,3 +205,14 @@ class preset_cis_cmd(CommandSet):
                              default=".*",
                              help="preset name regex pattern")
     list_parser.set_defaults(func=preset_cis_list)
+
+    delete_parser = pre_cis_subparser.add_parser(
+        "delete", help="delete CIS preset")
+    delete_parser.set_defaults(func=preset_cis_delete)
+
+    rename_parser = pre_cis_subparser.add_parser(
+        "rename", help="""rename CIS preset (save current changes \
+automatically)""")
+    rename_parser.add_argument("name",
+                               help="new name of CIS preset")
+    rename_parser.set_defaults(func=preset_cis_rename)
