@@ -284,7 +284,7 @@ class Inventory:
             return None
 
         if name not in Inventory.list_inventory():
-            print("[!] Inventory name not found")
+            print(f"[!] Inventory name not found: {name}")
             return None
 
         file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()

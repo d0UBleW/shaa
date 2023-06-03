@@ -56,7 +56,7 @@ class cis_section_cmd(CommandSet):
             if ns.status == "enabled" and s["enabled"]:
                 data_list.append([s_id, s["enabled"], s["title"]])
                 continue
-            if not s["enabled"]:
+            if ns.status == "disabled" and not s["enabled"]:
                 data_list.append([s_id, s["enabled"], s["title"]])
 
         tbl = st.generate_table(data_list, row_spacing=0)
@@ -80,6 +80,7 @@ class cis_section_cmd(CommandSet):
                 cis.sections[s_id]["enabled"] = True
                 if ns.verbose:
                     self._cmd.poutput(f"[+] {s_id} enabled successfully")
+        self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Enabled successfully")
 
     def cis_section_disable(self: CommandSet, ns: argparse.Namespace):
@@ -100,6 +101,7 @@ class cis_section_cmd(CommandSet):
                 cis.sections[s_id]["enabled"] = False
                 if ns.verbose:
                     self._cmd.poutput(f"[+] {s_id} disabled successfully")
+        self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Disabled successfully")
 
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):

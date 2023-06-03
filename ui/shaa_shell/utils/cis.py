@@ -180,7 +180,7 @@ class CIS:
             return None
 
         if name not in CIS.list_preset():
-            print("[!] CIS preset name not found")
+            print(f"[!] CIS preset name not found: {name}")
             return None
 
         file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
