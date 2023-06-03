@@ -291,11 +291,24 @@ better tab completion"""
 class cis_search_cmd(CommandSet):
     search_parser = Cmd2ArgumentParser()
     search_parser.add_argument("pattern",
-                               help="pattern in regex format to be searched")
+                               help="""pattern in regex format to be searched
+prefix with `(?i)` for case insensitive search""")
 
     @as_subcommand_to("cis", "search", search_parser,
                       help="search subcommand")
     def cis_search(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        self._cmd.poutput(f"search {ns.pattern}")
+        data = self._cmd._cis.list_section_and_details(search_query=ns.pattern)  # type: ignore  # noqa: E501
+        columns = [
+            Column("Section ID", width=10),
+            Column("Enabled", width=8),
+            Column("Title", width=96),
+        ]
+        st = SimpleTable(columns)
+        data_list = []
+        for s_id, s in data:
+            data_list.append([s_id, s["enabled"], s["title"]])
+
+        tbl = st.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")

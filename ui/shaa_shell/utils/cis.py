@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from ruamel.yaml import YAML  # type: ignore[import]
 from typing import Optional, Text, Dict, List, Tuple, Any
 from shaa_shell.utils.preset import list_preset
@@ -50,10 +51,15 @@ class CIS:
 
     def list_section_and_details(
         self,
-        section_id: Optional[Text] = None
+        section_id: Optional[Text] = None,
+        search_query: Optional[Text] = None
     ) -> List[Tuple[Text, Any]]:
         data: List[Tuple[Text, Text]] = []
         for s_id, section in self.sections.items():
+            if search_query is not None:
+                if re.search(search_query, section["title"]):
+                    data.append((s_id, section))
+                continue
             if section_id is None:
                 data.append((s_id, section))
                 continue
