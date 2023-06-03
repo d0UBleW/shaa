@@ -28,3 +28,11 @@ profile_parser.add_subparsers(title="subcommands",
                               help="subcommand for profile module")
 
 play_parser = Cmd2ArgumentParser()
+play_parser.add_argument("-v",
+                         "--verbose",
+                         action="store_true",
+                         help="print disabled section tasks")
+play_parser.add_argument("-c",
+                         "--color",
+                         action="store_true",
+                         help="enable colorized output")

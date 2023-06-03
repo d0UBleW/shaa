@@ -145,6 +145,8 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("    Inventory data is empty, try to save it first")
             return
         self.poutput("[+] Done")
+        self.poutput("[+] Running playbook ...")
+        play.run_playbook(profile.name, verbose=ns.verbose, color=ns.color)
 
     @cmd2.with_argparser(clear_parser)
     @cmd2.with_category("general")

@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from ruamel.yaml import YAML
 from typing import Text, Dict, Any
+from shaa_shell.utils.vault import vault_password
+import subprocess
+import os
+import sys
+
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.profile import Profile
@@ -69,3 +74,31 @@ def generate_playbook(profile: Profile) -> bool:
         yaml.dump(data, f)
 
     return True
+
+
+def run_playbook(name: Text, verbose: bool, color: bool) -> None:
+    # TODO: verbose == False --> use tags
+    inv_fpath = ANSIBLE_INV_PATH.joinpath(f"{name}.yml").resolve().__str__()
+    playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve().__str__()
+    ansible_cfg = PLAYBOOK_PATH.joinpath("ansible.cfg").resolve().__str__()
+    if vault_password is None:
+        print("Missing ansible vault password")
+        return
+    envs = {
+        "ANSIBLE_CONFIG": ansible_cfg,
+        "VAULT_PASSWORD": vault_password,
+        "ANSIBLE_FORCE_COLOR": str(color),
+    }
+    envs.update(os.environ)
+    args = ["ansible-playbook", "-i", inv_fpath, playbook_fpath]
+    with subprocess.Popen(
+        args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=envs
+    ) as proc:
+        with open("/tmp/shaa_shell_playbook.log", "w") as f:
+            while proc.poll() is None:
+                if proc.stdout is not None:
+                    data: Text = proc.stdout.readline().decode('utf-8')
+                    sys.stdout.write(data)
+                    f.write(data)
+
+        sys.stdout.write(f"return code: {proc.poll()}")
