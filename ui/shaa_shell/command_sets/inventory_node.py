@@ -64,43 +64,26 @@ class inventory_node_subcmd(CommandSet):
 
     create_parser = Cmd2ArgumentParser()
     create_parser.add_argument(
-        '-n',
-        '--name',
-        dest="node_name",
-        required=True,
-        type=str,
-        help='node name')
+        "node_name",
+        help="node name")
 
     create_parser.add_argument(
-        '-i',
-        '--ip-address',
-        dest="node_ip",
-        required=True,
-        type=str,
-        help='node ip address')
+        "node_ip",
+        help="node ip address")
 
     create_parser.add_argument(
-        '-u',
-        '--user',
-        dest="node_user",
-        required=True,
-        type=str,
-        help='node SSH user')
+        "node_user",
+        help="node SSH user")
 
     create_parser.add_argument(
-        '-p',
-        '--password',
-        dest="node_password",
-        required=True,
-        type=str,
-        help='node SSH password')
+        "node_password",
+        help="node SSH password")
 
     create_parser.add_argument(
         '-g',
         '--group',
         dest="node_group",
-        default=["ungrouped"],
-        nargs='*',
+        default="ungrouped",
         metavar='group_name',
         type=str,
         help="""list of node group name (ungrouped is a reserved group name, \
@@ -188,12 +171,11 @@ out ungrouped nodes)""",
             user=ns.node_user,
             password=ns.node_password,
         )
-        for group in ns.node_group:
-            if inv.add_node(node, group) == 0:
-                self._cmd.poutput("[+] Node has been created successfully")
-                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
-            else:
-                self._cmd.poutput("[!] Specified node name already existed")
+        if inv.add_node(node, ns.node_group) == 0:
+            self._cmd.poutput("[+] Node has been created successfully")
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+        else:
+            self._cmd.poutput("[!] Specified node name already existed")
 
     @as_subcommand_to("node", "delete", delete_parser,
                       aliases=["del", "rm"],
