@@ -110,12 +110,15 @@ class cis_section_cmd(CommandSet):
                 if "profile" not in section.keys():
                     continue
                 s_profile = arg_sid.replace("_", " ").title()
-                if s_profile in section["profile"]:
-                    cis.sections[s_id]["enabled"] = True
+                if s_profile not in section["profile"]:
+                    continue
+                cis.sections[s_id]["enabled"] = True
+                if ns.verbose:
+                    self._cmd.poutput(f"[+] {s_id} enabled successfully")
             else:
                 cis.sections[s_id]["enabled"] = True
-            if ns.verbose:
-                self._cmd.poutput(f"[+] {s_id} enabled successfully")
+                if ns.verbose:
+                    self._cmd.poutput(f"[+] {s_id} enabled successfully")
         self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Enabled successfully")
 

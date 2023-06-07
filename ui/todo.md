@@ -27,7 +27,7 @@ set key value [-n node_name] [-g group_name]
 - [ ] cis set (edge cases)
 - [x] cis search
 - [x] cis enable disable
-- [ ] cis enable disable level profile
+- [x] cis enable disable level profile
 - [x] profile create
 - [x] profile delete
 - [x] profile list
@@ -36,5 +36,5 @@ set key value [-n node_name] [-g group_name]
 - [x] profile set/unset cis
 - [x] profile set/unset oscap
 - [x] profile set/unset extra
-- [ ] run
+- [x] run
 - [ ] add description for inventory, presets, and profile
