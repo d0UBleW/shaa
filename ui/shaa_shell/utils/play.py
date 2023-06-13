@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ruamel.yaml import YAML
-from typing import Text, Dict, Any
+from typing import Text, Dict, Any, Optional, List
 from shaa_shell.utils.vault import vault_password
 import subprocess
 import os
@@ -37,6 +37,29 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
                 vars[var_key] = val
 
     return vars
+
+
+def generate_tags(profile: Profile) -> Optional[List]:
+    presets = profile.presets
+    if "cis" not in presets.keys():
+        return None
+    if presets["cis"] is None:
+        return None
+    cis: Optional[CIS] = CIS.load(presets["cis"])
+    if cis is None:
+        print("[!] CIS preset name not found")
+        return None
+    s = []
+    for s_id in cis.sections.keys():
+        if "subsections" in cis.sections[s_id].keys():
+            continue
+        if not cis.sections[s_id]["enabled"]:
+            continue
+        if s_id.count('.') < 2:
+            s.append(f"{s_id}.x")
+        else:
+            s.append(s_id)
+    return s
 
 
 def generate_playbook(profile: Profile) -> bool:
@@ -76,7 +99,10 @@ def generate_playbook(profile: Profile) -> bool:
     return True
 
 
-def run_playbook(name: Text, verbose: bool, color: bool) -> None:
+def run_playbook(name: Text,
+                 tags: Optional[List],
+                 verbose: Optional[bool] = True,
+                 color: Optional[bool] = True) -> None:
     # TODO: verbose == False --> use tags
     inv_fpath = ANSIBLE_INV_PATH.joinpath(f"{name}.yml").resolve().__str__()
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve().__str__()
@@ -91,6 +117,10 @@ def run_playbook(name: Text, verbose: bool, color: bool) -> None:
     }
     envs.update(os.environ)
     args = ["ansible-playbook", "-i", inv_fpath, playbook_fpath]
+    if not verbose and tags is not None:
+        args.append("--tags")
+        args.append(",".join(tags))
+    print(f"[*] {' '.join(args)}")
     with subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=envs
     ) as proc:
