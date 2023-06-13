@@ -1,90 +1,84 @@
 ---
-- name: Dbg
-  ansible.builtin.debug:
-    var: foo
-# - name: Check for OS family compatibility (skip if ok, fail if not)
-#   ansible.builtin.fail:
-#     msg: |
-#       The OS family ({{ ansible_os_family }}) is currently not supported
-#       yet.
-#   when:
-#     - ansible_os_family not in supported_os_families
-#
-# - name: |
-#     Check for Debian-based distribution compatibility (skip if ok, fail if not)
-#   ansible.builtin.fail:
-#     msg: |
-#       The distribution ({{ ansible_distribution }}) is currently not supported
-#       yet.
-#   when:
-#     - ansible_os_family == "Debian"
-#     - ansible_distribution not in supported_debian_distribution
-#
-# - name: Include OS family specific variables
-#   when:
-#     - ansible_os_family != "Debian"
-#   ansible.builtin.include_vars:
-#     file: "{{ ansible_os_family }}.yml"
-#
-# - name: Include Debian-based distribution specific variables
-#   when:
-#     - ansible_os_family == "Debian"
-#   ansible.builtin.include_vars:
-#     file: "{{ ansible_distribution }}.yml"
-#
-# - name: Add unstable source list for Debian distribution
-#   when:
-#     - ansible_distribution == "Debian"
-#   ansible.builtin.apt_repository:
-#     repo: "deb http://deb.debian.org/debian unstable main"
-#     state: present
-#
-# - name: Install OpenSCAP
-#   ansible.builtin.package:
-#     name: "{{ pkg }}"
-#     state: present
-#   loop: "{{ openscap_pkgs }}"
-#   loop_control:
-#     loop_var: pkg
-#     label: "{{ pkg }}"
-#
-# - name: Copy xccdf file for Ubuntu distribution
-#   when:
-#     - ansible_distribution == "Ubuntu"
-#   ansible.builtin.copy:
-#     src: "ssg/ssg-ubuntu{{ ansible_distribution_major_version }}04-ds.xml"
-#     dest: "/usr/share/xml/scap/ssg/content/"
-#     owner: root
-#     group: root
-#     mode: "0644"
-#
-# - name: Run scanner
-#   vars:
-#     def_name: >-
-#       {{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}
-#     final_name: >-
-#       {{ xccdf_name | default(def_name) }}
-#     xml_file: >-
-#       /usr/share/xml/scap/ssg/content/ssg-{{ final_name }}-ds.xml
-#   ansible.builtin.command: >-
-#     oscap xccdf eval --report /root/{{ profile.out }} --fetch-remote-resources
-#     --profile {{ profile.name }} {{ xml_file }}
-#   register: scan
-#   changed_when: true
-#   failed_when: scan.rc == 1
-#   loop: "{{ oscap_profiles }}"
-#   loop_control:
-#     loop_var: profile
-#     label: "{{ profile.name }}"
+- name: Check for OS family compatibility (skip if ok, fail if not)
+  ansible.builtin.fail:
+    msg: |
+      The OS family ({{ ansible_os_family }}) is currently not supported
+      yet.
+  when:
+    - ansible_os_family not in supported_os_families
 
-# - name: Dbg
-#   ansible.builtin.debug:
-#     var: scan.results
-# - name: Retrieve scanner output
-#   ansible.builtin.fetch:
-#     src: "/root/{{ profile.out }}"
-#     dest: "{{ profile.out }}"
-#   loop: "{{ oscap_profiles }}"
-#   loop_control:
-#     loop_var: profile
-#     label: "{{ profile.out }}"
+- name: |
+    Check for Debian-based distribution compatibility (skip if ok, fail if not)
+  ansible.builtin.fail:
+    msg: |
+      The distribution ({{ ansible_distribution }}) is currently not supported
+      yet.
+  when:
+    - ansible_os_family == "Debian"
+    - ansible_distribution not in supported_debian_distribution
+
+- name: Include OS family specific variables
+  when:
+    - ansible_os_family != "Debian"
+  ansible.builtin.include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Include Debian-based distribution specific variables
+  when:
+    - ansible_os_family == "Debian"
+  ansible.builtin.include_vars:
+    file: "{{ ansible_distribution }}.yml"
+
+- name: Add unstable source list for Debian distribution
+  when:
+    - ansible_distribution == "Debian"
+  ansible.builtin.apt_repository:
+    repo: "deb http://deb.debian.org/debian unstable main"
+    state: present
+
+- name: Install OpenSCAP
+  ansible.builtin.package:
+    name: "{{ pkg }}"
+    state: present
+  loop: "{{ openscap_pkgs }}"
+  loop_control:
+    loop_var: pkg
+    label: "{{ pkg }}"
+
+- name: Copy xccdf file for Ubuntu distribution
+  when:
+    - ansible_distribution == "Ubuntu"
+  ansible.builtin.copy:
+    src: "ssg/ssg-ubuntu{{ ansible_distribution_major_version }}04-ds.xml"
+    dest: "/usr/share/xml/scap/ssg/content/"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Run scanner
+  vars:
+    def_name: >-
+      {{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}
+    final_name: >-
+      {{ xccdf_name | default(def_name) }}
+    xml_file: >-
+      /usr/share/xml/scap/ssg/content/ssg-{{ final_name }}-ds.xml
+  ansible.builtin.command: >-
+    oscap xccdf eval --report /tmp/{{ profile.out }}
+    --profile {{ profile.name }} {{ xml_file }}
+  register: scan
+  changed_when: true
+  failed_when: scan.rc == 1
+  loop: "{{ oscap_profiles }}"
+  loop_control:
+    loop_var: profile
+    label: "{{ profile.name }}"
+
+- name: Retrieve scanner output
+  ansible.builtin.fetch:
+    src: "/tmp/{{ profile.out }}"
+    dest: "oscap-report/{{ ansible_hostname }}"
+  loop: "{{ oscap_profiles }}"
+  loop_control:
+    loop_var: profile
+    label: "{{ profile.out }}"
