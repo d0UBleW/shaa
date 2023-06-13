@@ -81,11 +81,11 @@ bootloader_conf_perm: "{{ section_1_4_1 }}"
 # 1.4.2
 bootloader_auth: "{{ section_1_4_2 }}"
 bootloader_superuser: "root"
-bootloader_password: "changeme"
+bootloader_password: ""
 
 # 1.4.3
 system_auth: "{{ section_1_4_3 }}"
-root_password: "changeme"
+root_password: ""
 
 # 1.4.4
 disable_interactive_boot: "{{ section_1_4_4 }}"
