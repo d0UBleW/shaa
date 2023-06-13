@@ -8,10 +8,12 @@ from cmd2 import (  # type: ignore[import]
     as_subcommand_to,
     with_argparser,
     CompletionItem,
+    CompletionError,
 )
 from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.parser import cis_parser
+from shaa_shell.utils.inventory import Inventory, InventoryGroup
 from typing import List, Text, Dict, Optional
 
 
@@ -279,6 +281,13 @@ has subsections)""")
 
 @with_default_category("cis")
 class cis_set_cmd(CommandSet):
+    def _choices_group_name(self) -> List[Text]:
+        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+        if inv is None:
+            raise CompletionError(
+                "[!] No inventory is loaded, unable to provide completion")
+        return list(inv.groups.keys())
+
     def _choices_cis_section_unit_and_title(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
@@ -361,6 +370,11 @@ better tab completion"""
                             nargs="+",
                             choices_provider=_choices_cis_option_value,
                             help="new option value")
+    set_parser.add_argument("-g",
+                            "--group-name",
+                            nargs="?",
+                            choices_provider=_choices_group_name,
+                            help="apply setting to specified group name")
 
     unset_parser = Cmd2ArgumentParser()
     unset_parser.add_argument(
@@ -374,6 +388,11 @@ better tab completion"""
     unset_parser.add_argument("option_key",
                               choices_provider=_choices_cis_option_key,
                               help="name of option to be set")
+    unset_parser.add_argument("-g",
+                              "--group-name",
+                              nargs="?",
+                              choices_provider=_choices_group_name,
+                              help="unset setting from specified group name")
 
     @as_subcommand_to("cis", "set", set_parser,
                       help="set subcommand")
@@ -397,20 +416,42 @@ better tab completion"""
         if not cis.is_valid_option_key(s_id, opt_key):
             self._cmd.poutput("[!] Invalid option key")
             return
-        if not cis.is_valid_option_val(s_id, opt_key, opt_val):
+        opt_val = cis.parse_option_val(s_id, opt_key, opt_val)
+        if opt_val is None:
             self._cmd.poutput("[!] Invalid option value")
             return
-        option = cis.sections[s_id]["vars"][opt_key]
-        if option["value_type"] != "list_choice":
-            val = opt_val[0]
+
+        val = opt_val
+
+        if ns.group_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput(
+                    "[!] No inventory is loaded")
+                self._cmd.poutput(
+                    "[!] Unable to set variable on this group name")
+                return
+            if ns.group_name not in inv.groups:
+                self._cmd.poutput("[!] Group name not found")
+                return
+            if ns.group_name == "ungrouped":
+                self._cmd.poutput("[!] The group `ungrouped` is not settable")
+                return
+            group: InventoryGroup = inv.groups[ns.group_name]
+            old_value = None
+            if opt_key in group.group_vars:
+                old_value = group.group_vars[opt_key]
+            else:
+                group.group_vars[opt_key] = val
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
-            val = list(set(opt_val))
-        old_value = option["value"]
-        option["value"] = val
+            option = cis.sections[s_id]["vars"][opt_key]
+            old_value = option["value"]
+            option["value"] = val
+            self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput(f"[+] {opt_key}:")
         self._cmd.poutput(f"    old: {old_value}")
         self._cmd.poutput(f"    new: {val}")
-        self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
 
     @as_subcommand_to("cis", "unset", unset_parser,
                       help="set subcommand")
@@ -429,14 +470,41 @@ better tab completion"""
         if not cis.is_valid_option_key(s_id, opt_key):
             self._cmd.poutput("[!] Invalid option key")
             return
+
         option = cis.sections[s_id]["vars"][opt_key]
-        old_value = option["value"]
-        default_val = option["default"]
-        option["value"] = default_val
+
+        if ns.group_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput(
+                    "[!] No inventory is loaded")
+                self._cmd.poutput(
+                    "[!] Unable to set variable on this group name")
+                return
+            if ns.group_name not in inv.groups:
+                self._cmd.poutput("[!] Group name not found")
+                return
+            if ns.group_name == "ungrouped":
+                self._cmd.poutput(
+                    "[!] The group `ungrouped` is not unsettable")
+                return
+            group: InventoryGroup = inv.groups[ns.group_name]
+            if opt_key in group.group_vars:
+                del group.group_vars[opt_key]
+                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+                old_value = group.group_vars[opt_key]
+            else:
+                self._cmd.poutput("[!] Option key not found")
+                return
+        else:
+            old_value = option["value"]
+            default_val = option["default"]
+            option["value"] = default_val
+            self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
+
         self._cmd.poutput(f"[+] {opt_key}:")
         self._cmd.poutput(f"    old: {old_value}")
         self._cmd.poutput(f"    new: {option['value']}")
-        self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
 
 
 @with_default_category("cis")

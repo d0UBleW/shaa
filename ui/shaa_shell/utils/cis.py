@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from ruamel.yaml import YAML  # type: ignore[import]
-from typing import Optional, Text, Dict, List, Tuple, Any
+from typing import Optional, Text, Dict, List, Tuple, Any, Union
 from pathlib import Path
 
 from shaa_shell.utils.preset import list_preset
@@ -48,19 +48,41 @@ class CIS:
         section_vars = self.sections[section_id]["vars"]
         return option_key in section_vars.keys()
 
-    def is_valid_option_val(self,
-                            section_id: Text,
-                            option_key: Text,
-                            option_val: List[Text]) -> bool:
+    def parse_option_val(
+        self,
+        section_id: Text,
+        option_key: Text,
+        option_val: List[Text]
+    ) -> Optional[Union[List[Dict], List[Text], Text, Dict]]:
         option = self.sections[section_id]["vars"][option_key]
         valid = option["valid"]
         value_type = option["value_type"]
+
         if value_type == "single":
-            return True
+            return option_val[0]
+
         if value_type == "dict":
-            return True
+            if section_id in ["3.3.2", "3.3.3"]:
+                dict_data = {}
+                idx = 0
+                while idx <= len(option_val) // 2:
+                    pattern = option_val[idx]
+                    hosts = option_val[idx + 1]
+                    dict_data[pattern] = [
+                        host for host in hosts.split(',') if host != ""]
+                    idx += 2
+                return dict_data
+            return option_val[0]
+
         if value_type == "list_dict":
-            return True
+            if section_id in ["3.5.1.4", "3.5.2.4"]:
+                data = []
+                for val in option_val:
+                    port, _, proto = val.partition(',')
+                    data.append({"port": port, "protocol": proto})
+                return data
+            return option_val
+
         if value_type == "range":
             range_start = option["range_start"]
             range_end = option["range_end"]
@@ -69,23 +91,25 @@ class CIS:
                 val = int(val)  # type: ignore[assignment]
             except ValueError:
                 print("[!] Invalid value, number is expected")
-                return False
+                return None
             if valid is not None and val in valid:
-                return True
+                return None
             if val < range_start:
                 print("[!] Supplied value is lower than allowed value")
                 print(f"    Min: {range_start}")
-                return False
+                return None
             if range_end is not None and val > range_end:
                 print("[!] Supplied value is higher than allowed value")
                 print(f"    Max: {range_end}")
-                return False
-            return True
+                return None
+            return option_val[0]
+
         if value_type == "choice":
             val = option_val[0]
             if val not in valid:
-                return False
-            return True
+                return None
+            return val
+
         if value_type == "list_choice":
             option_val_s = set(option_val)
             valid_s = set(valid)
@@ -93,8 +117,12 @@ class CIS:
             if len(diff) > 0:
                 print("[!] Invalid value provided")
                 print(f"    {diff}")
-                return False
-        return True
+                return None
+
+        if value_type == "list":
+            return list(set(option_val))
+
+        return None
 
     def list_section(self, section_id: Optional[Text] = None) -> List[Text]:
         return list(self.sections.keys())

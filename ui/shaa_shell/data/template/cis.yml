@@ -1259,6 +1259,8 @@ sections:
             - 172.16.0.0/12
         description: |
           TCP wrappers rule for allowing hosts
+          Example on how to set this value:
+          cis set -s 3.3.2 "ALL EXCEPT in.fingerd" .example.com,192.168.2.* "sshd" 10.
         value_type: dict
         valid:
       hosts_allow_cleanup:
@@ -1416,6 +1418,8 @@ sections:
             protocol: tcp
         description: |
           Allow traffic to specified ports and protocols
+          Example on how to set this value:
+          cis set -s 3.5.1.4 22,tcp 80,tcp 443,tcp 8080,tcp
         value_type: list_dict
         valid:
       save_ip6tables_rules:
@@ -1477,6 +1481,7 @@ sections:
             protocol: tcp
         description: |
           Allow traffic to specified ports and protocols
+          cis set -s 3.5.2.4 22,tcp 80,tcp 443,tcp 8080,tcp
         value_type: list_dict
         valid:
       save_iptables_rules:
