@@ -1,12 +1,12 @@
 ---
 bootstrap_pkgs:
+  - epel-release
   - iproute
   - iputils
   - kmod
   - cronie
   - procps-ng
   - grubby
-  - epel-release
   - iptables
   - audit
   - openssh-server

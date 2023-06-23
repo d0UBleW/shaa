@@ -41,7 +41,7 @@
         > Force password change on non system users
         ---
       when:
-        # - pam_sha512.changed
+        - "'sha512' not in mod_args.stdout.split()"
         - force_password_change
       ansible.builtin.shell: >-
         cat /etc/passwd | awk -F: '( $3 >= {{ uid_min }} && $1 != "nfsnobody"
