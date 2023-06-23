@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: "Include d0ublew.wazuh_agent"
+      include_role:
+        name: "d0ublew.wazuh_agent"

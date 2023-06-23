@@ -1,0 +1,86 @@
+---
+- name: Install wazuh-agent
+  block:
+    - name: Debian-based
+      when:
+        - ansible_os_family == "Debian"
+      block:
+        - name: Debian-based - Import GPG key
+          ansible.builtin.apt_key:
+            url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+            keyring: /usr/share/keyrings/wazuh.gpg
+            state: present
+
+        - name: Debian-based - Add wazuh repo
+          ansible.builtin.apt_repository:
+            repo: "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main"
+            state: present
+            filename: wazuh
+
+    - name: RedHat-based
+      when:
+        - ansible_os_family == "RedHat"
+      block:
+        - name: RedHat-based - Import GPG key
+          ansible.builtin.rpm_key:
+            key: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+            state: present
+
+        - name: RedHat-based - Add wazuh repo
+          ansible.builtin.yum_repository:
+            name: wazuh
+            description: wazuh repo
+            baseurl: https://packages.wazuh.com/4.x/yum/
+            gpgcheck: true
+            gpgkey: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+            enabled: true
+            protect: true
+            state: present
+
+    - name: Suse-based
+      when:
+        - ansible_os_family == "Suse"
+      block:
+        - name: Suse-based - Import GPG key
+          ansible.builtin.rpm_key:
+            key: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+            state: present
+
+        - name: Suse-based - Add wazuh repo
+          community.general.zypper_repository:
+            name: wazuh
+            description: wazuh repo
+            disable_gpg_check: true
+            repo: https://packages.wazuh.com/4.x/yum/
+            enabled: true
+            state: present
+            runrefresh: true
+
+    - name: Install wazuh-agent via package manager
+      ansible.builtin.package:
+        name: wazuh-agent
+        state: present
+      environment:
+        WAZUH_MANAGER: "{{ wazuh_manager }}"
+
+    - name: Configure wazuh-agent manager IP address
+      ansible.builtin.lineinfile:
+        path: /var/ossec/etc/ossec.conf
+        regexp: '^(\s+)<address>.+</address>'
+        line: '\1<address>{{ wazuh_manager }}</address>'
+        backrefs: true
+      register: wazuh_manager_conf
+
+    - name: Enable and start wazuh-agent
+      vars:
+        state: >-
+          {%- if wazuh_manager_conf.changed -%}
+            restarted
+          {%- else -%}
+            started
+          {%- endif -%}
+      ansible.builtin.systemd:
+        name: wazuh-agent
+        enabled: true
+        state: "{{ state }}"
+        daemon_reload: true

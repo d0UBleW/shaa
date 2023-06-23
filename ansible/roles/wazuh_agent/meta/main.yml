@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  author: William Wijaya
+  role_name: wazuh_agent
+  namespace: d0ublew
+  description: |
+    Install security tools
+  company: None
+  license: MIT
+
+  min_ansible_version: "2.12"
+
+  platforms:
+    - name: rhel
+      versions:
+        - 8
+        - 9
+
+    - name: ubuntu
+      versions:
+        - 20.04
+
+    - name: openSUSE
+      version:
+        - Tumbleweed
+
+    - name: debian
+      version:
+        - bullseye
+
+  galaxy_tags: []
+
+dependencies: []

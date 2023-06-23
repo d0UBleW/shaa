@@ -1,0 +1,3 @@
+---
+# defaults file for wazuh_agent
+wazuh_manager: 192.168.56.152
