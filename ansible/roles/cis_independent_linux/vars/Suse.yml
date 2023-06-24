@@ -9,7 +9,7 @@ bootstrap_pkgs:
   - audit
   - openssh-server
 
-login_defs: /usr/etc/login.defs
+login_defs: /etc/login.defs
 
 grub_prefix: grub2
 
