@@ -17,6 +17,7 @@ from shaa_shell.utils.path import (
     ANSIBLE_INV_PATH,
     LOG_PATH,
 )
+from shaa_shell.utils.preset import PRESETS
 
 yaml = YAML(typ="rt")
 
@@ -51,11 +52,14 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
 
 
 def generate_cis_tags(profile: Profile,
-                      arg_presets: Optional[List[Text]]) -> Optional[List]:
+                      arg_presets: List[Text]) -> Optional[List]:
     presets = {}
 
-    if arg_presets is not None:
+    if len(arg_presets) > 0:
         for preset in arg_presets:
+            if preset not in PRESETS:
+                print(f"[!] Invalid preset: {preset}")
+                return None
             presets[preset] = profile.presets[preset]
     else:
         presets = profile.presets
@@ -82,11 +86,14 @@ def generate_cis_tags(profile: Profile,
 
 
 def generate_playbook(profile: Profile,
-                      arg_presets: Optional[List[Text]]) -> bool:
+                      arg_presets: List[Text]) -> Optional[bool]:
     presets = {}
 
-    if arg_presets is not None:
+    if len(arg_presets) > 0:
         for preset in arg_presets:
+            if preset not in PRESETS:
+                print(f"[!] Invalid preset: {preset}")
+                return None
             presets[preset] = profile.presets[preset]
     else:
         presets = profile.presets
@@ -153,6 +160,8 @@ def run_playbook(name: Text,
     envs.update(os.environ)
     args = ["ansible-playbook", "-i", inv_fpath, playbook_fpath]
     if not verbose and tags is not None:
+        if len(tags) == 0:
+            tags.append("NON_EXISTENT")
         args.append("--tags")
         args.append(",".join(tags))
     print(f"[*] {' '.join(args)}")
