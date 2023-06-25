@@ -14,7 +14,7 @@ from cmd2.table_creator import (  # type: ignore[import]
 )
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils.inventory import Inventory
-from shaa_shell.utils.preset import list_preset
+from shaa_shell.utils.preset import list_preset, PRESETS
 from shaa_shell.utils.cis import CIS
 
 
@@ -66,7 +66,7 @@ class profile_subcmd(CommandSet):
 
     set_parser = Cmd2ArgumentParser()
     set_parser.add_argument("config",
-                            choices=["inventory", "cis", "oscap", "extra"],
+                            choices=["inventory"] + PRESETS,
                             help="config selection")
     set_parser.add_argument("name",
                             choices_provider=_choices_config_name,
@@ -74,7 +74,7 @@ class profile_subcmd(CommandSet):
 
     unset_parser = Cmd2ArgumentParser()
     unset_parser.add_argument("config",
-                              choices=["inventory", "cis", "oscap", "extra"],
+                              choices=["inventory"] + PRESETS,
                               help="config selection")
 
     @as_subcommand_to("profile", "create", create_parser,

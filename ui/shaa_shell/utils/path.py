@@ -15,8 +15,8 @@ CIS_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/cis.yml")
 OSCAP_PRESET_PATH = ROOT_PATH.joinpath("data/custom/oscap/")
 OSCAP_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/oscap.yml")
 
-EXTRA_PRESET_PATH = ROOT_PATH.joinpath("data/custom/extra/")
-EXTRA_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/extra.yml")
+UTIL_PRESET_PATH = ROOT_PATH.joinpath("data/custom/util/")
+UTIL_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/util.yml")
 
 PLAYBOOK_PATH = ROOT_PATH.joinpath("../../ansible/")
 ANSIBLE_INV_PATH = ROOT_PATH.joinpath("../../ansible/inventory/")

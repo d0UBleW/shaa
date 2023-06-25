@@ -19,7 +19,8 @@ class Profile:
             self.presets: Dict[Text, Optional[Text]] = {
                 "cis": None,
                 "oscap": None,
-                "extra": None,
+                "util": None,
+                "wazuh_agent": None,
             }
         else:
             self.presets = presets

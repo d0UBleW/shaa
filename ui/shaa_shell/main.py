@@ -140,13 +140,13 @@ class ShaaShell(cmd2.Cmd):
         self.check_if_cis_changed()
 
         self.poutput("[+] Generating playbook ...")
-        if not play.generate_playbook(profile):
+        if not play.generate_playbook(profile, ns.preset):
             self.poutput("[!] Error in generating playbook")
             self.poutput("    Inventory data is empty, try to save it first")
             return
         self.poutput("[+] Done")
         self.poutput("[+] Generating tags ...")
-        tags = play.generate_tags(profile)
+        tags = play.generate_cis_tags(profile, ns.preset)
         self.poutput("[+] Done")
         self.poutput("[+] Running playbook ...")
         play.run_playbook(

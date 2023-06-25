@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from cmd2 import Cmd2ArgumentParser
+from shaa_shell.utils.preset import PRESETS
 
 clear_parser = Cmd2ArgumentParser()
 
@@ -36,3 +37,7 @@ play_parser.add_argument("-c",
                          "--color",
                          action="store_true",
                          help="enable colorized output")
+play_parser.add_argument("preset",
+                         nargs="*",
+                         choices=PRESETS,
+                         help="preset(s) to be played, default to all")

@@ -50,8 +50,16 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
     return vars
 
 
-def generate_tags(profile: Profile) -> Optional[List]:
-    presets = profile.presets
+def generate_cis_tags(profile: Profile,
+                      arg_presets: Optional[List[Text]]) -> Optional[List]:
+    presets = {}
+
+    if arg_presets is not None:
+        for preset in arg_presets:
+            presets[preset] = profile.presets[preset]
+    else:
+        presets = profile.presets
+
     if "cis" not in presets.keys():
         return None
     if presets["cis"] is None:
@@ -73,9 +81,15 @@ def generate_tags(profile: Profile) -> Optional[List]:
     return s
 
 
-def generate_playbook(profile: Profile) -> bool:
-    name = profile.name
-    presets = profile.presets
+def generate_playbook(profile: Profile,
+                      arg_presets: Optional[List[Text]]) -> bool:
+    presets = {}
+
+    if arg_presets is not None:
+        for preset in arg_presets:
+            presets[preset] = profile.presets[preset]
+    else:
+        presets = profile.presets
 
     all_vars = {}
     if "cis" in presets.keys() and presets["cis"] is not None:
@@ -89,17 +103,27 @@ def generate_playbook(profile: Profile) -> bool:
     if inv is None:
         return False
 
+    name = profile.name
     inv.groups["ungrouped"].group_vars = all_vars
     inv.save(name, ANSIBLE_INV_PATH)
+
+    preset_role_map = {
+        "cis": "cis_independent_linux",
+        "oscap": "openscap",
+        "util": "util",
+        "wazuh_agent": "wazuh_agent",
+    }
+    roles = []
+    for preset in presets:
+        role = {"role": preset_role_map[preset]}
+        roles.append(role)
 
     data = [{
         "name": name,
         "become": True,
         "gather_facts": True,
         "hosts": "all",  # TODO: allow group targeting
-        "roles": [{
-            "role": "cis_independent_linux",
-        }]
+        "roles": roles,
     }]
 
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()
