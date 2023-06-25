@@ -36,7 +36,15 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
                 val = var["value"]
                 if val is None:
                     val = var["default"]
-                vars[var_key] = val
+                # for variables with nested key
+                # e.g., systemd_timesyncd.fallback_ntp
+                if "." in var_key:
+                    parent, _, child = var_key.partition(".")
+                    if parent not in vars:
+                        vars[parent] = {}
+                    vars[parent][child] = val
+                else:
+                    vars[var_key] = val
 
     return vars
 
