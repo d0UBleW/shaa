@@ -403,12 +403,65 @@ sections:
 
   "1.4":
     title: Secure Boot Settings
-    enabled: true
+    enabled: false
     subsections:
       - 1.4.1
       - 1.4.2
       - 1.4.3
       - 1.4.4
+
+  1.4.1:
+    title: Ensure permissions on bootloader config are configured
+    enabled: false
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
+  1.4.2:
+    title: Ensure bootloader password is set
+    enabled: false
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      bootloader_superuser:
+        value:
+        default: "root"
+        description: |
+          Username to access bootloader
+        value_type: single
+        valid:
+      bootloader_password:
+        value:
+        default:
+        description: |
+          Password to access bootloader
+        value_type: sensitive
+        valid:
+
+  1.4.3:
+    title: Ensure authentication required for single user mode
+    enabled: false
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+      root_password:
+        value:
+        default:
+        description: |
+          Password for root user
+        value_type: sensitive
+        valid:
+
+  1.4.4:
+    title: Ensure interactive boot is not enabled
+    enabled: true
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
 
   "1.5":
     title: Additional Process Hardening
@@ -684,7 +737,7 @@ sections:
   "1.8":
     title: >-
       Ensure update, patches, and additional security software are installed
-    enabled: true
+    enabled: false
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1419,7 +1472,7 @@ sections:
         description: |
           Allow traffic to specified ports and protocols
           Example on how to set this value:
-          cis set -s 3.5.1.4 22,tcp 80,tcp 443,tcp 8080,tcp
+          cis set -s 3.5.1.4 ip6tables_rules 22/tcp 80/tcp 443/tcp 8080/tcp
         value_type: list_dict
         valid:
       save_ip6tables_rules:
@@ -1481,7 +1534,7 @@ sections:
             protocol: tcp
         description: |
           Allow traffic to specified ports and protocols
-          cis set -s 3.5.2.4 22,tcp 80,tcp 443,tcp 8080,tcp
+          cis set -s 3.5.2.4 iptables_rules 22/tcp 80/tcp 443/tcp 8080/tcp
         value_type: list_dict
         valid:
       save_iptables_rules:
@@ -1494,7 +1547,7 @@ sections:
 
   "3.6":
     title: Ensure wireless interfaces are disabled
-    enabled: true
+    enabled: false
     profile:
       - Level 1 Server
       - Level 2 Workstation
