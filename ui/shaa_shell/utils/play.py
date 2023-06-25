@@ -2,17 +2,19 @@ from __future__ import annotations
 
 from ruamel.yaml import YAML
 from typing import Text, Dict, Any, Optional, List
-from shaa_shell.utils.vault import vault_password
+from datetime import datetime
 import subprocess
 import os
 import sys
 
+from shaa_shell.utils.vault import vault_password
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils.path import (
     PLAYBOOK_PATH,
     ANSIBLE_INV_PATH,
+    LOG_PATH,
 )
 
 yaml = YAML(typ="rt")
@@ -124,7 +126,9 @@ def run_playbook(name: Text,
     with subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=envs
     ) as proc:
-        with open("/tmp/shaa_shell_playbook.log", "w") as f:
+        now = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+        log_file = LOG_PATH.joinpath(f"{name}-{now}")
+        with open(log_file, "w") as f:
             while proc.poll() is None:
                 if proc.stdout is not None:
                     data: Text = proc.stdout.readline().decode('utf-8')

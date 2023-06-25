@@ -20,6 +20,7 @@ EXTRA_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/extra.yml")
 
 PLAYBOOK_PATH = ROOT_PATH.joinpath("../../ansible/")
 ANSIBLE_INV_PATH = ROOT_PATH.joinpath("../../ansible/inventory/")
+LOG_PATH = ROOT_PATH.joinpath("log/")
 
 
 def is_valid_file_path(parent: Path, file_name: Text) -> bool:
