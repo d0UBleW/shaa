@@ -15,6 +15,7 @@
     - name: Save ip6tables rules
       ansible.builtin.shell: >
         ip6tables-save > {{ ip6tables_data }}
+      changed_when: false
 
     - name: Enable iptables persistence service
       when:

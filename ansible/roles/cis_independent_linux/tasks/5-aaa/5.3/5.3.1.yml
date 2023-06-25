@@ -24,6 +24,8 @@
         ---
       vars:
         confs:
+          - key: minclass
+            value: "{{ pwquality_minclass }}"
           - key: minlen
             value: "{{ pwquality_minlen }}"
           - key: dcredit

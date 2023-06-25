@@ -15,8 +15,8 @@
         ---
       vars:
         confs:
-          - key: net.ipv4.tcp.syn_cookies
-            value: 0
+          - key: net.ipv4.tcp_syncookies
+            value: 1
         esc_key: "{{ conf.key | regex_escape() }}"
         esc_value: "{{ conf.value | regex_escape() }}"
         rg_template: >-

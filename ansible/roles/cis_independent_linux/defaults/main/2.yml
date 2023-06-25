@@ -64,6 +64,7 @@ systemd_timesyncd:
   fallback_ntp:
     - time3.google.com
     - time4.google.com
+    - time.cloudflare.com
   root_distance_max: 1
 
 # 2.2.2

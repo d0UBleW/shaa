@@ -161,6 +161,8 @@ pam_password_conf: "{{ section_5_3_1 }}"
 
 pwquality_retry: 3
 
+pwquality_minclass: 4
+
 pwquality_minlen: 14
 
 # digit (negative is minimum, positive is maximum, 0 is disable)

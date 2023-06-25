@@ -50,11 +50,11 @@
         - name: |
             ---
             2.2.1.4 Ensure systemd-timesyncd is configured
-            > Set RootDistanceMax to 1
+            > Set RootDistanceMaxSec to 1
             ---
           vars:
             confs:
-              - key: RootDistanceMax
+              - key: RootDistanceMaxSec
                 value: "{{ systemd_timesyncd.root_distance_max }}"
           ansible.builtin.lineinfile:
             path: /etc/systemd/timesyncd.conf
