@@ -15,3 +15,5 @@ ansible/*.yml
 !ansible/main.yml
 ansible/inventory/*.yml
 !ansible/inventory/main.yml
+ui/shaa_shell/log
+ansible/oscap-report
