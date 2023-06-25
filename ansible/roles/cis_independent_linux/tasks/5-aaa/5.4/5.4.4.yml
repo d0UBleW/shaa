@@ -14,10 +14,10 @@
     - name: |
         ---
         5.4.4 Ensure default user umask is 027 or more restrictive
-        > Get files with umask configuration
+        > Get files with umask configuration in /etc/profile.d/
         ---
       ansible.builtin.shell: >-
-        grep -lP '^umask\s' /etc/*shrc /etc/profile.d/*
+        grep -lP '^umask\s' /etc/profile.d/*
       register: umask_conf_files
       changed_when: false
       failed_when: umask_conf_files.rc > 2
@@ -25,7 +25,7 @@
     - name: |
         ---
         5.4.4 Ensure default group for the root account is GID 0
-        > Set umask {{ user_umask }}
+        > Set umask {{ user_umask }} in /etc/profile.d/
         ---
       ansible.builtin.lineinfile:
         path: "{{ file }}"
@@ -35,6 +35,71 @@
       loop_control:
         loop_var: file
         label: "{{ file }}"
+
+    - name: |
+        ---
+        5.4.4 Ensure default group for the root account is GID 0
+        > Replace all occurrences of umask {{ user_umask }} in /etc/profile.d/
+        ---
+      ansible.builtin.replace:
+        path: "{{ file }}"
+        regexp: '^(\s*)umask.+'
+        replace: '\1umask {{ user_umask }}'
+      loop: "{{ conf_files | union(umask_conf_files.stdout_lines) | unique }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+    - name: |
+        ---
+        5.4.4 Ensure default user umask is 027 or more restrictive
+        > Get shell rc files
+        ---
+      ansible.builtin.shell: >-
+        ls /etc/*shrc
+      register: shell_rc
+      changed_when: false
+      failed_when: shell_rc.rc > 2
+
+    - name: |
+        ---
+        5.4.4 Ensure default group for the root account is GID 0
+        > Set umask {{ user_umask }} in shell rc files
+        ---
+      ansible.builtin.lineinfile:
+        path: "{{ file }}"
+        regexp: '^umask\s+(?:(?!\b{{ user_umask }}\b).)*'
+        line: "umask {{ user_umask }}"
+      loop: "{{ shell_rc.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+    - name: |
+        ---
+        5.4.4 Ensure default group for the root account is GID 0
+        > Replace all occurrences of umask in shell rc files
+        ---
+      ansible.builtin.replace:
+        path: "{{ file }}"
+        regexp: '^(\s*)umask.+'
+        replace: '\1umask {{ user_umask }}'
+      loop: "{{ shell_rc.stdout_lines }}"
+      loop_control:
+        loop_var: file
+        label: "{{ file }}"
+
+
+    - name: |
+        ---
+        5.4.4 Ensure default group for the root account is GID 0
+        > Set UMASK {{ user_umask }} in /etc/login.defs
+        ---
+      ansible.builtin.lineinfile:
+        path: "{{ login_defs }}"
+        regexp: '^UMASK\s+(?:(?!\b{{ user_umask }}\b).)*'
+        line: "UMASK {{ user_umask }}"
+
 
   rescue:
     - name: Flushing all handlers

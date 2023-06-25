@@ -17,24 +17,79 @@
         > Get files with TMOUT configuration
         ---
       ansible.builtin.shell: >-
-        grep -lP '^TMOUT=' /etc/*shrc /etc/profile.d/*
-      register: tmout_conf_files
+        grep -lP '^(declare -xr\s+)?TMOUT=' /etc/*shrc /etc/profile.d/*
+      register: tmout_confs
       changed_when: false
-      failed_when: tmout_conf_files.rc > 2
+      failed_when: tmout_confs.rc > 2
 
-    - name: |
-        ---
-        5.4.5 Ensure default user shell timeout is 900 seconds or less
-        > Set TMOUT={{ user_shell_timeout }}
-        ---
-      ansible.builtin.lineinfile:
-        path: "{{ file }}"
-        regexp: '^TMOUT=(?:(?!\b{{ user_shell_timeout }}\b).)*'
-        line: "TMOUT={{ user_shell_timeout }}"
-      loop: "{{ conf_files | union(tmout_conf_files.stdout_lines) | unique }}"
-      loop_control:
-        loop_var: file
-        label: "{{ file }}"
+    - name: Non RedHat
+      when:
+        - ansible_os_family != "RedHat"
+      block:
+        - name: |
+            ---
+            5.4.5 Ensure default user shell timeout is 900 seconds or less
+            > Set TMOUT={{ user_shell_timeout }} (Non RedHat)
+            ---
+          ansible.builtin.lineinfile:
+            path: "{{ file }}"
+            regexp: '^TMOUT=(?:(?!\b{{ user_shell_timeout }}\b).)*'
+            line: "TMOUT={{ user_shell_timeout }}"
+          loop: "{{ conf_files | union(tmout_confs.stdout_lines) | unique }}"
+          loop_control:
+            loop_var: file
+            label: "{{ file }}"
+
+        - name: |
+            ---
+            5.4.5 Ensure default user shell timeout is 900 seconds or less
+            > Set TMOUT as readonly (Non RedHat)
+            ---
+          ansible.builtin.lineinfile:
+            path: "{{ file }}"
+            regexp: '^readonly\s+TMOUT$'
+            line: "readonly TMOUT"
+            insertafter: "^TMOUT="
+          loop: "{{ conf_files | union(tmout_confs.stdout_lines) | unique }}"
+          loop_control:
+            loop_var: file
+            label: "{{ file }}"
+
+        - name: |
+            ---
+            5.4.5 Ensure default user shell timeout is 900 seconds or less
+            > Export TMOUT (Non RedHat)
+            ---
+          ansible.builtin.lineinfile:
+            path: "{{ file }}"
+            regexp: '^export\s+TMOUT$'
+            line: "export TMOUT"
+            insertafter: "^readonly TMOUT$"
+          loop: "{{ conf_files | union(tmout_confs.stdout_lines) | unique }}"
+          loop_control:
+            loop_var: file
+            label: "{{ file }}"
+
+    - name: RedHat
+      when:
+        - ansible_os_family == "RedHat"
+      block:
+        - name: |
+            ---
+            5.4.5 Ensure default user shell timeout is 900 seconds or less
+            > Export TMOUT as readonly (RedHat)
+            ---
+          vars:
+            tmout: "{{ user_shell_timeout }}"
+          ansible.builtin.lineinfile:
+            path: "{{ file }}"
+            regexp: '^(declare -xr\s+)?TMOUT=(?:(?!\b{{ tmout }}\b).)*'
+            line: "declare -xr TMOUT={{ tmout }}"
+          loop: "{{ conf_files | union(tmout_confs.stdout_lines) | unique }}"
+          loop_control:
+            loop_var: file
+            label: "{{ file }}"
+
 
   rescue:
     - name: Flushing all handlers
