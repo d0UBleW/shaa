@@ -11,10 +11,12 @@ from cmd2 import (  # type: ignore[import]
     CompletionError,
 )
 from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
+from shaa_shell.utils.vault import vault
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.parser import cis_parser
 from shaa_shell.utils.inventory import Inventory, InventoryGroup
 from typing import List, Text, Dict, Optional
+from ruamel.yaml.comments import TaggedScalar
 
 
 @with_default_category("cis")
@@ -196,6 +198,8 @@ class cis_section_cmd(CommandSet):
                     if isinstance(user_val[0], str):
                         user_val = "\n".join(
                             list(map(lambda v: f"- {v}", var["value"])))
+                if isinstance(user_val, TaggedScalar):
+                    user_val = vault.load(user_val)
                 vars_data_list.append([
                     var_key,
                     detail,
@@ -449,6 +453,10 @@ better tab completion"""
             old_value = option["value"]
             option["value"] = val
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
+        if isinstance(old_value, TaggedScalar):
+            old_value = vault.load(old_value)
+        if isinstance(val, TaggedScalar):
+            val = vault.load(val)
         self._cmd.poutput(f"[+] {opt_key}:")
         self._cmd.poutput(f"    old: {old_value}")
         self._cmd.poutput(f"    new: {val}")

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from ruamel.yaml import YAML  # type: ignore[import]
+from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
 from typing import Optional, Text, Dict, List, Tuple, Any, Union
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from shaa_shell.utils.path import (
     CIS_TEMPLATE_FILE,
     is_valid_file_path,
 )
+from shaa_shell.utils.vault import vault
 
 yaml = YAML(typ="rt")
 
@@ -53,7 +55,7 @@ class CIS:
         section_id: Text,
         option_key: Text,
         option_val: List[Text]
-    ) -> Optional[Union[List[Dict], List[Text], Text, Dict]]:
+    ) -> Optional[Union[List[Dict], List[Text], Text, Dict, TaggedScalar]]:
         option = self.sections[section_id]["vars"][option_key]
         valid = option["valid"]
         value_type = option["value_type"]
@@ -78,7 +80,7 @@ class CIS:
             if section_id in ["3.5.1.4", "3.5.2.4"]:
                 data = []
                 for val in option_val:
-                    port, _, proto = val.partition(',')
+                    port, _, proto = val.partition('/')
                     data.append({"port": port, "protocol": proto})
                 return data
             return option_val
@@ -121,6 +123,10 @@ class CIS:
 
         if value_type == "list":
             return list(set(option_val))
+
+        if value_type == "sensitive":
+            val = option_val[0]
+            return TaggedScalar(value=vault.dump(val), tag="!vault")
 
         return None
 
