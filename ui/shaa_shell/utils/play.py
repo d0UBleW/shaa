@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from ruamel.yaml import YAML
 from typing import Text, Dict, Any, Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
 import subprocess
 import os
 import sys
@@ -131,6 +132,7 @@ def run_playbook(name: Text,
         args.append("--tags")
         args.append(",".join(tags))
     print(f"[*] {' '.join(args)}")
+    start_time = time.time()
     with subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=envs
     ) as proc:
@@ -143,4 +145,6 @@ def run_playbook(name: Text,
                     sys.stdout.write(data)
                     f.write(data)
 
-        sys.stdout.write(f"return code: {proc.poll()}")
+        # sys.stdout.write(f"return code: {proc.poll()}")
+    end_time = time.time()
+    print(f"[*] Time taken: {timedelta(seconds=end_time-start_time)}")
