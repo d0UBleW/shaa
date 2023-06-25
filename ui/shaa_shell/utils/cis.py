@@ -159,13 +159,13 @@ class CIS:
                 section_units.append(s_id)
         return section_units
 
-    def list_section_unit_and_details(
-            self, section_id: Optional[Text] = None) -> List[Text]:
-        section_units = []
-        for s_id in self.sections.keys():
-            if self.has_settable_vars(s_id):
-                section_units.append(s_id)
-        return section_units
+    def list_section_unit_and_details(self) -> List[Tuple[Text, Any]]:
+        data: List[Tuple[Text, Text]] = []
+        for s_id, section in self.sections.items():
+            if not self.has_settable_vars(s_id):
+                continue
+            data.append((s_id, section))
+        return data
 
     def save(self, file_name: Optional[Text] = None) -> bool:
         """

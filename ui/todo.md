@@ -25,7 +25,8 @@ set key value [-n node_name] [-g group_name]
 - [x] cis section list
 - [x] cis set
 - [x] cis set (edge cases)
-- [ ] cis set (encrypt password)
+- [x] cis set (encrypt password)
+- [ ] cis set on node level
 - [x] cis search
 - [x] cis enable disable
 - [x] cis enable disable level profile

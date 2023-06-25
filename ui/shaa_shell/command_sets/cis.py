@@ -296,7 +296,7 @@ class cis_set_cmd(CommandSet):
     def _choices_cis_section_unit_and_title(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
-        data = self._cmd._cis.list_section_and_details()  # type: ignore
+        data = self._cmd._cis.list_section_unit_and_details()  # type: ignore
         return [CompletionItem(s_id, s["title"]) for s_id, s in data]
 
     def _choices_cis_option_key(
@@ -316,7 +316,14 @@ class cis_set_cmd(CommandSet):
         if section_id is None:
             return []
 
-        section_vars = cis.sections[section_id]["vars"]
+        if not cis.has_settable_vars(section_id):
+            raise CompletionError(f"[!] {section_id} has no settable variable")
+
+        try:
+            section_vars = cis.sections[section_id]["vars"]
+        except KeyError:
+            raise CompletionError(f"[!] Invalid section: {section_id}")
+
         cmp: List[CompletionItem] = []
         for var_key, var in section_vars.items():
             detail = f"{var['description']}"
@@ -377,7 +384,7 @@ better tab completion"""
                             help="new option value")
     set_parser.add_argument("-g",
                             "--group-name",
-                            nargs="?",
+                            nargs="*",
                             choices_provider=_choices_group_name,
                             help="apply setting to specified group name")
 
@@ -395,7 +402,7 @@ better tab completion"""
                               help="name of option to be set")
     unset_parser.add_argument("-g",
                               "--group-name",
-                              nargs="?",
+                              nargs="*",
                               choices_provider=_choices_group_name,
                               help="unset setting from specified group name")
 
@@ -418,6 +425,9 @@ better tab completion"""
         if not cis.is_valid_section_id(s_id):
             self._cmd.poutput("[!] Invalid section id")
             return
+        if not cis.has_settable_vars(s_id):
+            self._cmd.poutput(f"[!] {s_id} has no settable variable")
+            return
         if not cis.is_valid_option_key(s_id, opt_key):
             self._cmd.poutput("[!] Invalid option key")
             return
@@ -434,33 +444,41 @@ better tab completion"""
                 self._cmd.poutput(
                     "[!] No inventory is loaded")
                 self._cmd.poutput(
-                    "[!] Unable to set variable on this group name")
+                    "[!] Unable to set variable")
                 return
-            if ns.group_name not in inv.groups:
-                self._cmd.poutput("[!] Group name not found")
-                return
-            if ns.group_name == "ungrouped":
-                self._cmd.poutput("[!] The group `ungrouped` is not settable")
-                return
-            group: InventoryGroup = inv.groups[ns.group_name]
-            old_value = None
-            if opt_key in group.group_vars:
-                old_value = group.group_vars[opt_key]
-            else:
+            for gname in ns.group_name:
+                if gname not in inv.groups:
+                    self._cmd.poutput(f"[!] Group name not found: {gname}")
+                    continue
+                if gname == "ungrouped":
+                    self._cmd.poutput(f"[!] {gname} is not settable")
+                    continue
+                group: InventoryGroup = inv.groups[gname]
+                old_value = None
+                if opt_key in group.group_vars:
+                    old_value = group.group_vars[opt_key]
                 group.group_vars[opt_key] = val
-            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+                if isinstance(old_value, TaggedScalar):
+                    old_value = vault.load(old_value)
+                if isinstance(val, TaggedScalar):
+                    val = vault.load(val)
+                self._cmd.poutput(f"[+] Group: {gname}")
+                self._cmd.poutput(f"[+] {opt_key}:")
+                self._cmd.poutput(f"    old: {old_value}")
+                self._cmd.poutput(f"    new: {val}")
         else:
             option = cis.sections[s_id]["vars"][opt_key]
             old_value = option["value"]
             option["value"] = val
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
-        if isinstance(old_value, TaggedScalar):
-            old_value = vault.load(old_value)
-        if isinstance(val, TaggedScalar):
-            val = vault.load(val)
-        self._cmd.poutput(f"[+] {opt_key}:")
-        self._cmd.poutput(f"    old: {old_value}")
-        self._cmd.poutput(f"    new: {val}")
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            if isinstance(val, TaggedScalar):
+                val = vault.load(val)
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    new: {val}")
 
     @as_subcommand_to("cis", "unset", unset_parser,
                       help="set subcommand")
@@ -476,6 +494,9 @@ better tab completion"""
         if not cis.is_valid_section_id(s_id):
             self._cmd.poutput("[!] Invalid section id")
             return
+        if not cis.has_settable_vars(s_id):
+            self._cmd.poutput(f"[!] {s_id} has no unsettable variable")
+            return
         if not cis.is_valid_option_key(s_id, opt_key):
             self._cmd.poutput("[!] Invalid option key")
             return
@@ -488,32 +509,36 @@ better tab completion"""
                 self._cmd.poutput(
                     "[!] No inventory is loaded")
                 self._cmd.poutput(
-                    "[!] Unable to set variable on this group name")
+                    "[!] Unable to unset variable on this group name")
                 return
-            if ns.group_name not in inv.groups:
-                self._cmd.poutput("[!] Group name not found")
-                return
-            if ns.group_name == "ungrouped":
-                self._cmd.poutput(
-                    "[!] The group `ungrouped` is not unsettable")
-                return
-            group: InventoryGroup = inv.groups[ns.group_name]
-            if opt_key in group.group_vars:
-                del group.group_vars[opt_key]
-                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
-                old_value = group.group_vars[opt_key]
-            else:
-                self._cmd.poutput("[!] Option key not found")
-                return
+            for gname in ns.group_name:
+                if gname not in inv.groups:
+                    self._cmd.poutput(f"[!] Group name not found: {gname}")
+                    continue
+                if gname == "ungrouped":
+                    self._cmd.poutput(f"[!] {gname} is not unsettable")
+                    continue
+                group: InventoryGroup = inv.groups[gname]
+                self._cmd.poutput(f"[+] Group: {gname}")
+                if opt_key in group.group_vars:
+                    old_value = group.group_vars[opt_key]
+                    del group.group_vars[opt_key]
+                    self._cmd._inv_has_changed = True  # type: ignore
+                else:
+                    self._cmd.poutput("[!] Option key not found")
+                    continue
+                self._cmd.poutput(f"[+] {opt_key}:")
+                self._cmd.poutput(f"    old: {old_value}")
+                self._cmd.poutput(f"    default: {option['default']}")
         else:
             old_value = option["value"]
             default_val = option["default"]
             option["value"] = default_val
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
 
-        self._cmd.poutput(f"[+] {opt_key}:")
-        self._cmd.poutput(f"    old: {old_value}")
-        self._cmd.poutput(f"    new: {option['value']}")
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    default: {option['value']}")
 
 
 @with_default_category("cis")

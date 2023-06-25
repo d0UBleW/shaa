@@ -189,7 +189,7 @@ class preset_cis_cmd(CommandSet):
 
     create_parser = pre_cis_subparser.add_parser("create",
                                                  help="create CIS preset")
-    create_parser.add_argument("name", help="name of inventory")
+    create_parser.add_argument("name", help="name of CIS preset")
     create_parser.set_defaults(func=preset_cis_create)
 
     save_parser = pre_cis_subparser.add_parser("save", help="save CIS preset")
