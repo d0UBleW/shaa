@@ -11,6 +11,92 @@ from cmd2.table_creator import SimpleTable, Column
 from cmd2.exceptions import CommandSetRegistrationError
 from typing import List, Text, Optional
 from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.role_util import RoleUtil
+
+
+@with_default_category("preset")
+class preset_util_cmd(CommandSet):
+    def _choices_preset_util(self) -> List[Text]:
+        return RoleUtil.list_preset()
+
+    def preset_util_load(self, ns: argparse.Namespace):
+        pass
+
+    def preset_util_unload(self, ns: argparse.Namespace):
+        pass
+
+    def preset_util_create(self, ns: argparse.Namespace):
+        pass
+
+    def preset_util_save(self, ns: argparse.Namespace):
+        pass
+
+    def preset_util_delete(self, ns: argparse.Namespace):
+        pass
+
+    def preset_util_rename(self, ns: argparse.Namespace):
+        pass
+
+    def preset_util_list(self, ns: argparse.Namespace):
+        pass
+
+    pre_util_parser = Cmd2ArgumentParser()
+    pre_util_subparser = pre_util_parser.add_subparsers(
+        title="subcommand", help="subcommand for preset util")
+
+    @as_subcommand_to("preset", "cis", pre_util_parser,
+                      help="cis subcommand")
+    def preset_util(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        func = getattr(ns, "func", None)
+        if func is not None:
+            func(self, ns)
+        else:
+            self._cmd.poutput("No subcommand was provided")
+            self._cmd.do_help("preset util")
+
+    load_parser = pre_util_subparser.add_parser(
+        "load", help="load util preset")
+    load_parser.add_argument("name",
+                             choices_provider=_choices_preset_util,
+                             help="name of util preset")
+    load_parser.set_defaults(func=preset_util_load)
+
+    unload_parser = pre_util_subparser.add_parser("unload",
+                                                  help="unload util preset")
+    unload_parser.set_defaults(func=preset_util_unload)
+
+    create_parser = pre_util_subparser.add_parser("create",
+                                                  help="create util preset")
+    create_parser.add_argument("name", help="name of util preset")
+    create_parser.set_defaults(func=preset_util_create)
+
+    save_parser = pre_util_subparser.add_parser(
+        "save", help="save util preset")
+    save_parser.add_argument("name",
+                             nargs="?",
+                             help="name of util preset")
+    save_parser.set_defaults(func=preset_util_save)
+
+    list_parser = pre_util_subparser.add_parser(
+        "list", help="list available util preset")
+    list_parser.add_argument("pattern",
+                             nargs="?",
+                             default=".*",
+                             help="preset name regex pattern")
+    list_parser.set_defaults(func=preset_util_list)
+
+    delete_parser = pre_util_subparser.add_parser(
+        "delete", help="delete util preset")
+    delete_parser.set_defaults(func=preset_util_delete)
+
+    rename_parser = pre_util_subparser.add_parser(
+        "rename", help="""rename util preset (save current changes \
+automatically)""")
+    rename_parser.add_argument("name",
+                               help="new name of util preset")
+    rename_parser.set_defaults(func=preset_util_rename)
 
 
 @with_default_category("preset")

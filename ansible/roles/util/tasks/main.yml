@@ -1,0 +1,51 @@
+---
+- name: Tasks to chpasswd
+  tags:
+    - chpasswd
+  block:
+    - name: Check if new password is provided
+      ansible.builtin.assert:
+        that:
+          - new_passwd != ""
+        msg: "Please provide a new password"
+
+    - name: Change password if expired on initial login
+      vars:
+        _host: "{{ hostvars[host] }}"
+        curr_passwd: "{{ _host['ansible_password'] }}"
+        hostname: "{{ _host['inventory_hostname'] }}"
+        username: "{{ _host['ansible_user'] }}"
+        ip_addr: "{{ _host['ansible_host'] }}"
+        conn: "{{ username }}@{{ ip_addr }}"
+      ansible.builtin.expect:
+        command: ssh -o StrictHostKeyChecking=no {{ conn }}
+        timeout: 10
+        responses:
+          '(?i)password:': "{{ curr_passwd }}"
+          'Current password:': "{{ curr_passwd }}"
+          'UNIX password:': "{{ curr_passwd }}"
+          '(?i)new password:': "{{ new_passwd }}"
+      register: login_check
+      loop: "{{ groups['all'] }}"
+      loop_control:
+        loop_var: host
+        label: "{{ hostname }}: {{ conn }}"
+      changed_when:
+        - '"Changing password" in login_check.stdout'
+        - login_check.rc == 0
+
+    - name: Check if password has been changed
+      vars:
+        message: >-
+          {%- if chk.changed -%}
+            Password has been changed, please update your inventory accordingly
+          {%- else -%}
+            No password change as it is not expired
+          {%- endif -%}
+      ansible.builtin.debug:
+        msg: "{{ message }}"
+      changed_when: chk.changed
+      loop: "{{ login_check.results }}"
+      loop_control:
+        loop_var: chk
+        label: "{{ chk['host'] }}"

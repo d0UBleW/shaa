@@ -121,7 +121,9 @@ def generate_playbook(profile: Profile,
         "wazuh_agent": "wazuh_agent",
     }
     roles = []
-    for preset in presets:
+    for preset, val in presets.items():
+        if preset == "util" or val is None:
+            continue
         role = {"role": preset_role_map[preset]}
         roles.append(role)
 
@@ -133,10 +135,27 @@ def generate_playbook(profile: Profile,
         "roles": roles,
     }]
 
+    util_pb = [{
+        "name": f"{name} - Util",
+        "become": False,
+        "gather_facts": False,
+        "hosts": "localhost",
+        "roles": [{
+            "role": "util",
+        }]
+    }]
+
+    if len(roles) == 0 and "util" not in presets:
+        print("[!] No preset is provided")
+        return None
+
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()
 
     with open(playbook_fpath, "w") as f:
-        yaml.dump(data, f)
+        if len(roles) > 0:
+            yaml.dump(data, f)
+        if "util" in presets:
+            yaml.dump(util_pb, f)
 
     return True
 

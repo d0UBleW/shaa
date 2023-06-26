@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include d0ublew.util"
+      include_role:
+        name: "d0ublew.util"

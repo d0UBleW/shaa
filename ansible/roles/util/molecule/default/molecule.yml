@@ -1,0 +1,69 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: almalinux8
+    image: localhost/almalinux8-init
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+    command: "/usr/sbin/init"
+    privileged: true
+    pre_build_image: true
+
+  - name: almalinux9
+    image: localhost/almalinux9-init
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+    command: "/usr/sbin/init"
+    privileged: true
+    pre_build_image: true
+
+  - name: debian
+    image: localhost/debian-bullseye-systemd
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+    command: "/lib/systemd/systemd"
+    privileged: true
+    pre_build_image: true
+
+  - name: ubuntu-2004
+    image: localhost/ubuntu-20.04-systemd
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+    command: "/lib/systemd/systemd"
+    privileged: true
+    pre_build_image: true
+
+  - name: opensuse-tumbleweed
+    image: localhost/opensuse-tumbleweed-systemd
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+    command: "/lib/systemd/systemd"
+    privileged: true
+    pre_build_image: true
+
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
+# lint: |
+#   set -e
+#   yamllint .
+#   ansible-lint .

@@ -19,6 +19,7 @@ from shaa_shell.utils.parser import (
 )
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.role_util import RoleUtil
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils import play
 
@@ -29,6 +30,9 @@ class ShaaShell(cmd2.Cmd):
 
     _cis: Optional[CIS] = None
     _cis_has_changed: bool = False
+
+    _util: Optional[RoleUtil] = None
+    _util_has_changed: bool = False
 
     _profile: Optional[Profile] = None
     _profile_has_changed: bool = False
@@ -188,6 +192,17 @@ class ShaaShell(cmd2.Cmd):
                         return
                     self.poutput("[+] Changes have been saved successfully")
                     self._cis_has_changed = False
+
+    def check_if_util_changed(self) -> None:
+        if self._util_has_changed:
+            prompt = "[*] There are unsaved changes on current util preset.\n"
+            prompt += "[+] Do you want to save? [Y/n] "
+            if (_ := self.read_input(prompt).lower()) != "n":
+                if self._util is not None:
+                    if not self._util.save():
+                        return
+                    self.poutput("[+] Changes have been saved successfully")
+                    self._util_has_changed = False
 
     def check_if_profile_changed(self) -> None:
         if self._profile_has_changed:
