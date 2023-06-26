@@ -62,6 +62,69 @@ class inventory_node_subcmd(CommandSet):
         nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
         return nodes
 
+    rename_parser = Cmd2ArgumentParser()
+    rename_parser.add_argument(
+        '-g',
+        '--group',
+        dest="node_group",
+        nargs='?',
+        default="ungrouped",
+        metavar='group_name',
+        help="""node group name (ungrouped is a reserved group name, \
+leaving it blank defaults to ungrouped)""",
+        choices_provider=_choices_group_name,
+    )
+    rename_parser.add_argument(
+        'name',
+        metavar="node_name",
+        help="node name to be renamed",
+        choices_provider=_choices_node_name,
+    )
+    rename_parser.add_argument(
+        'new_name',
+        metavar="new_node_name",
+        help="new node_name",
+    )
+
+    edit_parser = Cmd2ArgumentParser()
+    edit_parser.add_argument(
+        "-n",
+        "--name",
+        dest="node_name",
+        metavar="node_name",
+        choices_provider=_choices_node_name,
+        help="node name to be edited",
+    )
+    edit_parser.add_argument(
+        "-g",
+        "--group",
+        dest="node_group",
+        nargs='?',
+        default="ungrouped",
+        metavar='group_name',
+        choices_provider=_choices_group_name,
+        help="""node group name (ungrouped is a reserved group name, \
+leaving it blank defaults to ungrouped)""",
+    )
+    edit_parser.add_argument(
+        "-i",
+        "--ip",
+        nargs="?",
+        help="node ip address",
+    )
+    edit_parser.add_argument(
+        "-u",
+        "--user",
+        nargs="?",
+        help="node SSH user",
+    )
+    edit_parser.add_argument(
+        "-p",
+        "--password",
+        nargs="?",
+        help="node SSH password",
+    )
+
     create_parser = Cmd2ArgumentParser()
     create_parser.add_argument(
         "node_name",
@@ -86,7 +149,7 @@ class inventory_node_subcmd(CommandSet):
         default="ungrouped",
         metavar='group_name',
         type=str,
-        help="""list of node group name (ungrouped is a reserved group name, \
+        help="""node group name (ungrouped is a reserved group name, \
 leaving it blank defaults to ungrouped)""",
         choices_provider=_choices_group_name,
     )
@@ -157,6 +220,32 @@ out nodes from the specified group, otherwise it would just list \
 out ungrouped nodes)""",
         choices_provider=_choices_node_name,
     )
+
+    @as_subcommand_to("node", "rename", rename_parser,
+                      help="rename node on current inventory")
+    def inv_node_rename(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        if inv.edit_node(node_name=ns.name,
+                         new_name=ns.new_name,
+                         group_name=ns.node_group) == 0:
+            self._cmd.poutput("[+] Node has been renamed successfully")
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+
+    @as_subcommand_to("node", "edit", edit_parser,
+                      help="edit node on current inventory")
+    def inv_node_edit(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        if inv.edit_node(node_name=ns.node_name,
+                         ip=ns.ip,
+                         user=ns.user,
+                         password=ns.password,
+                         group_name=ns.node_group) == 0:
+            self._cmd.poutput("[+] Node has been edited successfully")
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
 
     @as_subcommand_to("node", "create", create_parser,
                       aliases=["add"],

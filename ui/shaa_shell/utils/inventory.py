@@ -167,6 +167,20 @@ class Inventory:
             self.groups.pop(group_name)
         return 0
 
+    def rename_group(self, group_name: Text, new_group_name: Text) -> int:
+        if group_name not in self.groups.keys():
+            print(f"[!] Invalid group name: {group_name}")
+            return -1
+        if group_name == "ungrouped":
+            print("[!] `ungrouped` is not rename-able")
+            return -1
+        if new_group_name in self.groups.keys():
+            print("[!] Unable to rename, group name already exists")
+            return -1
+        self.groups[group_name].name = new_group_name
+        self.groups[new_group_name] = self.groups.pop(group_name)
+        return 0
+
     def list_group(self, pattern: Text = '.*') -> List[InventoryGroup]:
         """
         Filter group name based on given pattern
@@ -205,6 +219,37 @@ class Inventory:
             nodes.pop(node_name)
             return 0
         return -1
+
+    def edit_node(self,
+                  node_name: Text,
+                  ip: Optional[Text] = None,
+                  user: Optional[Text] = None,
+                  password: Optional[Text] = None,
+                  new_name: Optional[Text] = None,
+                  group_name: Text = "ungrouped") -> int:
+        """
+        Edit a node object from an inventory
+        """
+        if group_name not in self.groups.keys():
+            print(f"[!] Invalid group name: {group_name}")
+            return -1
+        nodes = self.groups[group_name].nodes
+        if node_name not in nodes.keys():
+            print(f"[!] Invalid node name: {node_name}")
+            return -1
+        node = nodes[node_name]
+        if new_name is not None:
+            if new_name in nodes.keys():
+                print("[!] Unable to rename, node name already exists")
+                return -1
+            node.name = new_name
+        if ip is not None:
+            node.ip_address = ip
+        if user is not None:
+            node.user = user
+        if password is not None:
+            node.password = password
+        return 0
 
     def list_node(
         self,

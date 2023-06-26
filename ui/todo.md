@@ -14,8 +14,8 @@ set key value [-n node_name] [-g group_name]
 - [x] group delete
 - [x] group list
 - [x] group info
-- [ ] group edit
-- [ ] node edit
+- [x] group edit
+- [x] node edit
 - [x] preset cis load
 - [x] preset cis create
 - [x] preset cis delete

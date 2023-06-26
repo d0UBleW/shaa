@@ -51,6 +51,19 @@ class inventory_group_subcmd(CommandSet):
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         return list(inv.groups.keys())
 
+    rename_parser = Cmd2ArgumentParser()
+    rename_parser.add_argument(
+        'name',
+        metavar="group_name",
+        help="group name to be renamed",
+        choices_provider=_choices_group_name,
+    )
+    rename_parser.add_argument(
+        'new_name',
+        metavar="new_group_name",
+        help="new group name",
+    )
+
     create_parser = Cmd2ArgumentParser()
     create_parser.add_argument(
         'name',
@@ -91,6 +104,16 @@ class inventory_group_subcmd(CommandSet):
         help="group name regex pattern to be inspected",
         choices_provider=_choices_group_name
     )
+
+    @as_subcommand_to("group", "rename", rename_parser,
+                      help="rename group on current inventory")
+    def inv_group_rename(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        if inv.rename_group(ns.name, ns.new_name) == 0:
+            self._cmd.poutput("[+] Group has been renamed successfully")
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
 
     @as_subcommand_to("group", "create", create_parser,
                       aliases=["add"],
