@@ -21,6 +21,8 @@ from shaa_shell.utils.inventory import (
     InventoryNode,
 )
 from shaa_shell.utils.parser import inventory_node_parser
+from shaa_shell.utils.vault import vault
+from ruamel.yaml.comments import TaggedScalar
 
 
 @with_default_category("inventory node")
@@ -319,9 +321,14 @@ out ungrouped nodes)""",
         for node in inv.groups[ns.node_group].nodes.values():
             if re.search(ns.pattern, node.name):
                 data_list = list(asdict(node).items())
-                data_list[-1] = (data_list[-1][0],
-                                 pprint.pformat(dict(data_list[-1][-1]),
-                                                sort_dicts=False))
+                # node host vars
+                vars = []
+                for key, val in data_list[-1][1].items():
+                    if isinstance(val, TaggedScalar):
+                        val = vault.load(val)
+                    val = pprint.pformat(val, sort_dicts=False)
+                    vars.append(f"{key}: {val}")
+                data_list[-1] = (data_list[-1][0], "\n".join(vars))
                 tbl = st.generate_table(data_list,
                                         row_spacing=0,
                                         include_header=False)

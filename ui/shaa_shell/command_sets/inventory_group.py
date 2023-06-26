@@ -22,6 +22,8 @@ from shaa_shell.utils.inventory import (
     InventoryGroup,
 )
 from shaa_shell.utils.parser import inventory_group_parser
+from shaa_shell.utils.vault import vault
+from ruamel.yaml.comments import TaggedScalar
 
 
 @with_default_category("inventory group")
@@ -159,10 +161,15 @@ class inventory_group_subcmd(CommandSet):
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         groups: List[InventoryGroup] = inv.list_group(ns.pattern)
 
-        data_list = []
+        data_list: List[List] = []
         for group in groups:
-            vars = pprint.pformat(group.group_vars, sort_dicts=False)
-            data_list.append([group.name, len(group.nodes), vars])
+            vars = []
+            for key, val in data_list[2][1].items():
+                if isinstance(val, TaggedScalar):
+                    val = vault.load(val)
+                val = pprint.pformat(val, sort_dicts=False)
+                vars.append(f"{key}: {val}")
+            data_list.append([group.name, len(group.nodes), "\n".join(vars)])
 
         columns: List[Column] = [
             Column("Name", width=16),
@@ -190,12 +197,22 @@ class inventory_group_subcmd(CommandSet):
         for group in inv.groups.values():
             if re.search(ns.pattern, group.name):
                 data_list = list(asdict(group).items())
+                # group nodes
+                nodes = []
+                for node in data_list[1][1].values():
+                    nodes.append(pprint.pformat(node, sort_dicts=False))
                 data_list[1] = (data_list[1][0],
-                                pprint.pformat(dict(data_list[1][1]),
-                                               sort_dicts=False))
-                data_list[-1] = (data_list[-1][0],
-                                 pprint.pformat(dict(data_list[-1][-1]),
-                                                sort_dicts=False))
+                                "\n\n".join(nodes))
+                # group vars
+                vars = []
+                for key, val in data_list[2][1].items():
+                    if isinstance(val, TaggedScalar):
+                        val = vault.load(val)
+                    val = pprint.pformat(val, sort_dicts=False)
+                    vars.append(f"{key}: {val}")
+
+                data_list[2] = (data_list[2][0], "\n".join(vars))
+
                 tbl = st.generate_table(data_list,
                                         row_spacing=1,
                                         include_header=False)
