@@ -7,8 +7,17 @@
   when:
     # section_1_4_3
     - system_auth | bool
-    - root_password != ""
   block:
+    - name: |
+        ---
+        1.4.3 Ensure authentication required for single user mode
+        > Check if root password is provided
+        ---
+      ansible.builtin.assert:
+        that:
+          - root_password != ""
+        msg: "Please provide a root password"
+
     - name: |
         ---
         1.4.3 Ensure authentication required for single user mode

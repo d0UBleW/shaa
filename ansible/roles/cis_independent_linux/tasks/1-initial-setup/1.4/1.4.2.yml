@@ -8,8 +8,17 @@
     # section_1_4_2
     - bootloader_auth | bool
     - grub_v2
-    - bootloader_password != ""
   block:
+    - name: |
+        ---
+        1.4.2 Ensure bootloader password is set
+        > Check if bootloader password is provided
+        ---
+      ansible.builtin.assert:
+        that:
+          - bootloader_password != ""
+        msg: "Please provide a bootloader password"
+
     - name: |
         ---
         1.4.2 Ensure bootloader password is set
