@@ -14,7 +14,7 @@ from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
 from shaa_shell.utils.vault import vault
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.parser import cis_parser
-from shaa_shell.utils.inventory import Inventory, InventoryGroup
+from shaa_shell.utils.inventory import Inventory, InventoryGroup, InventoryNode
 from typing import List, Text, Dict, Optional
 from ruamel.yaml.comments import TaggedScalar
 
@@ -293,6 +293,19 @@ class cis_set_cmd(CommandSet):
                 "[!] No inventory is loaded, unable to provide completion")
         return list(inv.groups.keys())
 
+    def _choices_node_name(
+        self: CommandSet,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[Text]:
+        if self._cmd is None:
+            return []
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        group = "ungrouped"
+        if "group_name" in arg_tokens:
+            group = arg_tokens["group_name"][0]
+        nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
+        return nodes
+
     def _choices_cis_section_unit_and_title(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
@@ -384,9 +397,14 @@ better tab completion"""
                             help="new option value")
     set_parser.add_argument("-g",
                             "--group-name",
-                            nargs="*",
+                            nargs="?",
                             choices_provider=_choices_group_name,
                             help="apply setting to specified group name")
+    set_parser.add_argument("-n",
+                            "--node-name",
+                            nargs="?",
+                            choices_provider=_choices_node_name,
+                            help="apply setting to specified node name")
 
     unset_parser = Cmd2ArgumentParser()
     unset_parser.add_argument(
@@ -402,9 +420,14 @@ better tab completion"""
                               help="name of option to be set")
     unset_parser.add_argument("-g",
                               "--group-name",
-                              nargs="*",
+                              nargs="?",
                               choices_provider=_choices_group_name,
                               help="unset setting from specified group name")
+    unset_parser.add_argument("-n",
+                              "--node-name",
+                              nargs="?",
+                              choices_provider=_choices_node_name,
+                              help="apply setting to specified node name")
 
     @as_subcommand_to("cis", "set", set_parser,
                       help="set subcommand")
@@ -438,35 +461,63 @@ better tab completion"""
 
         val = opt_val
 
-        if ns.group_name is not None:
+        if ns.node_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
-                self._cmd.poutput(
-                    "[!] No inventory is loaded")
-                self._cmd.poutput(
-                    "[!] Unable to set variable")
+                self._cmd.poutput("[!] No inventory is loaded")
+                self._cmd.poutput("[!] Unable to set variable")
                 return
-            for gname in ns.group_name:
-                if gname not in inv.groups:
-                    self._cmd.poutput(f"[!] Group name not found: {gname}")
-                    continue
-                if gname == "ungrouped":
-                    self._cmd.poutput(f"[!] {gname} is not settable")
-                    continue
-                group: InventoryGroup = inv.groups[gname]
-                old_value = None
-                if opt_key in group.group_vars:
-                    old_value = group.group_vars[opt_key]
-                group.group_vars[opt_key] = val
-                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
-                if isinstance(old_value, TaggedScalar):
-                    old_value = vault.load(old_value)
-                if isinstance(val, TaggedScalar):
-                    val = vault.load(val)
-                self._cmd.poutput(f"[+] Group: {gname}")
-                self._cmd.poutput(f"[+] {opt_key}:")
-                self._cmd.poutput(f"    old: {old_value}")
-                self._cmd.poutput(f"    new: {val}")
+            gname = ns.group_name
+            nname = ns.node_name
+            if gname is None:
+                gname = "ungrouped"
+            nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
+            if nname not in nodes.keys():
+                self._cmd.poutput("[!] Node name does not exist")
+                return
+            node = nodes[nname]
+            old_value = None
+            if opt_key in node.host_vars:
+                old_value = node.host_vars[opt_key]
+            node.host_vars[opt_key] = val
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            if isinstance(val, TaggedScalar):
+                val = vault.load(val)
+            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    new: {val}")
+            return
+        elif ns.group_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput("[!] No inventory is loaded")
+                self._cmd.poutput("[!] Unable to set variable")
+                return
+            gname = ns.group_name
+            if gname not in inv.groups:
+                self._cmd.poutput(f"[!] Group name not found: {gname}")
+                return
+            if gname == "ungrouped":
+                self._cmd.poutput(f"[!] {gname} is not settable")
+                return
+            group: InventoryGroup = inv.groups[gname]
+            old_value = None
+            if opt_key in group.group_vars:
+                old_value = group.group_vars[opt_key]
+            group.group_vars[opt_key] = val
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            if isinstance(val, TaggedScalar):
+                val = vault.load(val)
+            self._cmd.poutput(f"[+] Group: {gname}")
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    new: {val}")
+            return
         else:
             option = cis.sections[s_id]["vars"][opt_key]
             old_value = option["value"]
@@ -479,6 +530,7 @@ better tab completion"""
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    new: {val}")
+            return
 
     @as_subcommand_to("cis", "unset", unset_parser,
                       help="set subcommand")
@@ -503,7 +555,40 @@ better tab completion"""
 
         option = cis.sections[s_id]["vars"][opt_key]
 
-        if ns.group_name is not None:
+        if ns.node_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput("[!] No inventory is loaded")
+                self._cmd.poutput("[!] Unable to set variable")
+                return
+            gname = ns.group_name
+            nname = ns.node_name
+            if gname is None:
+                gname = "ungrouped"
+            nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
+            if nname not in nodes.keys():
+                self._cmd.poutput("[!] Node name does not exist")
+                return
+            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
+            node = nodes[nname]
+            old_value = None
+            if opt_key in node.host_vars:
+                old_value = node.host_vars[opt_key]
+                del node.host_vars[opt_key]
+                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+            else:
+                self._cmd.poutput("[!] Option key not found")
+                return
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            default = option["default"]
+            if isinstance(default, TaggedScalar):
+                default = vault.load(default)
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    default: {default}")
+            return
+        elif ns.group_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
                 self._cmd.poutput(
@@ -511,34 +596,46 @@ better tab completion"""
                 self._cmd.poutput(
                     "[!] Unable to unset variable on this group name")
                 return
-            for gname in ns.group_name:
-                if gname not in inv.groups:
-                    self._cmd.poutput(f"[!] Group name not found: {gname}")
-                    continue
-                if gname == "ungrouped":
-                    self._cmd.poutput(f"[!] {gname} is not unsettable")
-                    continue
-                group: InventoryGroup = inv.groups[gname]
-                self._cmd.poutput(f"[+] Group: {gname}")
-                if opt_key in group.group_vars:
-                    old_value = group.group_vars[opt_key]
-                    del group.group_vars[opt_key]
-                    self._cmd._inv_has_changed = True  # type: ignore
-                else:
-                    self._cmd.poutput("[!] Option key not found")
-                    continue
-                self._cmd.poutput(f"[+] {opt_key}:")
-                self._cmd.poutput(f"    old: {old_value}")
-                self._cmd.poutput(f"    default: {option['default']}")
+            gname = ns.group_name
+            if gname not in inv.groups:
+                self._cmd.poutput(f"[!] Group name not found: {gname}")
+                return
+            if gname == "ungrouped":
+                self._cmd.poutput(f"[!] {gname} is not unsettable")
+                return
+            group: InventoryGroup = inv.groups[gname]
+            self._cmd.poutput(f"[+] Group: {gname}")
+            if opt_key in group.group_vars:
+                old_value = group.group_vars[opt_key]
+                del group.group_vars[opt_key]
+                self._cmd._inv_has_changed = True  # type: ignore
+            else:
+                self._cmd.poutput("[!] Option key not found")
+                return
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            default = option["default"]
+            if isinstance(default, TaggedScalar):
+                default = vault.load(default)
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    default: {default}")
+            return
         else:
             old_value = option["value"]
             default_val = option["default"]
             option["value"] = default_val
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
 
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            default = option["default"]
+            if isinstance(default, TaggedScalar):
+                default = vault.load(default)
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    default: {option['value']}")
+            self._cmd.poutput(f"    default: {default}")
+            return
 
 
 @with_default_category("cis")
