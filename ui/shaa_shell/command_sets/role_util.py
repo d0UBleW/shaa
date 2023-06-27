@@ -300,7 +300,8 @@ class util_set_cmd(CommandSet):
             action = arg_tokens["action"][0]
 
         if action is None:
-            return []
+            raise CompletionError(
+                "[!] Please specify an action first with `--action`")
 
         if not role_util.has_settable_vars(action):
             raise CompletionError(f"[!] {action} has no settable variable")
