@@ -29,6 +29,10 @@ cis_parser = Cmd2ArgumentParser()
 cis_parser.add_subparsers(title="subcommands",
                           help="subcommand for cis module")
 
+role_util_parser = Cmd2ArgumentParser()
+role_util_parser.add_subparsers(title="subcommands",
+                                help="subcommand for util module")
+
 profile_parser = Cmd2ArgumentParser()
 profile_parser.add_subparsers(title="subcommands",
                               help="subcommand for profile module")

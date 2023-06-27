@@ -11,40 +11,165 @@ from cmd2.table_creator import SimpleTable, Column
 from cmd2.exceptions import CommandSetRegistrationError
 from typing import List, Text, Optional
 from shaa_shell.utils.cis import CIS
-from shaa_shell.utils.role_util import RoleUtil
+from shaa_shell.utils.role import Role
+from shaa_shell.utils.preset import list_preset
 
 
 @with_default_category("preset")
 class preset_util_cmd(CommandSet):
     def _choices_preset_util(self) -> List[Text]:
-        return RoleUtil.list_preset()
-
-    def preset_util_load(self, ns: argparse.Namespace):
-        pass
-
-    def preset_util_unload(self, ns: argparse.Namespace):
-        pass
-
-    def preset_util_create(self, ns: argparse.Namespace):
-        pass
-
-    def preset_util_save(self, ns: argparse.Namespace):
-        pass
-
-    def preset_util_delete(self, ns: argparse.Namespace):
-        pass
-
-    def preset_util_rename(self, ns: argparse.Namespace):
-        pass
+        return list_preset("util")
 
     def preset_util_list(self, ns: argparse.Namespace):
-        pass
+        if self._cmd is None:
+            return
+        data_list = []
+        for pre in list_preset("util", ns.pattern):
+            data_list.append([pre])
+
+        columns = [
+            Column("Name", width=32),
+        ]
+
+        st = SimpleTable(columns)
+        tbl = st.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")
+
+    def preset_util_create(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        role_util: Optional[Role] = Role.create("util", ns.name)
+        if role_util is None:
+            warning_text = "[!] Invalid name or specified util preset name"
+            warning_text += " already existed"
+            self._cmd.poutput(warning_text)
+            return
+        self._cmd._util = role_util  # type: ignore[attr-defined]
+        return self.preset_util_load(argparse.Namespace(), role_util)
+
+    def preset_util_save(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        if role_util is None:
+            self._cmd.poutput("[!] Currently, there is no util preset loaded")
+            return
+        if not role_util.save(ns.name):
+            self._cmd.poutput("[!] Invalid util preset name")
+            return
+        self._cmd._util_has_changed = False  # type: ignore[attr-defined]
+        self._cmd.poutput("[+] util preset has been saved")
+
+    def preset_util_rename(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        if role_util is None:
+            self._cmd.poutput("[!] Currently, there is no util preset loaded")
+            return
+        old_name = role_util.name
+        if not role_util.rename(ns.name):
+            self._cmd.poutput("[!] Invalid util preset name")
+            return
+        self._cmd._util_has_changed = False  # type: ignore[attr-defined]
+        self._cmd.poutput("[+] util preset has been renamed")
+        self._cmd.poutput(f"    old: {old_name}")
+        self._cmd.poutput(f"    new: {role_util.name}")
+
+    def preset_util_delete(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        if role_util is None:
+            self._cmd.poutput("[!] Currently, there is no util preset loaded")
+            return
+        role_util.delete()
+        self._cmd.poutput("[+] util preset has been deleted successfully")
+        self._cmd._util_has_changed = False  # type: ignore[attr-defined]
+        self.preset_util_unload(None)
+
+    def preset_util_unload(self, _):
+        if self._cmd is None:
+            return
+        self._cmd.check_if_util_changed()  # type: ignore[attr-defined]
+        self._cmd._util = None  # type: ignore[attr-defined]
+
+        self._cmd.unregister_command_set(
+            self._cmd._util_action_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] util action module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._util_set_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] util set module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._util_search_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] util search module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._util_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] util module unloaded")
+
+    def preset_util_load(self, ns: argparse.Namespace,
+                         role_util: Optional[Role] = None):
+        if self._cmd is None:
+            return
+
+        self._cmd.check_if_util_changed()  # type: ignore[attr-defined]
+
+        if role_util is not None:
+            self._cmd._util_has_changed = True  # type: ignore[attr-defined]
+
+        if role_util is None:
+            role_util = Role.load("util", ns.name)
+            self._cmd._util = role_util  # type: ignore[attr-defined]
+
+        if role_util is None:
+            return
+
+        try:
+            self._cmd.register_command_set(
+                self._cmd._util_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] util module loaded")
+            self._cmd.poutput("[*] check `help util` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._util_action_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] util action module loaded")
+            self._cmd.poutput(
+                "[*] check `help util action` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._util_set_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] util set module loaded")
+            self._cmd.poutput(
+                "[*] check `help util set` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._util_search_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] util search module loaded")
+            self._cmd.poutput(
+                "[*] check `help util search` for usage information")
+
+        except CommandSetRegistrationError:
+            return
 
     pre_util_parser = Cmd2ArgumentParser()
     pre_util_subparser = pre_util_parser.add_subparsers(
         title="subcommand", help="subcommand for preset util")
 
-    @as_subcommand_to("preset", "cis", pre_util_parser,
+    @as_subcommand_to("preset", "util", pre_util_parser,
                       help="cis subcommand")
     def preset_util(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:

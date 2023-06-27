@@ -7,6 +7,7 @@ from shaa_shell.command_sets import (
     inventory_node as inv_node_cs,
     inventory_group as inv_group_cs,
     cis as cis_cs,
+    role_util as util_cs,
     preset as pre_cs,
     profile as pro_cs,
 )
@@ -19,7 +20,7 @@ from shaa_shell.utils.parser import (
 )
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.cis import CIS
-from shaa_shell.utils.role_util import RoleUtil
+from shaa_shell.utils.role import Role
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils import play
 
@@ -31,7 +32,7 @@ class ShaaShell(cmd2.Cmd):
     _cis: Optional[CIS] = None
     _cis_has_changed: bool = False
 
-    _util: Optional[RoleUtil] = None
+    _util: Optional[Role] = None
     _util_has_changed: bool = False
 
     _profile: Optional[Profile] = None
@@ -57,6 +58,10 @@ class ShaaShell(cmd2.Cmd):
         self._cis_section_cmd = cis_cs.cis_section_cmd()
         self._cis_set_cmd = cis_cs.cis_set_cmd()
         self._cis_search_cmd = cis_cs.cis_search_cmd()
+        self._util_cmd = util_cs.util_cmd()
+        self._util_action_cmd = util_cs.util_action_cmd()
+        self._util_set_cmd = util_cs.util_set_cmd()
+        self._util_search_cmd = util_cs.util_search_cmd()
         self.register_postloop_hook(self.check_if_inv_changed)
         self.register_postloop_hook(self.check_if_cis_changed)
         self.register_postloop_hook(self.check_if_profile_changed)
@@ -70,11 +75,20 @@ class ShaaShell(cmd2.Cmd):
         if self._cis is not None:
             cis_prompt = f"[cis: {self._cis.name}] "
 
+        util_prompt = ""
+        if self._util is not None:
+            util_prompt = f"[util: {self._util.name}] "
+
         profile_prompt = ""
         if self._profile is not None:
             profile_prompt = f"[pro: {self._profile.name}] "
 
-        self.prompt = f"\n{profile_prompt}{inv_prompt}{cis_prompt}\nshaa> "
+        self.prompt = "\n"
+        self.prompt += f"{profile_prompt}"
+        self.prompt += f"{inv_prompt}"
+        self.prompt += f"{cis_prompt}"
+        self.prompt += f"{util_prompt}"
+        self.prompt += "\nshaa> "
 
     def postcmd(self, stop, statement):
         self._set_prompt()
@@ -220,6 +234,7 @@ def main():
     shaa_shell = ShaaShell(command_sets=[
         inv_cs.inventory_subcmd(),
         pre_cs.preset_cis_cmd(),
+        pre_cs.preset_util_cmd(),
         pro_cs.profile_subcmd(),
     ])
     shaa_shell.disable_command(
