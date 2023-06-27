@@ -16,7 +16,7 @@
         ---
       ansible.builtin.assert:
         that:
-          - bootloader_password != ""
+          - bootloader_password
         msg: "Please provide a bootloader password"
 
     - name: |

@@ -6,7 +6,7 @@
     - name: Check if new password is provided
       ansible.builtin.assert:
         that:
-          - new_passwd != ""
+          - new_passwd
         msg: "Please provide a new password"
 
     - name: Change password if expired on initial login

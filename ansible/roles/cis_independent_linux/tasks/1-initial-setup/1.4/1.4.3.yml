@@ -15,7 +15,7 @@
         ---
       ansible.builtin.assert:
         that:
-          - root_password != ""
+          - root_password
         msg: "Please provide a root password"
 
     - name: |
