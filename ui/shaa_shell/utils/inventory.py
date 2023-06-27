@@ -277,16 +277,19 @@ class Inventory:
         return nodes
 
     def save(
-            self,
-            file_name: Optional[Text] = None,
-            inv_path: Path = INVENTORY_PATH) -> bool:
+        self,
+        file_name: Optional[Text] = None,
+        inv_path: Path = INVENTORY_PATH,
+        overwrite: bool = False,
+    ) -> bool:
         """
         Dump inventory data into a YAML file which is compatible with Ansible
         inventory format
         """
         if file_name is not None and file_name in Inventory.list_inventory():
-            print("[!] Specified inventory name exists")
-            return False
+            if not overwrite:
+                print("[!] Specified inventory name exists")
+                return False
 
         if file_name is None:
             file_name = self.name

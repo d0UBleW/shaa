@@ -10,6 +10,7 @@ import sys
 
 from shaa_shell.utils.vault import vault_password
 from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.role import Role
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils.path import (
@@ -53,10 +54,33 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
     return vars
 
 
-def generate_cis_tags(profile: Profile,
-                      arg_presets: List[Text]) -> Optional[List]:
-    presets = {}
+def convert_role_vars_to_ansible_vars(role_type: Text,
+                                      name: Text) -> Dict[Text, Any]:
+    role: Optional[Role] = Role.load(role_type, name)
+    if role is None:
+        return {}
+    vars = {}
+    for action, task in role.actions.items():
+        vars[action] = task["enabled"]
+        if not role.has_settable_vars(action):
+            continue
+        for var_key, var in task["vars"].items():
+            val = var["value"]
+            if val is None:
+                val = var["default"]
+            if "." in var_key:
+                parent, _, child = var_key.partition(".")
+                if parent not in vars:
+                    vars[parent] = {}
+                vars[parent][child] = val
+            else:
+                vars[var_key] = val
 
+    return vars
+
+
+def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
+    presets = {}
     if len(arg_presets) > 0:
         for preset in arg_presets:
             if preset not in PRESETS:
@@ -66,25 +90,59 @@ def generate_cis_tags(profile: Profile,
     else:
         presets = profile.presets
 
-    if "cis" not in presets.keys():
+    tags: List[Text] = []
+
+    if "cis" in presets.keys():
+        cis_tags = generate_cis_tags(presets["cis"])
+        if cis_tags is not None:
+            tags += cis_tags
+
+    for role_type in PRESETS:
+        if role_type == "cis":
+            continue
+        if role_type not in presets.keys():
+            continue
+        role_tags = generate_role_tags(role_type, presets[role_type])
+        if role_tags is not None:
+            tags += role_tags
+
+    return tags
+
+
+def generate_cis_tags(pre_name: Optional[Text]) -> Optional[List]:
+    if pre_name is None:
         return None
-    if presets["cis"] is None:
-        return None
-    cis: Optional[CIS] = CIS.load(presets["cis"])
+    cis: Optional[CIS] = CIS.load(pre_name)
     if cis is None:
-        print("[!] CIS preset name not found")
+        print(f"[!] CIS preset name not found: {pre_name}")
         return None
-    s = []
+    tags = []
     for s_id in cis.sections.keys():
         if "subsections" in cis.sections[s_id].keys():
             continue
         if not cis.sections[s_id]["enabled"]:
             continue
         if s_id.count('.') < 2:
-            s.append(f"{s_id}.x")
+            tags.append(f"{s_id}.x")
         else:
-            s.append(s_id)
-    return s
+            tags.append(s_id)
+    return tags
+
+
+def generate_role_tags(role_type: Text,
+                       pre_name: Optional[Text]) -> Optional[List]:
+    if pre_name is None:
+        return None
+    role: Optional[Role] = Role.load(role_type, pre_name)
+    if role is None:
+        print(f"[!] {role_type} preset name not found: {pre_name}")
+        return None
+    tags = []
+    for action in role.actions.keys():
+        if not role.actions[action]["enabled"]:
+            continue
+        tags.append(action)
+    return tags
 
 
 def generate_playbook(profile: Profile,
@@ -102,8 +160,20 @@ def generate_playbook(profile: Profile,
 
     all_vars = {}
     if "cis" in presets.keys() and presets["cis"] is not None:
+        print("[+] Converting CIS preset variables")
         cis_vars = convert_cis_to_ansible_vars(presets["cis"])
         all_vars.update(cis_vars)
+
+    for role_type in PRESETS:
+        if role_type == "cis":
+            continue
+        if role_type not in presets:
+            continue
+        role_name = presets[role_type]
+        if role_type in presets.keys() and role_name is not None:
+            print(f"[+] Converting {role_type} preset variables")
+            role_vars = convert_role_vars_to_ansible_vars(role_type, role_name)
+            all_vars.update(role_vars)
 
     inv_name = profile.inv_name
     if inv_name is not None:
@@ -114,7 +184,7 @@ def generate_playbook(profile: Profile,
 
     name = profile.name
     inv.groups["ungrouped"].group_vars = all_vars
-    inv.save(name, ANSIBLE_INV_PATH)
+    inv.save(name, ANSIBLE_INV_PATH, overwrite=True)
 
     preset_role_map = {
         "cis": "cis_independent_linux",
@@ -148,7 +218,7 @@ def generate_playbook(profile: Profile,
     }]
 
     if len(roles) == 0 and "util" not in presets:
-        print("[!] No preset is provided")
+        print("[!] No preset is provided, aborting!")
         return None
 
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()

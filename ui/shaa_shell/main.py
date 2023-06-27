@@ -64,6 +64,7 @@ class ShaaShell(cmd2.Cmd):
         self._util_search_cmd = util_cs.util_search_cmd()
         self.register_postloop_hook(self.check_if_inv_changed)
         self.register_postloop_hook(self.check_if_cis_changed)
+        self.register_postloop_hook(self.check_if_util_changed)
         self.register_postloop_hook(self.check_if_profile_changed)
 
     def _set_prompt(self):
@@ -144,19 +145,23 @@ class ShaaShell(cmd2.Cmd):
 
         # TODO: check if at least one preset is set
         cis = self._cis
-        if cis is None:
-            self.poutput("[!] No CIS preset is loaded, aborting!")
-            return
+        role_util = self._util
 
         profile = self._profile
         if profile is None:
             profile = Profile(name="_shaa_unnamed_profile")
             profile.inv_name = inv.name
-            profile.presets["cis"] = cis.name
+            if cis is not None:
+                profile.presets["cis"] = cis.name
+            if role_util is not None:
+                profile.presets["util"] = role_util.name
 
         self.check_if_inv_changed()
-        if len(ns.preset) == 0 or "cis" in ns.preset:
+        if len(ns.preset) == 0 or ("cis" in ns.preset and cis is not None):
             self.check_if_cis_changed()
+        if len(ns.preset) == 0 or (
+                "util" in ns.preset and role_util is not None):
+            self.check_if_util_changed()
 
         self.poutput("[+] Generating playbook ...")
         gen_pb = play.generate_playbook(profile, ns.preset)
@@ -168,7 +173,7 @@ class ShaaShell(cmd2.Cmd):
             return
         self.poutput("[+] Done")
         self.poutput("[+] Generating tags ...")
-        tags = play.generate_cis_tags(profile, ns.preset)
+        tags = play.generate_tags(profile, ns.preset)
         self.poutput("[+] Done")
         self.poutput("[+] Running playbook ...")
         play.run_playbook(
