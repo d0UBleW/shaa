@@ -2,6 +2,8 @@
 - name: Tasks to chpasswd
   tags:
     - chpasswd
+  when:
+    - chpasswd | bool
   block:
     - name: Check if new password is provided
       ansible.builtin.assert:
