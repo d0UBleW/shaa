@@ -199,10 +199,22 @@ class inventory_group_subcmd(CommandSet):
                 data_list = list(asdict(group).items())
                 # group nodes
                 nodes = []
-                for node in data_list[1][1].values():
-                    nodes.append(pprint.pformat(node, sort_dicts=False))
+                for node in group.nodes.values():
+                    node_data_list = list(asdict(node).items())
+                    node_vars = []
+                    for key, val in node_data_list[-1][1].items():
+                        if isinstance(val, TaggedScalar):
+                            val = vault.load(val)
+                        val = pprint.pformat(val, sort_dicts=False)
+                        node_vars.append(f"{key}: {val}")
+                    node_data_list[-1] = (node_data_list[-1]
+                                          [0], "".join(node_vars))
+                    node_tbl = st.generate_table(node_data_list,
+                                                 row_spacing=0,
+                                                 include_header=False)
+                    nodes.append(node_tbl)
                 data_list[1] = (data_list[1][0],
-                                "\n\n".join(nodes))
+                                "\n---\n\n".join(nodes))
                 # group vars
                 vars = []
                 for key, val in data_list[2][1].items():
