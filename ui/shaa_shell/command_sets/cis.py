@@ -59,6 +59,14 @@ class cis_section_cmd(CommandSet):
                 "Level 2 Workstation profile"))
         return cmp
 
+    def _choices_cis_section_disable(self) -> List[CompletionItem]:
+        if self._cmd is None:
+            return []
+        data = self._cmd._cis.list_section_and_details()  # type: ignore
+        cmp = [CompletionItem(s_id, s["title"]) for s_id, s in data]
+        cmp.append(CompletionItem("all", "Everything"))
+        return cmp
+
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -270,7 +278,7 @@ has subsections)""")
     disable_parser.add_argument(
         "section_id",
         nargs="+",
-        choices_provider=_choices_cis_section_title,
+        choices_provider=_choices_cis_section_disable,
         descriptive_header="Title",
         help="section id to be disabled (use `all` for everything)")
     disable_parser.set_defaults(func=cis_section_disable)

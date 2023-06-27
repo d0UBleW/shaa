@@ -26,7 +26,9 @@ class CIS:
                 data = yaml.load(f)
 
         if "sections" not in data.keys():
-            print("[!] Invalid CIS preset file: missing `sections` key")
+            raise KeyError(
+                "[!] Invalid CIS preset file: missing `sections` key"
+            )
         self.sections = data["sections"]
 
     @staticmethod
@@ -92,9 +94,9 @@ class CIS:
             try:
                 val = int(val)  # type: ignore[assignment]
             except ValueError:
+                if valid is not None and val in valid:
+                    return val
                 print("[!] Invalid value, number is expected")
-                return None
-            if valid is not None and val in valid:
                 return None
             if val < range_start:
                 print("[!] Supplied value is lower than allowed value")
@@ -120,6 +122,7 @@ class CIS:
                 print("[!] Invalid value provided")
                 print(f"    {diff}")
                 return None
+            return list(set(option_val))
 
         if value_type == "list":
             return list(set(option_val))
