@@ -25,7 +25,22 @@ class RoleUtil:
             with open(UTIL_TEMPLATE_FILE, "r") as f:
                 data = yaml.load(f)
 
+        if "actions" not in data.keys():
+            raise KeyError(
+                "[!] Invalid util preset file: missing `actions` key"
+            )
         self.actions = data["actions"]
+
+    def is_valid_action(self, action: Text) -> bool:
+        return action in self.actions.keys()
+
+    def has_settable_vars(self, arg_action: Text) -> bool:
+        action = self.actions[arg_action]
+        return "vars" in action.keys() and action["vars"] is not None
+
+    def is_valid_option_key(self, action: Text, option_key: Text) -> bool:
+        action_vars = self.actions[action]["vars"]
+        return option_key in action_vars.keys()
 
     def save(self, file_name: Optional[Text] = None) -> bool:
         """
@@ -67,7 +82,7 @@ class RoleUtil:
     @staticmethod
     def load(name: Text) -> Optional[RoleUtil]:
         """
-        Load CIS preset from YAML file to Python object
+        Load util preset from YAML file to Python object
         """
         if not is_valid_file_path(UTIL_PRESET_PATH, f"{name}.yml"):
             print("[!] Invalid util preset name")
@@ -91,7 +106,7 @@ class RoleUtil:
     @staticmethod
     def create(name: Text) -> Optional[RoleUtil]:
         """
-        Function wrapper for creating CIS object
+        Function wrapper for creating RoleUtil object
         """
         if name in RoleUtil.list_preset():
             return None
