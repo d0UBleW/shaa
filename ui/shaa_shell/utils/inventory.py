@@ -9,7 +9,12 @@ from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
 from typing import List, Text, Optional, Dict, Tuple, Any
 from shaa_shell.utils.vault import vault
 from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
-from shaa_shell.utils.path import INVENTORY_PATH, is_valid_file_path
+from shaa_shell.utils.path import (
+    INVENTORY_PATH,
+    is_valid_file_path,
+    resolve_path,
+    filter_file,
+)
 
 yaml = YAML(typ="rt")
 
@@ -314,7 +319,8 @@ class Inventory:
                 continue
             data["all"]["children"][group.name] = group.raw()
 
-        with open(file_path, "w") as f:
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with file_path.open("w") as f:
             yaml.dump(data, f)
 
         return True
@@ -333,7 +339,7 @@ class Inventory:
             return None
 
         file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
-        with open(file_path, "r") as f:
+        with file_path.open("r") as f:
             data: Dict = yaml.load(f)
 
         inv = Inventory(name)
@@ -368,16 +374,16 @@ class Inventory:
         """
         List inventory based on given pattern
         """
-        files = INVENTORY_PATH.glob("*.yml")
-        return list(filter(lambda fname: re.search(pattern, fname),
-                           [file.stem for file in files]))
+        return filter_file(INVENTORY_PATH, "*.yml", ".*")
 
     @staticmethod
     def create_inventory(name: Text) -> Optional[Inventory]:
-        if name in Inventory.list_inventory():
+        if not is_valid_file_path(INVENTORY_PATH, f"{name}.yml"):
             return None
 
-        if not is_valid_file_path(INVENTORY_PATH, f"{name}.yml"):
+        name = resolve_path(name, INVENTORY_PATH)
+
+        if name in Inventory.list_inventory():
             return None
 
         inv = Inventory(name)
@@ -397,6 +403,7 @@ class Inventory:
             return False
         old_file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
         Path.unlink(old_file_path, missing_ok=True)
+        new_name = resolve_path(new_name, INVENTORY_PATH)
         self.name = new_name
         return True
 

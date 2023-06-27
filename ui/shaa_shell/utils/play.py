@@ -151,7 +151,7 @@ def generate_playbook(profile: Profile,
 
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()
 
-    with open(playbook_fpath, "w") as f:
+    with playbook_fpath.open("w") as f:
         if len(roles) > 0:
             yaml.dump(data, f)
         if "util" in presets:
@@ -190,7 +190,8 @@ def run_playbook(name: Text,
     ) as proc:
         now = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
         log_file = LOG_PATH.joinpath(f"{name}-{now}")
-        with open(log_file, "w") as f:
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        with log_file.open("w") as f:
             while proc.poll() is None:
                 if proc.stdout is not None:
                     data: Text = proc.stdout.readline().decode('utf-8')

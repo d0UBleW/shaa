@@ -9,6 +9,7 @@ from pathlib import Path
 from shaa_shell.utils.preset import list_preset
 from shaa_shell.utils.path import (
     is_valid_file_path,
+    resolve_path,
     UTIL_TEMPLATE_FILE,
     UTIL_PRESET_PATH,
     OSCAP_TEMPLATE_FILE,
@@ -38,7 +39,7 @@ class Role:
             raise NotImplementedError(f"TODO: {role_type}")
 
         if data is None:
-            with open(self.template_file, "r") as f:
+            with self.template_file.open("r") as f:
                 data = yaml.load(f)
 
         if self.root_key not in data.keys():
@@ -163,7 +164,8 @@ class Role:
             self.root_key: self.actions
         }
 
-        with open(file_path, 'w') as f:
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with file_path.open('w') as f:
             yaml.dump(data, f)
 
         return True
@@ -177,6 +179,7 @@ class Role:
             return False
 
         self.delete()
+        new_name = resolve_path(new_name, self.preset_path)
         self.name = new_name
         return True
 
@@ -195,7 +198,7 @@ class Role:
             return None
 
         file_path = role.preset_path.joinpath(f"{name}.yml").resolve()
-        with open(file_path, "r") as f:
+        with file_path.open("r") as f:
             data: Dict = yaml.load(f)
 
         if role.root_key not in data.keys():
@@ -212,11 +215,15 @@ class Role:
         """
         Function wrapper for creating Role object
         """
-        if name in list_preset(role_type):
+        role = Role(role_type, name)
+
+        if not is_valid_file_path(role.preset_path, f"{name}.yml"):
             return None
 
-        role = Role(role_type, name)
-        if not is_valid_file_path(role.preset_path, f"{name}.yml"):
+        name = resolve_path(name, role.preset_path)
+        role.name = name
+
+        if name in list_preset(role_type):
             return None
 
         return role

@@ -11,6 +11,7 @@ from shaa_shell.utils.path import (
     CIS_PRESET_PATH,
     CIS_TEMPLATE_FILE,
     is_valid_file_path,
+    resolve_path,
 )
 from shaa_shell.utils.vault import vault
 
@@ -22,7 +23,7 @@ class CIS:
         self.name = name
 
         if data is None:
-            with open(CIS_TEMPLATE_FILE, "r") as f:
+            with CIS_TEMPLATE_FILE.open("r") as f:
                 data = yaml.load(f)
 
         if "sections" not in data.keys():
@@ -190,7 +191,8 @@ class CIS:
             "sections": self.sections
         }
 
-        with open(file_path, 'w') as f:
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with file_path.open('w') as f:
             yaml.dump(data, f)
 
         return True
@@ -204,6 +206,7 @@ class CIS:
             return False
 
         self.delete()
+        new_name = resolve_path(new_name, CIS_PRESET_PATH)
         self.name = new_name
         return True
 
@@ -221,7 +224,7 @@ class CIS:
             return None
 
         file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
-        with open(file_path, "r") as f:
+        with file_path.open("r") as f:
             data: Dict = yaml.load(f)
 
         if "sections" not in data.keys():
@@ -236,10 +239,12 @@ class CIS:
         """
         Function wrapper for creating CIS object
         """
-        if name in CIS.list_preset():
+        if not is_valid_file_path(CIS_PRESET_PATH, f"{name}.yml"):
             return None
 
-        if not is_valid_file_path(CIS_PRESET_PATH, f"{name}.yml"):
+        name = resolve_path(name, CIS_PRESET_PATH)
+
+        if name in CIS.list_preset():
             return None
 
         cis = CIS(name)

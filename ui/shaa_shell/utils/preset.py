@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from typing import Text, List
 from shaa_shell.utils import path
 
@@ -18,6 +17,4 @@ def list_preset(_type: Text, pattern: Text = ".*") -> List[Text]:
     else:
         raise ValueError(f"preset type `{_type}` does not exist")
 
-    files = preset_path.glob("*.yml")
-    return list(filter(lambda fname: re.search(pattern, fname),
-                       [file.stem for file in files]))
+    return path.filter_file(preset_path, "*.yml", pattern)

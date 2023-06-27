@@ -4,7 +4,7 @@ from typing import List, Text, Dict, Optional
 from pathlib import Path
 from ruamel.yaml import YAML
 import re
-from shaa_shell.utils.path import PROFILE_PATH, is_valid_file_path
+from shaa_shell.utils.path import PROFILE_PATH, is_valid_file_path, filter_file
 
 yaml = YAML(typ="rt")
 
@@ -27,9 +27,7 @@ class Profile:
 
     @staticmethod
     def list_profile(pattern: Text = ".*") -> List[Text]:
-        files = PROFILE_PATH.glob("*.yml")
-        return list(filter(lambda fname: re.search(pattern, fname),
-                           [file.stem for file in files]))
+        return filter_file(PROFILE_PATH, "*.yml", pattern)
 
     @staticmethod
     def create(name: Text) -> Optional[Profile]:
@@ -57,7 +55,7 @@ class Profile:
             return None
 
         file_path = PROFILE_PATH.joinpath(f"{name}.yml").resolve()
-        with open(file_path, "r") as f:
+        with file_path.open("r") as f:
             data: Dict = yaml.load(f)
 
         if "inventory" not in data.keys():
@@ -92,7 +90,8 @@ class Profile:
             "presets": self.presets,
         }
 
-        with open(file_path, 'w') as f:
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with file_path.open('w') as f:
             yaml.dump(data, f)
 
         return True
