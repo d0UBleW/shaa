@@ -56,7 +56,7 @@ class preset_util_cmd(CommandSet):
             self._cmd.poutput("[!] Currently, there is no util preset loaded")
             return
         if not role_util.save(ns.name):
-            self._cmd.poutput("[!] Invalid util preset name")
+            self._cmd.poutput("[!] Invalid util preset name or name existed")
             return
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] util preset has been saved")
@@ -264,7 +264,7 @@ class preset_cis_cmd(CommandSet):
             self._cmd.poutput("[!] Currently, there is no CIS preset loaded")
             return
         if not cis.save(ns.name):
-            self._cmd.poutput("[!] Invalid CIS preset name")
+            self._cmd.poutput("[!] Invalid CIS preset name or name existed")
             return
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] CIS preset has been saved")

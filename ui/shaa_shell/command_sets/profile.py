@@ -16,6 +16,7 @@ from shaa_shell.utils.profile import Profile
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.preset import list_preset, PRESETS
 from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.role import Role
 
 
 @with_default_category("profile")
@@ -92,11 +93,16 @@ class profile_subcmd(CommandSet):
         self._cmd._profile = profile  # type: ignore
 
         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
-        cis: Optional[CIS] = self._cmd._cis  # type: ignore
         if inv is not None:
             profile.inv_name = inv.name
+
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore
         if cis is not None:
             profile.presets["cis"] = cis.name
+
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        if role_util is not None:
+            profile.presets["util"] = role_util.name
 
         return self.profile_load(None, profile)  # type: ignore
 
@@ -250,33 +256,19 @@ automatically)""")
             profile.inv_name = ns.name
             self._cmd.do_inventory(f"load {ns.name}")  # type: ignore
             self._cmd.poutput("\n[+] Inventory set successfully")
-        elif ns.config == "cis":
-            if ns.name not in list_preset("cis"):
-                self._cmd.poutput("[!] CIS preset name does not exist")
+        else:
+            if ns.config not in PRESETS:
+                self._cmd.poutput(f"[!] Invalid preset: {ns.config}")
                 return
-            if "cis" in profile.presets.keys():
-                old_name = profile.presets["cis"]
-            profile.presets["cis"] = ns.name
-            self._cmd.do_preset(f"cis load {ns.name}")  # type: ignore
-            self._cmd.poutput("\n[+] CIS preset set successfully")
-        elif ns.config == "oscap":
-            if ns.name not in list_preset("oscap"):
-                self._cmd.poutput("[!] OSCAP preset name does not exist")
+            preset = ns.config
+            if ns.name not in list_preset(preset):
+                self._cmd.poutput(f"[!] {preset} preset name does not exist")
                 return
-            if "oscap" in profile.presets.keys():
-                old_name = profile.presets["oscap"]
-            profile.presets["oscap"] = ns.name
-            self._cmd.do_preset(f"oscap load {ns.name}")  # type: ignore
-            self._cmd.poutput("\n[+] OSCAP preset set successfully")
-        elif ns.config == "extra":
-            if ns.name not in list_preset("extra"):
-                self._cmd.poutput("[!] Extra preset name does not exist")
-                return
-            if "extra" in profile.presets.keys():
-                old_name = profile.presets["extra"]
-            profile.presets["extra"] = ns.name
-            self._cmd.do_preset(f"extra load {ns.name}")  # type: ignore
-            self._cmd.poutput("\n[+] Extra preset set successfully")
+            if preset in profile.presets.keys():
+                old_name = profile.presets[preset]
+            profile.presets[preset] = ns.name
+            self._cmd.do_preset(f"{preset} load {ns.name}")  # type: ignore
+            self._cmd.poutput(f"\n[+] {preset} preset set successfully")
 
         if old_name is None:
             old_name = ""
