@@ -121,7 +121,6 @@ class Role:
 
     def list_action_and_details(
         self,
-        action: Optional[Text] = None,
         search_query: Optional[Text] = None,
     ) -> List[Tuple[Text, Any]]:
         data: List[Tuple[Text, Text]] = []
@@ -130,9 +129,7 @@ class Role:
                 if re.search(search_query, task["title"]):
                     data.append((action_key, task))
                 continue
-            if action is None:
-                data.append((action_key, task))
-                continue
+            data.append((action_key, task))
         return data
 
     def list_action_w_vars_and_details(self) -> List[Tuple[Text, Any]]:

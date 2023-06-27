@@ -52,8 +52,7 @@ class util_action_cmd(CommandSet):
     def util_action_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        data = self._cmd._util.list_action_and_details(  # type: ignore
-            ns.action)
+        data = self._cmd._util.list_action_and_details()  # type: ignore
         columns = [
             Column("Action", width=24),
             Column("Enabled", width=8),
@@ -106,7 +105,7 @@ class util_action_cmd(CommandSet):
 
         for arg_act in ns.action:
             if arg_act != "all" and not role_util.is_valid_action(arg_act):
-                self._cmd.poutput(f"[!] Invalid section id: {arg_act}")
+                self._cmd.poutput(f"[!] Invalid action: {arg_act}")
                 return
 
             role_util.actions[arg_act]["enabled"] = False
@@ -197,7 +196,7 @@ class util_action_cmd(CommandSet):
         title="subcommand", help="subcommand for util action")
 
     @as_subcommand_to("util", "action", action_parser,
-                      help="section subcommand")
+                      help="action subcommand")
     def util_action(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -216,13 +215,6 @@ class util_action_cmd(CommandSet):
         choices=["enabled", "disabled", "all"],
         default="all",
         help="filter actions based on their status"
-    )
-    list_parser.add_argument(
-        "action",
-        nargs="?",
-        choices_provider=_choices_util_action_title,
-        help="""if specified, it would list out corresponding subsections \
-(e.g., 1, 2.1, 3.3.1)"""
     )
     list_parser.set_defaults(func=util_action_list)
 
@@ -253,7 +245,7 @@ class util_action_cmd(CommandSet):
         nargs="+",
         choices_provider=_choices_util_action_enable,
         descriptive_header="Title",
-        help="section id to be disabled (use `all` for everything)")
+        help="action to be disabled (use `all` for everything)")
     disable_parser.set_defaults(func=util_action_disable)
 
     info_parser = action_subparser.add_parser(
@@ -267,389 +259,387 @@ class util_action_cmd(CommandSet):
 
 @with_default_category("util")
 class util_set_cmd(CommandSet):
-    pass
-#     def _choices_group_name(self) -> List[Text]:
-#         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
-#         if inv is None:
-#             raise CompletionError(
-#                 "[!] No inventory is loaded, unable to provide completion")
-#         return list(inv.groups.keys())
-#
-#     def _choices_node_name(
-#         self: CommandSet,
-#         arg_tokens: Dict[Text, List[Text]]
-#     ) -> List[Text]:
-#         if self._cmd is None:
-#             return []
-#         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
-#         group = "ungrouped"
-#         if "group_name" in arg_tokens:
-#             group = arg_tokens["group_name"][0]
-#         nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
-#         return nodes
-#
-#     def _choices_cis_section_unit_and_title(self) -> List[CompletionItem]:
-#         if self._cmd is None:
-#             return []
-#         data = self._cmd._cis.list_section_unit_and_details()  # type: ignore
-#         return [CompletionItem(s_id, s["title"]) for s_id, s in data]
-#
-#     def _choices_cis_option_key(
-#         self: CommandSet,
-#         arg_tokens: Dict[Text, List[Text]]
-#     ) -> List[CompletionItem]:
-#         if self._cmd is None:
-#             return []
-#         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
-#         if cis is None:
-#             return []
-#
-#         section_id = None
-#         if "section_id" in arg_tokens:
-#             section_id = arg_tokens["section_id"][0]
-#
-#         if section_id is None:
-#             return []
-#
-#         if not cis.has_settable_vars(section_id):
-#             raise CompletionError(f"[!] {section_id} has no settable variable")
-#
-#         try:
-#             section_vars = cis.sections[section_id]["vars"]
-#         except KeyError:
-#             raise CompletionError(f"[!] Invalid section: {section_id}")
-#
-#         cmp: List[CompletionItem] = []
-#         for var_key, var in section_vars.items():
-#             detail = f"{var['description']}"
-#             cmp.append(CompletionItem(var_key, detail))
-#         return cmp
-#
-#     def _choices_cis_option_value(
-#         self: CommandSet,
-#         arg_tokens: Dict[Text, List[Text]]
-#     ) -> List[Text]:
-#         if self._cmd is None:
-#             return []
-#         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
-#         if cis is None:
-#             return []
-#
-#         section_id = None
-#         if "section_id" in arg_tokens:
-#             section_id = arg_tokens["section_id"][0]
-#
-#         if section_id is None:
-#             return []
-#
-#         option_key = None
-#         if "option_key" in arg_tokens:
-#             option_key = arg_tokens["option_key"][0]
-#
-#         if option_key is None:
-#             return []
-#
-#         section_vars = cis.sections[section_id]["vars"]
-#         for var_key, var in section_vars.items():
-#             if var_key != option_key:
-#                 continue
-#             if var["value_type"] == "choice":
-#                 return var["valid"]
-#             if var["value_type"] == "list_choice":
-#                 return var["valid"]
-#             if var["value_type"] == "bool":
-#                 return ["True", "False"]
-#         return []
-#
-#     set_parser = Cmd2ArgumentParser()
-#     set_parser.add_argument(
-#         "-s",
-#         "--section-id",
-#         dest="section_id",
-#         choices_provider=_choices_cis_section_unit_and_title,
-#         help="""narrow down to specific section id with settable vars for \
-# better tab completion"""
-#     )
-#     set_parser.add_argument("option_key",
-#                             choices_provider=_choices_cis_option_key,
-#                             help="name of option to be set")
-#     set_parser.add_argument("option_value",
-#                             nargs="+",
-#                             choices_provider=_choices_cis_option_value,
-#                             help="new option value")
-#     set_parser.add_argument("-g",
-#                             "--group-name",
-#                             nargs="?",
-#                             choices_provider=_choices_group_name,
-#                             help="apply setting to specified group name")
-#     set_parser.add_argument("-n",
-#                             "--node-name",
-#                             nargs="?",
-#                             choices_provider=_choices_node_name,
-#                             help="apply setting to specified node name")
-#
-#     unset_parser = Cmd2ArgumentParser()
-#     unset_parser.add_argument(
-#         "-s",
-#         "--section-id",
-#         dest="section_id",
-#         choices_provider=_choices_cis_section_unit_and_title,
-#         help="""narrow down to specific section id with settable vars for \
-# better tab completion"""
-#     )
-#     unset_parser.add_argument("option_key",
-#                               choices_provider=_choices_cis_option_key,
-#                               help="name of option to be set")
-#     unset_parser.add_argument("-g",
-#                               "--group-name",
-#                               nargs="?",
-#                               choices_provider=_choices_group_name,
-#                               help="unset setting from specified group name")
-#     unset_parser.add_argument("-n",
-#                               "--node-name",
-#                               nargs="?",
-#                               choices_provider=_choices_node_name,
-#                               help="apply setting to specified node name")
-#
-#     @as_subcommand_to("cis", "set", set_parser,
-#                       help="set subcommand")
-#     def cis_set(self: CommandSet, ns: argparse.Namespace):
-#         """
-#         If an option accepts a list of value, then every args separated by
-#         whitespaces after option_key would be considered as the list value
-#         """
-#         if self._cmd is None:
-#             return
-#         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
-#         s_id = ns.section_id
-#         opt_key = ns.option_key
-#         opt_val = ns.option_value
-#         if cis is None:
-#             self._cmd.poutput("[!] cis object is None")
-#             return
-#         if not cis.is_valid_section_id(s_id):
-#             self._cmd.poutput("[!] Invalid section id")
-#             return
-#         if not cis.has_settable_vars(s_id):
-#             self._cmd.poutput(f"[!] {s_id} has no settable variable")
-#             return
-#         if not cis.is_valid_option_key(s_id, opt_key):
-#             self._cmd.poutput("[!] Invalid option key")
-#             return
-#         opt_val = cis.parse_option_val(s_id, opt_key, opt_val)
-#         if opt_val is None:
-#             self._cmd.poutput("[!] Invalid option value")
-#             return
-#
-#         val = opt_val
-#
-#         if ns.node_name is not None:
-#             inv: Inventory = self._cmd._inventory  # type: ignore
-#             if inv is None:
-#                 self._cmd.poutput("[!] No inventory is loaded")
-#                 self._cmd.poutput("[!] Unable to set variable")
-#                 return
-#             gname = ns.group_name
-#             nname = ns.node_name
-#             if gname is None:
-#                 gname = "ungrouped"
-#             nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
-#             if nname not in nodes.keys():
-#                 self._cmd.poutput("[!] Node name does not exist")
-#                 return
-#             node = nodes[nname]
-#             old_value = None
-#             if opt_key in node.host_vars:
-#                 old_value = node.host_vars[opt_key]
-#             node.host_vars[opt_key] = val
-#             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
-#             if isinstance(old_value, TaggedScalar):
-#                 old_value = vault.load(old_value)
-#             if isinstance(val, TaggedScalar):
-#                 val = vault.load(val)
-#             self._cmd.poutput(f"[+] Node: {nname} ({gname})")
-#             self._cmd.poutput(f"[+] {opt_key}:")
-#             self._cmd.poutput(f"    old: {old_value}")
-#             self._cmd.poutput(f"    new: {val}")
-#             return
-#         elif ns.group_name is not None:
-#             inv: Inventory = self._cmd._inventory  # type: ignore
-#             if inv is None:
-#                 self._cmd.poutput("[!] No inventory is loaded")
-#                 self._cmd.poutput("[!] Unable to set variable")
-#                 return
-#             gname = ns.group_name
-#             if gname not in inv.groups:
-#                 self._cmd.poutput(f"[!] Group name not found: {gname}")
-#                 return
-#             if gname == "ungrouped":
-#                 self._cmd.poutput(f"[!] {gname} is not settable")
-#                 return
-#             group: InventoryGroup = inv.groups[gname]
-#             old_value = None
-#             if opt_key in group.group_vars:
-#                 old_value = group.group_vars[opt_key]
-#             group.group_vars[opt_key] = val
-#             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
-#             if isinstance(old_value, TaggedScalar):
-#                 old_value = vault.load(old_value)
-#             if isinstance(val, TaggedScalar):
-#                 val = vault.load(val)
-#             self._cmd.poutput(f"[+] Group: {gname}")
-#             self._cmd.poutput(f"[+] {opt_key}:")
-#             self._cmd.poutput(f"    old: {old_value}")
-#             self._cmd.poutput(f"    new: {val}")
-#             return
-#         else:
-#             option = cis.sections[s_id]["vars"][opt_key]
-#             old_value = option["value"]
-#             option["value"] = val
-#             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
-#             if isinstance(old_value, TaggedScalar):
-#                 old_value = vault.load(old_value)
-#             if isinstance(val, TaggedScalar):
-#                 val = vault.load(val)
-#             self._cmd.poutput(f"[+] {opt_key}:")
-#             self._cmd.poutput(f"    old: {old_value}")
-#             self._cmd.poutput(f"    new: {val}")
-#             return
-#
-#     @as_subcommand_to("cis", "unset", unset_parser,
-#                       help="set subcommand")
-#     def cis_unset(self: CommandSet, ns: argparse.Namespace):
-#         if self._cmd is None:
-#             return
-#         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
-#         s_id = ns.section_id
-#         opt_key = ns.option_key
-#         if cis is None:
-#             self._cmd.poutput("[!] cis object is None")
-#             return
-#         if not cis.is_valid_section_id(s_id):
-#             self._cmd.poutput("[!] Invalid section id")
-#             return
-#         if not cis.has_settable_vars(s_id):
-#             self._cmd.poutput(f"[!] {s_id} has no unsettable variable")
-#             return
-#         if not cis.is_valid_option_key(s_id, opt_key):
-#             self._cmd.poutput("[!] Invalid option key")
-#             return
-#
-#         option = cis.sections[s_id]["vars"][opt_key]
-#
-#         if ns.node_name is not None:
-#             inv: Inventory = self._cmd._inventory  # type: ignore
-#             if inv is None:
-#                 self._cmd.poutput("[!] No inventory is loaded")
-#                 self._cmd.poutput("[!] Unable to set variable")
-#                 return
-#             gname = ns.group_name
-#             nname = ns.node_name
-#             if gname is None:
-#                 gname = "ungrouped"
-#             nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
-#             if nname not in nodes.keys():
-#                 self._cmd.poutput("[!] Node name does not exist")
-#                 return
-#             self._cmd.poutput(f"[+] Node: {nname} ({gname})")
-#             node = nodes[nname]
-#             old_value = None
-#             if opt_key in node.host_vars:
-#                 old_value = node.host_vars[opt_key]
-#                 del node.host_vars[opt_key]
-#                 self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
-#             else:
-#                 self._cmd.poutput("[!] Option key not found")
-#                 return
-#             if isinstance(old_value, TaggedScalar):
-#                 old_value = vault.load(old_value)
-#             default = option["default"]
-#             if isinstance(default, TaggedScalar):
-#                 default = vault.load(default)
-#             self._cmd.poutput(f"[+] {opt_key}:")
-#             self._cmd.poutput(f"    old: {old_value}")
-#             self._cmd.poutput(f"    default: {default}")
-#             return
-#         elif ns.group_name is not None:
-#             inv: Inventory = self._cmd._inventory  # type: ignore
-#             if inv is None:
-#                 self._cmd.poutput(
-#                     "[!] No inventory is loaded")
-#                 self._cmd.poutput(
-#                     "[!] Unable to unset variable on this group name")
-#                 return
-#             gname = ns.group_name
-#             if gname not in inv.groups:
-#                 self._cmd.poutput(f"[!] Group name not found: {gname}")
-#                 return
-#             if gname == "ungrouped":
-#                 self._cmd.poutput(f"[!] {gname} is not unsettable")
-#                 return
-#             group: InventoryGroup = inv.groups[gname]
-#             self._cmd.poutput(f"[+] Group: {gname}")
-#             if opt_key in group.group_vars:
-#                 old_value = group.group_vars[opt_key]
-#                 del group.group_vars[opt_key]
-#                 self._cmd._inv_has_changed = True  # type: ignore
-#             else:
-#                 self._cmd.poutput("[!] Option key not found")
-#                 return
-#             if isinstance(old_value, TaggedScalar):
-#                 old_value = vault.load(old_value)
-#             default = option["default"]
-#             if isinstance(default, TaggedScalar):
-#                 default = vault.load(default)
-#             self._cmd.poutput(f"[+] {opt_key}:")
-#             self._cmd.poutput(f"    old: {old_value}")
-#             self._cmd.poutput(f"    default: {default}")
-#             return
-#         else:
-#             old_value = option["value"]
-#             default_val = option["default"]
-#             option["value"] = default_val
-#             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
-#
-#             if isinstance(old_value, TaggedScalar):
-#                 old_value = vault.load(old_value)
-#             default = option["default"]
-#             if isinstance(default, TaggedScalar):
-#                 default = vault.load(default)
-#             self._cmd.poutput(f"[+] {opt_key}:")
-#             self._cmd.poutput(f"    old: {old_value}")
-#             self._cmd.poutput(f"    default: {default}")
-#             return
+    def _choices_group_name(self) -> List[Text]:
+        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+        if inv is None:
+            raise CompletionError(
+                "[!] No inventory is loaded, unable to provide completion")
+        return list(inv.groups.keys())
+
+    def _choices_node_name(
+        self: CommandSet,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[Text]:
+        if self._cmd is None:
+            return []
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        group = "ungrouped"
+        if "group_name" in arg_tokens:
+            group = arg_tokens["group_name"][0]
+        nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
+        return nodes
+
+    def _choices_util_action_w_vars_and_details(self) -> List[CompletionItem]:
+        if self._cmd is None:
+            return []
+        data = self._cmd._util.list_action_w_vars_and_details()  # type: ignore
+        return [CompletionItem(act, task["title"]) for act, task in data]
+
+    def _choices_util_option_key(
+        self: CommandSet,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[CompletionItem]:
+        if self._cmd is None:
+            return []
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        if role_util is None:
+            return []
+
+        action = None
+        if "action" in arg_tokens:
+            action = arg_tokens["action"][0]
+
+        if action is None:
+            return []
+
+        if not role_util.has_settable_vars(action):
+            raise CompletionError(f"[!] {action} has no settable variable")
+
+        try:
+            task_vars = role_util.actions[action]["vars"]
+        except KeyError:
+            raise CompletionError(f"[!] Invalid action: {action}")
+
+        cmp: List[CompletionItem] = []
+        for var_key, var in task_vars.items():
+            detail = f"{var['description']}"
+            cmp.append(CompletionItem(var_key, detail))
+        return cmp
+
+    def _choices_util_option_value(
+        self: CommandSet,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[Text]:
+        if self._cmd is None:
+            return []
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        if role_util is None:
+            return []
+
+        action = None
+        if "action" in arg_tokens:
+            action = arg_tokens["action"][0]
+
+        if action is None:
+            return []
+
+        option_key = None
+        if "option_key" in arg_tokens:
+            option_key = arg_tokens["option_key"][0]
+
+        if option_key is None:
+            return []
+
+        task_vars = role_util.actions[action]["vars"]
+        for var_key, var in task_vars.items():
+            if var_key != option_key:
+                continue
+            if var["value_type"] == "choice":
+                return var["valid"]
+            if var["value_type"] == "list_choice":
+                return var["valid"]
+            if var["value_type"] == "bool":
+                return ["True", "False"]
+        return []
+
+    set_parser = Cmd2ArgumentParser()
+    set_parser.add_argument(
+        "-a",
+        "--action",
+        dest="action",
+        choices_provider=_choices_util_action_w_vars_and_details,
+        help="""narrow down to specific action with settable vars for \
+better tab completion"""
+    )
+    set_parser.add_argument("option_key",
+                            choices_provider=_choices_util_option_key,
+                            help="name of option to be set")
+    set_parser.add_argument("option_value",
+                            nargs="+",
+                            choices_provider=_choices_util_option_value,
+                            help="new option value")
+    set_parser.add_argument("-g",
+                            "--group-name",
+                            nargs="?",
+                            choices_provider=_choices_group_name,
+                            help="apply setting to specified group name")
+    set_parser.add_argument("-n",
+                            "--node-name",
+                            nargs="?",
+                            choices_provider=_choices_node_name,
+                            help="apply setting to specified node name")
+
+    unset_parser = Cmd2ArgumentParser()
+    unset_parser.add_argument(
+        "-a",
+        "--action",
+        dest="action",
+        choices_provider=_choices_util_action_w_vars_and_details,
+        help="""narrow down to specific action with settable vars for \
+better tab completion"""
+    )
+    unset_parser.add_argument("option_key",
+                              choices_provider=_choices_util_option_key,
+                              help="name of option to be set")
+    unset_parser.add_argument("-g",
+                              "--group-name",
+                              nargs="?",
+                              choices_provider=_choices_group_name,
+                              help="unset setting from specified group name")
+    unset_parser.add_argument("-n",
+                              "--node-name",
+                              nargs="?",
+                              choices_provider=_choices_node_name,
+                              help="apply setting to specified node name")
+
+    @as_subcommand_to("util", "set", set_parser,
+                      help="set subcommand")
+    def util_set(self: CommandSet, ns: argparse.Namespace):
+        """
+        If an option accepts a list of value, then every args separated by
+        whitespaces after option_key would be considered as the list value
+        """
+        if self._cmd is None:
+            return
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        action = ns.action
+        opt_key = ns.option_key
+        opt_val = ns.option_value
+        if role_util is None:
+            self._cmd.poutput("[!] util object is None")
+            return
+        if not role_util.is_valid_action(action):
+            self._cmd.poutput("[!] Invalid action")
+            return
+        if not role_util.has_settable_vars(action):
+            self._cmd.poutput(f"[!] {action} has no settable variable")
+            return
+        if not role_util.is_valid_option_key(action, opt_key):
+            self._cmd.poutput("[!] Invalid option key")
+            return
+        opt_val = role_util.parse_option_val(action, opt_key, opt_val)
+        if opt_val is None:
+            self._cmd.poutput("[!] Invalid option value")
+            return
+
+        val = opt_val
+
+        if ns.node_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput("[!] No inventory is loaded")
+                self._cmd.poutput("[!] Unable to set variable")
+                return
+            gname = ns.group_name
+            nname = ns.node_name
+            if gname is None:
+                gname = "ungrouped"
+            nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
+            if nname not in nodes.keys():
+                self._cmd.poutput("[!] Node name does not exist")
+                return
+            node = nodes[nname]
+            old_value = None
+            if opt_key in node.host_vars:
+                old_value = node.host_vars[opt_key]
+            node.host_vars[opt_key] = val
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            if isinstance(val, TaggedScalar):
+                val = vault.load(val)
+            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    new: {val}")
+            return
+        elif ns.group_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput("[!] No inventory is loaded")
+                self._cmd.poutput("[!] Unable to set variable")
+                return
+            gname = ns.group_name
+            if gname not in inv.groups:
+                self._cmd.poutput(f"[!] Group name not found: {gname}")
+                return
+            if gname == "ungrouped":
+                self._cmd.poutput(f"[!] {gname} is not settable")
+                return
+            group: InventoryGroup = inv.groups[gname]
+            old_value = None
+            if opt_key in group.group_vars:
+                old_value = group.group_vars[opt_key]
+            group.group_vars[opt_key] = val
+            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            if isinstance(val, TaggedScalar):
+                val = vault.load(val)
+            self._cmd.poutput(f"[+] Group: {gname}")
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    new: {val}")
+            return
+        else:
+            option = role_util.actions[action]["vars"][opt_key]
+            old_value = option["value"]
+            option["value"] = val
+            self._cmd._util_has_changed = True  # type: ignore[attr-defined]
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            if isinstance(val, TaggedScalar):
+                val = vault.load(val)
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    new: {val}")
+            return
+
+    @as_subcommand_to("util", "unset", unset_parser,
+                      help="set subcommand")
+    def util_unset(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        action = ns.action
+        opt_key = ns.option_key
+        if role_util is None:
+            self._cmd.poutput("[!] util object is None")
+            return
+        if not role_util.is_valid_action(action):
+            self._cmd.poutput("[!] Invalid action")
+            return
+        if not role_util.has_settable_vars(action):
+            self._cmd.poutput(f"[!] {action} has no unsettable variable")
+            return
+        if not role_util.is_valid_option_key(action, opt_key):
+            self._cmd.poutput("[!] Invalid option key")
+            return
+
+        option = role_util.actions[action]["vars"][opt_key]
+
+        if ns.node_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput("[!] No inventory is loaded")
+                self._cmd.poutput("[!] Unable to set variable")
+                return
+            gname = ns.group_name
+            nname = ns.node_name
+            if gname is None:
+                gname = "ungrouped"
+            nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
+            if nname not in nodes.keys():
+                self._cmd.poutput("[!] Node name does not exist")
+                return
+            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
+            node = nodes[nname]
+            old_value = None
+            if opt_key in node.host_vars:
+                old_value = node.host_vars[opt_key]
+                del node.host_vars[opt_key]
+                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+            else:
+                self._cmd.poutput("[!] Option key not found")
+                return
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            default = option["default"]
+            if isinstance(default, TaggedScalar):
+                default = vault.load(default)
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    default: {default}")
+            return
+        elif ns.group_name is not None:
+            inv: Inventory = self._cmd._inventory  # type: ignore
+            if inv is None:
+                self._cmd.poutput(
+                    "[!] No inventory is loaded")
+                self._cmd.poutput(
+                    "[!] Unable to unset variable on this group name")
+                return
+            gname = ns.group_name
+            if gname not in inv.groups:
+                self._cmd.poutput(f"[!] Group name not found: {gname}")
+                return
+            if gname == "ungrouped":
+                self._cmd.poutput(f"[!] {gname} is not unsettable")
+                return
+            group: InventoryGroup = inv.groups[gname]
+            self._cmd.poutput(f"[+] Group: {gname}")
+            if opt_key in group.group_vars:
+                old_value = group.group_vars[opt_key]
+                del group.group_vars[opt_key]
+                self._cmd._inv_has_changed = True  # type: ignore
+            else:
+                self._cmd.poutput("[!] Option key not found")
+                return
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            default = option["default"]
+            if isinstance(default, TaggedScalar):
+                default = vault.load(default)
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    default: {default}")
+            return
+        else:
+            old_value = option["value"]
+            default_val = option["default"]
+            option["value"] = default_val
+            self._cmd._util_has_changed = True  # type: ignore[attr-defined]
+
+            if isinstance(old_value, TaggedScalar):
+                old_value = vault.load(old_value)
+            default = option["default"]
+            if isinstance(default, TaggedScalar):
+                default = vault.load(default)
+            self._cmd.poutput(f"[+] {opt_key}:")
+            self._cmd.poutput(f"    old: {old_value}")
+            self._cmd.poutput(f"    default: {default}")
+            return
 
 
 @with_default_category("util")
 class util_search_cmd(CommandSet):
-    pass
-#     search_parser = Cmd2ArgumentParser()
-#     search_parser.add_argument("-i",
-#                                "--ignore-case",
-#                                dest="ignore_case",
-#                                action="store_true",
-#                                help="case insensitive")
-#     search_parser.add_argument("pattern",
-#                                help="pattern in regex format to be searched")
-#
-#     @as_subcommand_to("cis", "search", search_parser,
-#                       help="search subcommand")
-#     def cis_search(self: CommandSet, ns: argparse.Namespace):
-#         if self._cmd is None:
-#             return
-#         pattern = ns.pattern
-#         if ns.ignore_case:
-#             pattern = f"(?i){pattern}"
-#         data = self._cmd._cis.list_section_and_details(search_query=pattern)  # type: ignore  # noqa: E501
-#         columns = [
-#             Column("Section ID", width=10),
-#             Column("Enabled", width=8),
-#             Column("Title", width=96),
-#         ]
-#         st = SimpleTable(columns)
-#         data_list = []
-#         for s_id, s in data:
-#             data_list.append([s_id, s["enabled"], s["title"]])
-#
-#         tbl = st.generate_table(data_list, row_spacing=0)
-#         self._cmd.poutput(f"\n{tbl}\n")
+    search_parser = Cmd2ArgumentParser()
+    search_parser.add_argument("-i",
+                               "--ignore-case",
+                               dest="ignore_case",
+                               action="store_true",
+                               help="case insensitive")
+    search_parser.add_argument("pattern",
+                               help="pattern in regex format to be searched")
+
+    @as_subcommand_to("util", "search", search_parser,
+                      help="search subcommand")
+    def util_search(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        pattern = ns.pattern
+        if ns.ignore_case:
+            pattern = f"(?i){pattern}"
+        data = self._cmd._util.list_action_and_details(search_query=pattern)  # type: ignore  # noqa: E501
+        columns = [
+            Column("Action", width=24),
+            Column("Enabled", width=8),
+            Column("Title", width=80),
+        ]
+        st = SimpleTable(columns)
+        data_list = []
+        for act, task in data:
+            data_list.append([act, task["enabled"], task["title"]])
+
+        tbl = st.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")
