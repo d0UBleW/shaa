@@ -19,9 +19,13 @@ OSCAP_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/oscap.yml")
 UTIL_PRESET_PATH = ROOT_PATH.joinpath("data/custom/util/")
 UTIL_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/util.yml")
 
-PLAYBOOK_PATH = ROOT_PATH.joinpath("../../ansible/")
-ANSIBLE_INV_PATH = ROOT_PATH.joinpath("../../ansible/inventory/")
+PLAYBOOK_PATH = ROOT_PATH.joinpath("data/ansible/playbook")
+ANSIBLE_INV_PATH = ROOT_PATH.joinpath("data/ansible/inventory/")
 LOG_PATH = ROOT_PATH.joinpath("log/")
+
+ANSIBLE_PATH = ROOT_PATH.joinpath("../../ansible")
+ANSIBLE_VAULT_PASSWORD = ANSIBLE_PATH.joinpath("vault-password.py")
+ROLE_PATH = ANSIBLE_PATH.joinpath("roles/")
 
 
 def is_valid_file_path(parent: Path, file_name: Text) -> bool:

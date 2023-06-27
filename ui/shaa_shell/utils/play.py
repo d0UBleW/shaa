@@ -16,6 +16,8 @@ from shaa_shell.utils.path import (
     PLAYBOOK_PATH,
     ANSIBLE_INV_PATH,
     LOG_PATH,
+    ANSIBLE_VAULT_PASSWORD,
+    ROLE_PATH,
 )
 from shaa_shell.utils.preset import PRESETS
 
@@ -141,7 +143,7 @@ def generate_playbook(profile: Profile,
         "gather_facts": False,
         "hosts": "localhost",
         "roles": [{
-            "role": "util",
+            "role": preset_role_map["util"],
         }]
     }]
 
@@ -151,6 +153,7 @@ def generate_playbook(profile: Profile,
 
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()
 
+    playbook_fpath.parent.mkdir(parents=True, exist_ok=True)
     with playbook_fpath.open("w") as f:
         if len(roles) > 0:
             yaml.dump(data, f)
@@ -164,10 +167,9 @@ def run_playbook(name: Text,
                  tags: Optional[List],
                  verbose: Optional[bool] = True,
                  color: Optional[bool] = True) -> None:
-    # TODO: verbose == False --> use tags
-    inv_fpath = ANSIBLE_INV_PATH.joinpath(f"{name}.yml").resolve().__str__()
-    playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve().__str__()
-    ansible_cfg = PLAYBOOK_PATH.joinpath("ansible.cfg").resolve().__str__()
+    inv_fpath = str(ANSIBLE_INV_PATH.joinpath(f"{name}.yml").resolve())
+    playbook_fpath = str(PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve())
+    ansible_cfg = str(PLAYBOOK_PATH.joinpath("ansible.cfg").resolve())
     if vault_password is None:
         print("Missing ansible vault password")
         return
@@ -175,6 +177,9 @@ def run_playbook(name: Text,
         "ANSIBLE_CONFIG": ansible_cfg,
         "VAULT_PASSWORD": vault_password,
         "ANSIBLE_FORCE_COLOR": str(color),
+        "ANSIBLE_HOST_KEY_CHECKING": "False",
+        "ANSIBLE_VAULT_PASSWORD_FILE": str(ANSIBLE_VAULT_PASSWORD),
+        "ANSIBLE_ROLES_PATH": str(ROLE_PATH),
     }
     envs.update(os.environ)
     args = ["ansible-playbook", "-i", inv_fpath, playbook_fpath]
