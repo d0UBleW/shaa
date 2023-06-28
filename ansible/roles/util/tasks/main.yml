@@ -6,15 +6,23 @@
     - chpasswd | bool
   block:
     - name: Check if new password is provided
-      ansible.builtin.assert:
-        that:
-          - new_passwd
+      vars:
+        _host: "{{ hostvars[host] }}"
+        _new_passwd: "{{ _host['new_passwd'] | default(new_passwd) }}"
+        curr_passwd: "{{ _host['ansible_password'] }}"
+      ansible.builtin.fail:
         msg: "Please provide a new password"
+      loop: "{{ groups['all'] }}"
+      loop_control:
+        loop_var: host
+      failed_when:
+        - not _new_passwd
 
     - name: Change password if expired on initial login
       vars:
         _host: "{{ hostvars[host] }}"
         curr_passwd: "{{ _host['ansible_password'] }}"
+        _new_passwd: "{{ _host['new_passwd'] | default(new_passwd) }}"
         hostname: "{{ _host['inventory_hostname'] }}"
         username: "{{ _host['ansible_user'] }}"
         ip_addr: "{{ _host['ansible_host'] }}"
@@ -26,7 +34,7 @@
           '(?i)password:': "{{ curr_passwd }}"
           'Current password:': "{{ curr_passwd }}"
           'UNIX password:': "{{ curr_passwd }}"
-          '(?i)new password:': "{{ new_passwd }}"
+          '(?i)new password:': "{{ _new_passwd }}"
       register: login_check
       loop: "{{ groups['all'] }}"
       loop_control:
