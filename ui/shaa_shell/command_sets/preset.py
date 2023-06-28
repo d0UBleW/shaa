@@ -16,6 +16,215 @@ from shaa_shell.utils.preset import list_preset
 
 
 @with_default_category("preset")
+class preset_oscap_cmd(CommandSet):
+    def _choices_preset_oscap(self) -> List[Text]:
+        return list_preset("oscap")
+
+    def preset_oscap_list(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        data_list = []
+        for pre in list_preset("oscap", ns.pattern):
+            data_list.append([pre])
+
+        columns = [
+            Column("Name", width=32),
+        ]
+
+        st = SimpleTable(columns)
+        tbl = st.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")
+
+    def preset_oscap_create(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        role_oscap: Optional[Role] = Role.create("oscap", ns.name)
+        if role_oscap is None:
+            warning_text = "[!] Invalid name or specified oscap preset name"
+            warning_text += " already existed"
+            self._cmd.poutput(warning_text)
+            return
+        self._cmd._oscap = role_oscap  # type: ignore[attr-defined]
+        return self.preset_oscap_load(argparse.Namespace(), role_oscap)
+
+    def preset_oscap_save(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        if role_oscap is None:
+            self._cmd.poutput("[!] Currently, there is no oscap preset loaded")
+            return
+        if not role_oscap.save(ns.name):
+            self._cmd.poutput("[!] Invalid oscap preset name or name existed")
+            return
+        self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
+        self._cmd.poutput("[+] oscap preset has been saved")
+
+    def preset_oscap_rename(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        if role_oscap is None:
+            self._cmd.poutput("[!] Currently, there is no oscap preset loaded")
+            return
+        old_name = role_oscap.name
+        if not role_oscap.rename(ns.name):
+            self._cmd.poutput("[!] Invalid oscap preset name")
+            return
+        self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
+        self._cmd.poutput("[+] oscap preset has been renamed")
+        self._cmd.poutput(f"    old: {old_name}")
+        self._cmd.poutput(f"    new: {role_oscap.name}")
+
+    def preset_oscap_delete(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        if role_oscap is None:
+            self._cmd.poutput("[!] Currently, there is no oscap preset loaded")
+            return
+        role_oscap.delete()
+        self._cmd.poutput("[+] oscap preset has been deleted successfully")
+        self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
+        self.preset_oscap_unload(None)
+
+    def preset_oscap_unload(self, _):
+        if self._cmd is None:
+            return
+        self._cmd.check_if_oscap_changed()  # type: ignore[attr-defined]
+        self._cmd._oscap = None  # type: ignore[attr-defined]
+
+        self._cmd.unregister_command_set(
+            self._cmd._oscap_action_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] oscap action module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._oscap_set_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] oscap set module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._oscap_search_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] oscap search module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._oscap_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] oscap module unloaded")
+
+    def preset_oscap_load(self, ns: argparse.Namespace,
+                          role_oscap: Optional[Role] = None):
+        if self._cmd is None:
+            return
+
+        self._cmd.check_if_oscap_changed()  # type: ignore[attr-defined]
+
+        if role_oscap is not None:
+            self._cmd._oscap_has_changed = True  # type: ignore[attr-defined]
+
+        if role_oscap is None:
+            role_oscap = Role.load("oscap", ns.name)
+            self._cmd._oscap = role_oscap  # type: ignore[attr-defined]
+
+        if role_oscap is None:
+            return
+
+        try:
+            self._cmd.register_command_set(
+                self._cmd._oscap_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] oscap module loaded")
+            self._cmd.poutput("[*] check `help oscap` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._oscap_action_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] oscap action module loaded")
+            self._cmd.poutput(
+                "[*] check `help oscap action` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._oscap_set_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] oscap set module loaded")
+            self._cmd.poutput(
+                "[*] check `help oscap set` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._oscap_search_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] oscap search module loaded")
+            self._cmd.poutput(
+                "[*] check `help oscap search` for usage information")
+
+        except CommandSetRegistrationError:
+            return
+
+    pre_oscap_parser = Cmd2ArgumentParser()
+    pre_oscap_subparser = pre_oscap_parser.add_subparsers(
+        title="subcommand", help="subcommand for preset oscap")
+
+    @as_subcommand_to("preset", "oscap", pre_oscap_parser,
+                      help="cis subcommand")
+    def preset_oscap(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        func = getattr(ns, "func", None)
+        if func is not None:
+            func(self, ns)
+        else:
+            self._cmd.poutput("No subcommand was provided")
+            self._cmd.do_help("preset oscap")
+
+    load_parser = pre_oscap_subparser.add_parser(
+        "load", help="load oscap preset")
+    load_parser.add_argument("name",
+                             choices_provider=_choices_preset_oscap,
+                             help="name of oscap preset")
+    load_parser.set_defaults(func=preset_oscap_load)
+
+    unload_parser = pre_oscap_subparser.add_parser("unload",
+                                                   help="unload oscap preset")
+    unload_parser.set_defaults(func=preset_oscap_unload)
+
+    create_parser = pre_oscap_subparser.add_parser("create",
+                                                   help="create oscap preset")
+    create_parser.add_argument("name", help="name of oscap preset")
+    create_parser.set_defaults(func=preset_oscap_create)
+
+    save_parser = pre_oscap_subparser.add_parser(
+        "save", help="save oscap preset")
+    save_parser.add_argument("name",
+                             nargs="?",
+                             help="name of oscap preset")
+    save_parser.set_defaults(func=preset_oscap_save)
+
+    list_parser = pre_oscap_subparser.add_parser(
+        "list", help="list available oscap preset")
+    list_parser.add_argument("pattern",
+                             nargs="?",
+                             default=".*",
+                             help="preset name regex pattern")
+    list_parser.set_defaults(func=preset_oscap_list)
+
+    delete_parser = pre_oscap_subparser.add_parser(
+        "delete", help="delete oscap preset")
+    delete_parser.set_defaults(func=preset_oscap_delete)
+
+    rename_parser = pre_oscap_subparser.add_parser(
+        "rename", help="""rename oscap preset (save current changes \
+automatically)""")
+    rename_parser.add_argument("name",
+                               help="new name of oscap preset")
+    rename_parser.set_defaults(func=preset_oscap_rename)
+
+
+@with_default_category("preset")
 class preset_util_cmd(CommandSet):
     def _choices_preset_util(self) -> List[Text]:
         return list_preset("util")

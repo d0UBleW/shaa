@@ -66,6 +66,8 @@
   ansible.builtin.command: >-
     oscap xccdf eval --report /tmp/{{ profile.out }}
     --profile {{ profile.name }} {{ xml_file }}
+  when:
+    - profile.tag in scan_profiles
   register: scan
   changed_when: true
   failed_when: scan.rc == 1

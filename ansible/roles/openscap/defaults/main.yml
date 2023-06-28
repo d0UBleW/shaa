@@ -1,2 +1,4 @@
 ---
 # defaults file for openscap
+scan_profiles:
+  - level_1_server
