@@ -1,0 +1,7 @@
+inventory: example/local
+presets:
+  cis: example/part-1
+  oscap:
+  util:
+  wazuh_agent:
+  sec_tools:

@@ -1,0 +1,24 @@
+actions:
+  scan:
+    title: Use OpenSCAP to scan CIS compliance level
+    enabled: true
+    vars:
+      scan_profiles:
+        value:
+        default:
+        - level_1_server
+        description: |
+          CIS scan profile level
+        value_type: list_choice
+        valid:
+        - level_1_server
+        - level_2_server
+        - level_1_workstation
+        - level_2_workstation
+      report_output_prefix:
+        value: before
+        default: ''
+        description: |
+          Prefix for OpenSCAP report output file name
+        value_type: single
+        valid:
