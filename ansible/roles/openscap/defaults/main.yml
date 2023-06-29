@@ -2,3 +2,7 @@
 # defaults file for openscap
 scan_profiles:
   - level_1_server
+
+report_output_prefix: ""
+
+oscap_report_dir: "/tmp"
