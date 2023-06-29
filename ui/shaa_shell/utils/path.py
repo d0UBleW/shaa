@@ -7,6 +7,8 @@ import re
 
 ROOT_PATH = Path(importlib.resources.files("shaa_shell").__str__())
 
+DATA_PATH = ROOT_PATH.joinpath("data/")
+
 PROFILE_PATH = ROOT_PATH.joinpath("data/custom/profile")
 INVENTORY_PATH = ROOT_PATH.joinpath("data/custom/inventory/")
 

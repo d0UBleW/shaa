@@ -19,6 +19,7 @@ from shaa_shell.utils.path import (
     LOG_PATH,
     ANSIBLE_VAULT_PASSWORD,
     ROLE_PATH,
+    DATA_PATH,
 )
 from shaa_shell.utils.preset import PRESETS, PRESET_ROLE_MAP
 
@@ -172,8 +173,11 @@ def generate_playbook(profile: Profile,
             print(f"[+] Converting {role_type} preset variables")
             role_vars = convert_role_vars_to_ansible_vars(role_type, role_name)
             all_vars.update(role_vars)
+            if role_type == "oscap":
+                all_vars["oscap_report_dir"] = str(DATA_PATH)
 
     inv_name = profile.inv_name
+    inv: Optional[Inventory] = None
     if inv_name is not None:
         inv = Inventory.load(inv_name)
 
