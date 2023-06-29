@@ -1,0 +1,8 @@
+---
+- name: Install wazuh agent
+  ansible.builtin.include_role:
+    name: wazuh_agent
+  tags:
+    - install_wazuh
+  when:
+    - install_wazuh | bool

@@ -1,5 +1,7 @@
 ---
 - name: Install wazuh-agent
+  tags:
+    - install_wazuh
   block:
     - name: Debian-based
       when:
