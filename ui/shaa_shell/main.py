@@ -198,12 +198,19 @@ class ShaaShell(cmd2.Cmd):
         if len(ns.preset) == 0 or (
                 "util" in ns.preset and role_util is not None):
             self.check_if_util_changed()
+        if len(ns.preset) == 0 or (
+                "oscap" in ns.preset and oscap is not None):
+            self.check_if_oscap_changed()
+        if len(ns.preset) == 0 or (
+                "sec_tools" in ns.preset and sec_tools is not None):
+            self.check_if_sec_tools_changed()
 
         self.poutput("[+] Generating playbook ...")
         gen_pb = play.generate_playbook(profile, ns.preset)
         if gen_pb is not None and not gen_pb:
             self.poutput("[!] Error in generating playbook")
             self.poutput("    Inventory data is empty, try to save it first")
+            self.poutput("    or make sure it is set on current profile")
             return
         if gen_pb is None:
             return

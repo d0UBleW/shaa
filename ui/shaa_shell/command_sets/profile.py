@@ -7,6 +7,7 @@ from cmd2 import (  # type: ignore[import]
     CommandSet,
     with_default_category,
     as_subcommand_to,
+    CompletionError,
 )
 from cmd2.table_creator import (  # type: ignore[import]
     SimpleTable,
@@ -38,7 +39,12 @@ class profile_subcmd(CommandSet):
         if config == "inventory":
             return Inventory.list_inventory()
 
-        return list_preset(config)
+        if config in PRESETS:
+            return list_preset(config)
+
+        raise CompletionError(
+            f"[!] Invalid config name: {config}"
+        )
 
     create_parser = Cmd2ArgumentParser()
     create_parser.add_argument("name", help="name of profile")
@@ -103,6 +109,14 @@ class profile_subcmd(CommandSet):
         role_util: Optional[Role] = self._cmd._util  # type: ignore
         if role_util is not None:
             profile.presets["util"] = role_util.name
+
+        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        if role_oscap is not None:
+            profile.presets["oscap"] = role_oscap.name
+
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is not None:
+            profile.presets["sec_tools"] = role_sec_tools.name
 
         return self.profile_load(None, profile)  # type: ignore
 
@@ -227,14 +241,26 @@ automatically)""")
             self._cmd.poutput("[!] Currently, there is no profile loaded")
             return
 
+        old_name = None
         if ns.config == "inventory":
+            old_name = profile.inv_name
             profile.inv_name = None
             self._cmd.do_inventory("unload")  # type: ignore
         else:
+            if ns.config not in PRESETS:
+                self._cmd.poutput(f"[!] Invalid preset: {ns.config}")
+                return
+            old_name = profile.presets[ns.config]
             profile.presets[ns.config] = None
             self._cmd.do_preset(f"{ns.config} unload")  # type: ignore
 
-        self._cmd.poutput(f"[+] {ns.config} unset successfully")
+        self._cmd.poutput(f"\n[+] {ns.config} unset successfully")
+        self._cmd._profile_has_changed = True  # type: ignore
+
+        if old_name is None:
+            old_name = ""
+
+        self._cmd.poutput(f"    old: {old_name}")
 
     @as_subcommand_to("profile", "set", set_parser,
                       help="set profile config")

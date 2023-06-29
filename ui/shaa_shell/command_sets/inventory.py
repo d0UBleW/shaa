@@ -14,6 +14,7 @@ from cmd2.table_creator import (
 from cmd2.exceptions import CommandSetRegistrationError
 from typing import List, Text, Optional
 from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.profile import Profile
 
 
 @with_default_category("inventory")
@@ -183,6 +184,11 @@ automatically)""")
             self._cmd.poutput("[!] Invalid inventory name")
             return
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
+        if profile is not None:
+            profile.inv_name = inv.name
+            self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
+
         self._cmd.poutput("[+] inventory has been renamed")
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {inv.name}")

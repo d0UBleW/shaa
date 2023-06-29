@@ -13,6 +13,7 @@ from typing import List, Text, Optional
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.role import Role
 from shaa_shell.utils.preset import list_preset
+from shaa_shell.utils.profile import Profile
 
 
 @with_default_category("preset")
@@ -77,6 +78,11 @@ class preset_sec_tools_cmd(CommandSet):
             self._cmd.poutput("[!] Invalid sec_tools preset name")
             return
         self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
+        if profile is not None:
+            profile.presets["sec_tools"] = role_sec_tools.name
+            self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
+
         self._cmd.poutput("[+] sec_tools preset has been renamed")
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {role_sec_tools.name}")
@@ -129,8 +135,7 @@ class preset_sec_tools_cmd(CommandSet):
         self._cmd.check_if_sec_tools_changed()  # type: ignore[attr-defined]
 
         if role_sec_tools is not None:
-            # type: ignore[attr-defined]
-            self._cmd._sec_tools_has_changed = True
+            self._cmd._sec_tools_has_changed = True  # type: ignore
 
         if role_sec_tools is None:
             role_sec_tools = Role.load("sec_tools", ns.name)
@@ -289,6 +294,11 @@ class preset_oscap_cmd(CommandSet):
             self._cmd.poutput("[!] Invalid oscap preset name")
             return
         self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
+        if profile is not None:
+            profile.presets["oscap"] = role_oscap.name
+            self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
+
         self._cmd.poutput("[+] oscap preset has been renamed")
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {role_oscap.name}")
@@ -498,6 +508,11 @@ class preset_util_cmd(CommandSet):
             self._cmd.poutput("[!] Invalid util preset name")
             return
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
+        if profile is not None:
+            profile.presets["util"] = role_util.name
+            self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
+
         self._cmd.poutput("[+] util preset has been renamed")
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {role_util.name}")
@@ -706,6 +721,11 @@ class preset_cis_cmd(CommandSet):
             self._cmd.poutput("[!] Invalid CIS preset name")
             return
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
+        if profile is not None:
+            profile.presets["cis"] = cis.name
+            self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
+
         self._cmd.poutput("[+] CIS preset has been renamed")
         self._cmd.poutput(f"    old: {old_name}")
         self._cmd.poutput(f"    new: {cis.name}")
