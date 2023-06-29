@@ -10,10 +10,11 @@ __pycache__/
 .mypy_cache/
 venv/
 ui/shaa_shell/data/custom/*
-!ui/shaa_shell/data/custom/**/example.yml
+ui/shaa_shell/data/ansible/*
+!ui/shaa_shell/data/custom/**/example/*
+ui/shaa_shell/log
 ansible/*.yml
 !ansible/main.yml
 ansible/inventory/*.yml
 !ansible/inventory/main.yml
-ui/shaa_shell/log
 ansible/oscap-report

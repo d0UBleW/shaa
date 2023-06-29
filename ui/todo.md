@@ -8,14 +8,14 @@ set key value [-n node_name] [-g group_name]
 - [x] inventory save
 - [x] inventory delete
 - [x] inventory list
-- [ ] inventory info
-- [ ] inventory edit
 - [x] group create
 - [x] group delete
 - [x] group list
 - [x] group info
 - [x] group edit
+- [ ] group unset group_vars
 - [x] node edit
+- [ ] node unset group_vars
 - [x] preset cis load
 - [x] preset cis create
 - [x] preset cis delete
@@ -39,4 +39,3 @@ set key value [-n node_name] [-g group_name]
 - [x] profile set/unset oscap
 - [x] profile set/unset extra
 - [x] run
-- [ ] add description for inventory, presets, and profile
