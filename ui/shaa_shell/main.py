@@ -19,12 +19,15 @@ from shaa_shell.utils.parser import (
     profile_parser,
     play_parser,
     clear_parser,
+    config_parser,
 )
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.role import Role
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils import play
+
+STARTUP_SCRIPT = '~/.shaa_shell_rc'
 
 
 class ShaaShell(cmd2.Cmd):
@@ -50,7 +53,7 @@ class ShaaShell(cmd2.Cmd):
         super().__init__(
             *args,
             persistent_history_file='~/.shaa_shell_hist',
-            startup_script='~/.shaa_shell_rc',
+            startup_script=STARTUP_SCRIPT,
             silence_startup_script=True,
             auto_load_commands=False,
             **kwargs,
@@ -171,7 +174,6 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("[!] No inventory is loaded, aborting!")
             return
 
-        # TODO: check if at least one preset is set
         cis = self._cis
         role_util = self._util
         oscap = self._oscap
@@ -223,6 +225,14 @@ class ShaaShell(cmd2.Cmd):
         Clear screen
         """
         self.do_shell("clear -x")
+
+    @cmd2.with_argparser(config_parser)
+    @cmd2.with_category("general")
+    def do_config(self, ns: argparse.Namespace):
+        """
+        Configure startup script
+        """
+        self.do_edit(STARTUP_SCRIPT)
 
     def check_if_inv_changed(self) -> None:
         if self._inv_has_changed:
