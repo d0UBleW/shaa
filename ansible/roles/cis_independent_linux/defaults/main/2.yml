@@ -77,6 +77,7 @@ disable_special_purpose_services:
   dhcpd: "{{ section_2_2_5 }}"
   slapd: "{{ section_2_2_6 }}"
   nfs: "{{ section_2_2_7_nfs }}"
+  nfs-server: "{{ section_2_2_7_nfs_server }}"
   rpcbind: "{{ section_2_2_7_rpcbind }}"
   named: "{{ section_2_2_8 }}"
   vsfptd: "{{ section_2_2_9 }}"

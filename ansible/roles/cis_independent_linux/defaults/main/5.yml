@@ -50,8 +50,8 @@ sshd_protocol_v2: "{{ section_5_2_4 }}"
 # 5.2.5
 sshd_log_level_conf: "{{ section_5_2_5 }}"
 
-# Valid value: verbose, info
-sshd_log_level: "verbose"
+# Valid value: VERBOSE, INFO
+sshd_log_level: "VERBOSE"
 
 # 5.2.6
 sshd_x11_forwarding: "{{ section_5_2_6 }}"

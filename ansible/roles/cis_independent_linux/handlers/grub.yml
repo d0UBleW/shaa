@@ -4,7 +4,7 @@
     {{ grub_prefix }}-mkconfig -o {{ boot_loader_conf }}
   changed_when: false
 
-- name: Set reboot flag
-  ansible.builtin.set_fact:
-    reboot: true
-  listen: "reboot"
+# - name: Set reboot flag
+#   ansible.builtin.set_fact:
+#     reboot: true
+#   listen: "reboot"

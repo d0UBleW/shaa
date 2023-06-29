@@ -22,7 +22,7 @@
     - name: |
         ---
         1.4.2 Ensure bootloader password is set
-        > Check if a password has been set
+        > Check if a password has been set (non RedHat)
         ---
       ansible.builtin.command: >-
         grep "password_pbkdf2\s+.+\s+grub\.pbkdf2\.sha512"
@@ -30,6 +30,21 @@
       register: grep_out
       changed_when: false
       failed_when: grep_out.rc > 2
+      when:
+        - ansible_os_family != 'RedHat'
+
+    - name: |
+        ---
+        1.4.2 Ensure bootloader password is set
+        > Check if a password has been set (RedHat)
+        ---
+      ansible.builtin.command: >-
+        grep "^GRUB2_PASSWORD=" {{ boot_loader_conf }}
+      register: grep_out
+      changed_when: false
+      failed_when: grep_out.rc > 2
+      when:
+        - ansible_os_family == 'RedHat'
 
     - name: |
         ---
@@ -59,6 +74,28 @@
         owner: root
         group: root
       notify: "grub mkconfig"
+      when:
+        - ansible_os_family != 'RedHat'
+
+    - name: |
+        ---
+        1.4.2 Ensure bootloader password is set
+        > Edit /boot/grub2/user.cfg
+        ---
+      vars:
+        bootloader_pw_hash: >-
+          {{ pbkdf2_out.stdout_lines[-1].split(" ")[-1] }}
+      ansible.builtin.lineinfile:
+        path: /boot/grub2/user.cfg
+        regexp: "^GRUB2_PASSWORD=.*"
+        line: "GRUB2_PASSWORD={{ bootloader_pw_hash }}"
+        mode: "0600"
+        owner: root
+        group: root
+        create: true
+      notify: "grub mkconfig"
+      when:
+        - ansible_os_family == 'RedHat'
 
   rescue:
     - name: Flushing all handlers

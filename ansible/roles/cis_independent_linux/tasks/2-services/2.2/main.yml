@@ -71,7 +71,11 @@
         section_id: 2.2.7
         desc: NFS
 
-      - name: rpc-bind
+      - name: nfs-server
+        section_id: 2.2.7
+        desc: NFS
+
+      - name: rpcbind
         section_id: 2.2.7
         desc: RPC
 

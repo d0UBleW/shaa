@@ -7,10 +7,10 @@
   ansible.builtin.import_tasks:
     file: ./1.4.2.yml
 
-- name: 1.4.3 Ensure bootloader password is set
+- name: 1.4.3 Ensure authentication required for single user mode
   ansible.builtin.import_tasks:
     file: ./1.4.3.yml
 
-- name: 1.4.4 Ensure bootloader password is set
+- name: 1.4.4 Ensure interactive boot is not enabled
   ansible.builtin.import_tasks:
     file: ./1.4.4.yml
