@@ -9,21 +9,3 @@
       register: ping_out
       changed_when: false
       failed_when: '"4 packets transmitted, 4 received, 0% packet loss" not in ping_out.stdout'
-
-    - name: Bootstrap python3
-      vars:
-        pkg_mgr:
-          opensuse-tumbleweed-1: zypper
-          almalinux8-1: dnf
-          ubuntu2004: apt
-        pm: "{{ pkg_mgr[inventory_hostname] }}"
-      ansible.builtin.raw: >
-        "{{ pm }}" update -y && "{{ pm }}" install -y python3 python3-pip
-      register: install_py3_out
-
-    - name: Install ssh pubkey file
-      ansible.builtin.lineinfile:
-        path: /home/vagrant/.ssh/authorized_keys
-        search_string: "doublew@LAPTOP-D1SIAGAJ"
-        line: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDwC3kx/wPhECyup/9yRJMfbKJNHpLFuOr0Q4fBb/FTD2iaBI9Gsy6/dxt5u/PT/YJf8FwwsxEEeVNorBykZCgpeuhkr7zdrZuYYoHgfPe7vV4I0SJOCp/hBNoUBMMfRDJE5pVeeTkwEUitsDu+4DVNM3vdx2hcSC0gCJvoxJZuktnGwFhXTkaNDI/52PNp3tj6fLzcW8nWgRUFgkCkTIFXIKb7gl4TMxmSvzk1jEDYt1/aJgxcdTjW5lc8HEclHqL3O6JtBEueiPE7HcwhCKdJ7EPAL3wx5wg981MdPpmGmJ2caLuA4wYKbWHdVr1s4YNbtFRGeIhT1F/2ZX3Svex6PTT7DYIT5ZqGSOpD6Q5uZiHRVvzoE8XfBr3+EjVHxwKZq3qCcagRuIcD/pf1/tIgTRNLfgWukuLVELlUpuD9kj54ASHaw8nCF6e1JZmKpGmMs9GXqhuD/Nj+ZUDCOP92T4jGc+78IoRwKlO4bRKd5wACzYIi+w1/QC99PSX8AXE= doublew@LAPTOP-D1SIAGAJ
-        create: yes
