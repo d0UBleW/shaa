@@ -16,3 +16,10 @@ actions:
           - level_2_server
           - level_1_workstation
           - level_2_workstation
+      report_output_prefix:
+        value:
+        default: ""
+        description: |
+          Prefix for OpenSCAP report output file name
+        value_type: single
+        valid:

@@ -2106,13 +2106,13 @@ sections:
     vars:
       sshd_log_level:
         value:
-        default: "verbose"
+        default: "VERBOSE"
         description: |
-          Possible values: verbose, info
+          Possible values: VERBOSE, INFO
         value_type: choice
         valid:
-          - verbose
-          - info
+          - VERBOSE
+          - INFO
 
   5.2.6:
     title: Ensure SSH X11 forwarding is disabled
