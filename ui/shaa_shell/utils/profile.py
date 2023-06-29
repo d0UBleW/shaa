@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import List, Text, Dict, Optional
 from pathlib import Path
 from ruamel.yaml import YAML
-import re
 from shaa_shell.utils.path import PROFILE_PATH, is_valid_file_path, filter_file
+from shaa_shell.utils.preset import PRESETS
 
 yaml = YAML(typ="rt")
 
@@ -16,12 +16,9 @@ class Profile:
         self.name: Text = name
         self.inv_name: Optional[Text] = inv_name
         if len(presets.keys()) == 0:
-            self.presets: Dict[Text, Optional[Text]] = {
-                "cis": None,
-                "oscap": None,
-                "util": None,
-                "wazuh_agent": None,
-            }
+            self.presets: Dict[Text, Optional[Text]] = {}
+            for preset in PRESETS:
+                self.presets[preset] = None
         else:
             self.presets = presets
 

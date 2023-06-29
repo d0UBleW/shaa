@@ -11,6 +11,7 @@ from shaa_shell.command_sets import (
     preset as pre_cs,
     profile as pro_cs,
     oscap as oscap_cs,
+    sec_tools as sec_tools_cs,
 )
 from shaa_shell.utils.parser import (
     inventory_parser,
@@ -38,6 +39,9 @@ class ShaaShell(cmd2.Cmd):
 
     _oscap: Optional[Role] = None
     _oscap_has_changed: bool = False
+
+    _sec_tools: Optional[Role] = None
+    _sec_tools_has_changed: bool = False
 
     _profile: Optional[Profile] = None
     _profile_has_changed: bool = False
@@ -70,10 +74,15 @@ class ShaaShell(cmd2.Cmd):
         self._oscap_action_cmd = oscap_cs.oscap_action_cmd()
         self._oscap_set_cmd = oscap_cs.oscap_set_cmd()
         self._oscap_search_cmd = oscap_cs.oscap_search_cmd()
+        self._sec_tools_cmd = sec_tools_cs.sec_tools_cmd()
+        self._sec_tools_action_cmd = sec_tools_cs.sec_tools_action_cmd()
+        self._sec_tools_set_cmd = sec_tools_cs.sec_tools_set_cmd()
+        self._sec_tools_search_cmd = sec_tools_cs.sec_tools_search_cmd()
         self.register_postloop_hook(self.check_if_inv_changed)
         self.register_postloop_hook(self.check_if_cis_changed)
         self.register_postloop_hook(self.check_if_util_changed)
         self.register_postloop_hook(self.check_if_oscap_changed)
+        self.register_postloop_hook(self.check_if_sec_tools_changed)
         self.register_postloop_hook(self.check_if_profile_changed)
 
     def _set_prompt(self):
@@ -93,6 +102,10 @@ class ShaaShell(cmd2.Cmd):
         if self._oscap is not None:
             oscap_prompt = f"[oscap: {self._oscap.name}] "
 
+        sec_tools_prompt = ""
+        if self._sec_tools is not None:
+            sec_tools_prompt = f"[sec_tools: {self._sec_tools.name}] "
+
         profile_prompt = ""
         if self._profile is not None:
             profile_prompt = f"[pro: {self._profile.name}] "
@@ -102,6 +115,7 @@ class ShaaShell(cmd2.Cmd):
         self.prompt += f"{inv_prompt}"
         self.prompt += f"{cis_prompt}"
         self.prompt += f"{util_prompt}"
+        self.prompt += f"{sec_tools_prompt}"
         self.prompt += f"{oscap_prompt}"
         self.prompt += "\nshaa> "
 
@@ -161,6 +175,7 @@ class ShaaShell(cmd2.Cmd):
         cis = self._cis
         role_util = self._util
         oscap = self._oscap
+        sec_tools = self._sec_tools
 
         profile = self._profile
         if profile is None:
@@ -172,6 +187,8 @@ class ShaaShell(cmd2.Cmd):
                 profile.presets["util"] = role_util.name
             if oscap is not None:
                 profile.presets["oscap"] = oscap.name
+            if sec_tools is not None:
+                profile.presets["sec_tools"] = sec_tools.name
 
         self.check_if_inv_changed()
         if len(ns.preset) == 0 or ("cis" in ns.preset and cis is not None):
@@ -251,6 +268,17 @@ class ShaaShell(cmd2.Cmd):
                     self.poutput("[+] Changes have been saved successfully")
                     self._oscap_has_changed = False
 
+    def check_if_sec_tools_changed(self) -> None:
+        if self._sec_tools_has_changed:
+            prompt = "[*] There are unsaved changes on current sec_tools "
+            prompt += "preset.\n[+] Do you want to save? [Y/n] "
+            if (_ := self.read_input(prompt).lower()) != "n":
+                if self._sec_tools is not None:
+                    if not self._sec_tools.save():
+                        return
+                    self.poutput("[+] Changes have been saved successfully")
+                    self._sec_tools_has_changed = False
+
     def check_if_profile_changed(self) -> None:
         if self._profile_has_changed:
             prompt = "[*] There are unsaved changes on current profile.\n"
@@ -269,6 +297,7 @@ def main():
         pre_cs.preset_cis_cmd(),
         pre_cs.preset_util_cmd(),
         pre_cs.preset_oscap_cmd(),
+        pre_cs.preset_sec_tools_cmd(),
         pro_cs.profile_subcmd(),
     ])
     shaa_shell.disable_command(

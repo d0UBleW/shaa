@@ -37,6 +37,10 @@ oscap_parser = Cmd2ArgumentParser()
 oscap_parser.add_subparsers(title="subcommands",
                             help="subcommand for oscap module")
 
+sec_tools_parser = Cmd2ArgumentParser()
+sec_tools_parser.add_subparsers(title="subcommands",
+                                help="subcommand for sec_tools module")
+
 profile_parser = Cmd2ArgumentParser()
 profile_parser.add_subparsers(title="subcommands",
                               help="subcommand for profile module")

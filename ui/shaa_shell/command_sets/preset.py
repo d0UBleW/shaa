@@ -16,6 +16,221 @@ from shaa_shell.utils.preset import list_preset
 
 
 @with_default_category("preset")
+class preset_sec_tools_cmd(CommandSet):
+    def _choices_preset_sec_tools(self) -> List[Text]:
+        return list_preset("sec_tools")
+
+    def preset_sec_tools_list(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        data_list = []
+        for pre in list_preset("sec_tools", ns.pattern):
+            data_list.append([pre])
+
+        columns = [
+            Column("Name", width=32),
+        ]
+
+        st = SimpleTable(columns)
+        tbl = st.generate_table(data_list, row_spacing=0)
+        self._cmd.poutput(f"\n{tbl}\n")
+
+    def preset_sec_tools_create(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        role_sec_tools: Optional[Role] = Role.create("sec_tools", ns.name)
+        if role_sec_tools is None:
+            warning_text = "[!] Invalid name or specified sec_tools preset"
+            warning_text += " name already existed"
+            self._cmd.poutput(warning_text)
+            return
+        self._cmd._sec_tools = role_sec_tools  # type: ignore[attr-defined]
+        return self.preset_sec_tools_load(argparse.Namespace(), role_sec_tools)
+
+    def preset_sec_tools_save(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
+            self._cmd.poutput(
+                "[!] Currently, there is no sec_tools preset loaded")
+            return
+        if not role_sec_tools.save(ns.name):
+            self._cmd.poutput(
+                "[!] Invalid sec_tools preset name or name existed")
+            return
+        self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
+        self._cmd.poutput("[+] sec_tools preset has been saved")
+
+    def preset_sec_tools_rename(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
+            self._cmd.poutput(
+                "[!] Currently, there is no sec_tools preset loaded")
+            return
+        old_name = role_sec_tools.name
+        if not role_sec_tools.rename(ns.name):
+            self._cmd.poutput("[!] Invalid sec_tools preset name")
+            return
+        self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
+        self._cmd.poutput("[+] sec_tools preset has been renamed")
+        self._cmd.poutput(f"    old: {old_name}")
+        self._cmd.poutput(f"    new: {role_sec_tools.name}")
+
+    def preset_sec_tools_delete(self, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
+            self._cmd.poutput(
+                "[!] Currently, there is no sec_tools preset loaded")
+            return
+        role_sec_tools.delete()
+        self._cmd.poutput("[+] sec_tools preset has been deleted successfully")
+        self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
+        self.preset_sec_tools_unload(None)
+
+    def preset_sec_tools_unload(self, _):
+        if self._cmd is None:
+            return
+        self._cmd.check_if_sec_tools_changed()  # type: ignore[attr-defined]
+        self._cmd._sec_tools = None  # type: ignore[attr-defined]
+
+        self._cmd.unregister_command_set(
+            self._cmd._sec_tools_action_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] sec_tools action module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._sec_tools_set_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] sec_tools set module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._sec_tools_search_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] sec_tools search module loaded")
+
+        self._cmd.unregister_command_set(
+            self._cmd._sec_tools_cmd  # type: ignore[attr-defined]
+        )
+        self._cmd.poutput("[*] sec_tools module unloaded")
+
+    def preset_sec_tools_load(self, ns: argparse.Namespace,
+                              role_sec_tools: Optional[Role] = None):
+        if self._cmd is None:
+            return
+
+        self._cmd.check_if_sec_tools_changed()  # type: ignore[attr-defined]
+
+        if role_sec_tools is not None:
+            # type: ignore[attr-defined]
+            self._cmd._sec_tools_has_changed = True
+
+        if role_sec_tools is None:
+            role_sec_tools = Role.load("sec_tools", ns.name)
+            self._cmd._sec_tools = role_sec_tools  # type: ignore[attr-defined]
+
+        if role_sec_tools is None:
+            return
+
+        try:
+            self._cmd.register_command_set(
+                self._cmd._sec_tools_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] sec_tools module loaded")
+            self._cmd.poutput(
+                "[*] check `help sec_tools` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._sec_tools_action_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] sec_tools action module loaded")
+            self._cmd.poutput(
+                "[*] check `help sec_tools action` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._sec_tools_set_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] sec_tools set module loaded")
+            self._cmd.poutput(
+                "[*] check `help sec_tools set` for usage information")
+
+            self._cmd.register_command_set(
+                self._cmd._sec_tools_search_cmd  # type: ignore[attr-defined]
+            )
+            self._cmd.poutput("[*] sec_tools search module loaded")
+            self._cmd.poutput(
+                "[*] check `help sec_tools search` for usage information")
+
+        except CommandSetRegistrationError:
+            return
+
+    pre_sec_tools_parser = Cmd2ArgumentParser()
+    pre_sec_tools_subparser = pre_sec_tools_parser.add_subparsers(
+        title="subcommand", help="subcommand for preset sec_tools")
+
+    @as_subcommand_to("preset", "sec_tools", pre_sec_tools_parser,
+                      help="cis subcommand")
+    def preset_sec_tools(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        func = getattr(ns, "func", None)
+        if func is not None:
+            func(self, ns)
+        else:
+            self._cmd.poutput("No subcommand was provided")
+            self._cmd.do_help("preset sec_tools")
+
+    load_parser = pre_sec_tools_subparser.add_parser(
+        "load", help="load sec_tools preset")
+    load_parser.add_argument("name",
+                             choices_provider=_choices_preset_sec_tools,
+                             help="name of sec_tools preset")
+    load_parser.set_defaults(func=preset_sec_tools_load)
+
+    unload_parser = pre_sec_tools_subparser.add_parser(
+        "unload", help="unload sec_tools preset")
+    unload_parser.set_defaults(func=preset_sec_tools_unload)
+
+    create_parser = pre_sec_tools_subparser.add_parser(
+        "create", help="create sec_tools preset")
+    create_parser.add_argument("name", help="name of sec_tools preset")
+    create_parser.set_defaults(func=preset_sec_tools_create)
+
+    save_parser = pre_sec_tools_subparser.add_parser(
+        "save", help="save sec_tools preset")
+    save_parser.add_argument("name",
+                             nargs="?",
+                             help="name of sec_tools preset")
+    save_parser.set_defaults(func=preset_sec_tools_save)
+
+    list_parser = pre_sec_tools_subparser.add_parser(
+        "list", help="list available sec_tools preset")
+    list_parser.add_argument("pattern",
+                             nargs="?",
+                             default=".*",
+                             help="preset name regex pattern")
+    list_parser.set_defaults(func=preset_sec_tools_list)
+
+    delete_parser = pre_sec_tools_subparser.add_parser(
+        "delete", help="delete sec_tools preset")
+    delete_parser.set_defaults(func=preset_sec_tools_delete)
+
+    rename_parser = pre_sec_tools_subparser.add_parser(
+        "rename", help="""rename sec_tools preset (save current changes \
+automatically)""")
+    rename_parser.add_argument("name",
+                               help="new name of sec_tools preset")
+    rename_parser.set_defaults(func=preset_sec_tools_rename)
+
+
+@with_default_category("preset")
 class preset_oscap_cmd(CommandSet):
     def _choices_preset_oscap(self) -> List[Text]:
         return list_preset("oscap")

@@ -14,6 +14,8 @@ from shaa_shell.utils.path import (
     UTIL_PRESET_PATH,
     OSCAP_TEMPLATE_FILE,
     OSCAP_PRESET_PATH,
+    SEC_TOOLS_TEMPLATE_FILE,
+    SEC_TOOLS_PRESET_PATH,
 )
 from shaa_shell.utils.vault import vault
 
@@ -34,6 +36,10 @@ class Role:
         elif role_type == "oscap":
             self.template_file = OSCAP_TEMPLATE_FILE
             self.preset_path = OSCAP_PRESET_PATH
+            self.root_key = "actions"
+        elif role_type == "sec_tools":
+            self.template_file = SEC_TOOLS_TEMPLATE_FILE
+            self.preset_path = SEC_TOOLS_PRESET_PATH
             self.root_key = "actions"
         else:
             raise NotImplementedError(f"TODO: {role_type}")

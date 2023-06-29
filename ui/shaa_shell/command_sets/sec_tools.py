@@ -13,16 +13,16 @@ from cmd2 import (  # type: ignore[import]
 from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
 from shaa_shell.utils.vault import vault
 from shaa_shell.utils.role import Role
-from shaa_shell.utils.parser import oscap_parser
+from shaa_shell.utils.parser import sec_tools_parser
 from shaa_shell.utils.inventory import Inventory, InventoryGroup, InventoryNode
 from typing import List, Text, Dict, Optional
 from ruamel.yaml.comments import TaggedScalar
 
 
-@with_default_category("oscap")
-class oscap_cmd(CommandSet):
-    @with_argparser(oscap_parser)
-    def do_oscap(self: CommandSet, ns: argparse.Namespace):
+@with_default_category("sec_tools")
+class sec_tools_cmd(CommandSet):
+    @with_argparser(sec_tools_parser)
+    def do_sec_tools(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
         handler = ns.cmd2_handler.get()
@@ -30,29 +30,29 @@ class oscap_cmd(CommandSet):
             handler(ns)
         else:
             self._cmd.poutput("No subcommand was provided")
-            self._cmd.do_help("oscap")
+            self._cmd.do_help("sec_tools")
 
 
-@with_default_category("oscap")
-class oscap_action_cmd(CommandSet):
-    def _choices_oscap_action_title(self) -> List[CompletionItem]:
+@with_default_category("sec_tools")
+class sec_tools_action_cmd(CommandSet):
+    def _choices_sec_tools_action_title(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
-        data = self._cmd._oscap.list_action_and_details()  # type: ignore
+        data = self._cmd._sec_tools.list_action_and_details()  # type: ignore
         return [CompletionItem(act, task["title"]) for act, task in data]
 
-    def _choices_oscap_action_enable(self) -> List[CompletionItem]:
+    def _choices_sec_tools_action_enable(self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
-        data = self._cmd._oscap.list_action_and_details()  # type: ignore
+        data = self._cmd._sec_tools.list_action_and_details()  # type: ignore
         cmp = [CompletionItem(act, task["title"]) for act, task in data]
         cmp.append(CompletionItem("all", "Everything"))
         return cmp
 
-    def oscap_action_list(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_action_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        data = self._cmd._oscap.list_action_and_details()  # type: ignore
+        data = self._cmd._sec_tools.list_action_and_details()  # type: ignore
         columns = [
             Column("Action", width=24),
             Column("Enabled", width=8),
@@ -73,11 +73,11 @@ class oscap_action_cmd(CommandSet):
         tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")
 
-    def oscap_action_enable(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_action_enable(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
-        if role_oscap is None:
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
             return
 
         valid_action = [
@@ -86,43 +86,44 @@ class oscap_action_cmd(CommandSet):
 
         for arg_act in ns.action:
             if arg_act not in valid_action:
-                if not role_oscap.is_valid_action(arg_act):
+                if not role_sec_tools.is_valid_action(arg_act):
                     self._cmd.poutput("[!] Invalid action")
                     return
 
-            role_oscap.actions[arg_act]["enabled"] = True
+            role_sec_tools.actions[arg_act]["enabled"] = True
             if ns.verbose:
                 self._cmd.poutput(f"[+] {arg_act} enabled successfully")
-        self._cmd._oscap_has_changed = True  # type: ignore[attr-defined]
+        self._cmd._sec_tools_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Enabled successfully")
 
-    def oscap_action_disable(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_action_disable(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
-        if role_oscap is None:
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
             return
 
         for arg_act in ns.action:
-            if arg_act != "all" and not role_oscap.is_valid_action(arg_act):
+            if arg_act != "all" and not role_sec_tools.is_valid_action(
+                    arg_act):
                 self._cmd.poutput(f"[!] Invalid action: {arg_act}")
                 return
 
-            role_oscap.actions[arg_act]["enabled"] = False
+            role_sec_tools.actions[arg_act]["enabled"] = False
             if ns.verbose:
                 self._cmd.poutput(f"[+] {arg_act} disabled successfully")
-        self._cmd._oscap_has_changed = True  # type: ignore[attr-defined]
+        self._cmd._sec_tools_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Disabled successfully")
 
-    def oscap_action_info(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_action_info(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
 
-        if role_oscap is None:
+        if role_sec_tools is None:
             return
 
-        if not role_oscap.is_valid_action(ns.action):
+        if not role_sec_tools.is_valid_action(ns.action):
             self._cmd.poutput("[!] Invalid action")
             return
 
@@ -131,7 +132,7 @@ class oscap_action_cmd(CommandSet):
             Column("Value", width=128),
         ]
         st = SimpleTable(columns)
-        task = role_oscap.actions[ns.action]
+        task = role_sec_tools.actions[ns.action]
         data_list = []
         for key, value in task.items():
             if key == "vars":
@@ -193,11 +194,11 @@ class oscap_action_cmd(CommandSet):
     action_parser = Cmd2ArgumentParser()
 
     action_subparser = action_parser.add_subparsers(
-        title="subcommand", help="subcommand for oscap action")
+        title="subcommand", help="subcommand for sec_tools action")
 
-    @as_subcommand_to("oscap", "action", action_parser,
+    @as_subcommand_to("sec_tools", "action", action_parser,
                       help="action subcommand")
-    def oscap_action(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_action(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
         func = getattr(ns, "func", None)
@@ -205,7 +206,7 @@ class oscap_action_cmd(CommandSet):
             func(self, ns)
         else:
             self._cmd.poutput("No subcommand was provided")
-            self._cmd.do_help("oscap action")
+            self._cmd.do_help("sec_tools action")
 
     list_parser = action_subparser.add_parser(
         "list", help="list available actions")
@@ -216,7 +217,7 @@ class oscap_action_cmd(CommandSet):
         default="all",
         help="filter actions based on their status"
     )
-    list_parser.set_defaults(func=oscap_action_list)
+    list_parser.set_defaults(func=sec_tools_action_list)
 
     enable_parser = action_subparser.add_parser(
         "enable",
@@ -228,10 +229,10 @@ class oscap_action_cmd(CommandSet):
     enable_parser.add_argument(
         "action",
         nargs="+",
-        choices_provider=_choices_oscap_action_enable,
+        choices_provider=_choices_sec_tools_action_enable,
         descriptive_header="Title",
         help="action to be enabled (use `all` for everything)")
-    enable_parser.set_defaults(func=oscap_action_enable)
+    enable_parser.set_defaults(func=sec_tools_action_enable)
 
     disable_parser = action_subparser.add_parser(
         "disable",
@@ -243,22 +244,22 @@ class oscap_action_cmd(CommandSet):
     disable_parser.add_argument(
         "action",
         nargs="+",
-        choices_provider=_choices_oscap_action_enable,
+        choices_provider=_choices_sec_tools_action_enable,
         descriptive_header="Title",
         help="action to be disabled (use `all` for everything)")
-    disable_parser.set_defaults(func=oscap_action_disable)
+    disable_parser.set_defaults(func=sec_tools_action_disable)
 
     info_parser = action_subparser.add_parser(
         "info", help="info action")
     info_parser.add_argument("action",
-                             choices_provider=_choices_oscap_action_title,
+                             choices_provider=_choices_sec_tools_action_title,
                              descriptive_header="Title",
                              help="action whose details to be displayed")
-    info_parser.set_defaults(func=oscap_action_info)
+    info_parser.set_defaults(func=sec_tools_action_info)
 
 
-@with_default_category("oscap")
-class oscap_set_cmd(CommandSet):
+@with_default_category("sec_tools")
+class sec_tools_set_cmd(CommandSet):
     def _choices_group_name(self) -> List[Text]:
         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
         if inv is None:
@@ -279,20 +280,21 @@ class oscap_set_cmd(CommandSet):
         nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
         return nodes
 
-    def _choices_oscap_action_w_vars_and_details(self) -> List[CompletionItem]:
+    def _choices_sec_tools_action_w_vars_and_details(
+            self) -> List[CompletionItem]:
         if self._cmd is None:
             return []
-        data = self._cmd._oscap.list_action_w_vars_and_details()  # type: ignore  # noqa: E501
+        data = self._cmd._sec_tools.list_action_w_vars_and_details()  # type: ignore  # noqa: E501
         return [CompletionItem(act, task["title"]) for act, task in data]
 
-    def _choices_oscap_option_key(
+    def _choices_sec_tools_option_key(
         self: CommandSet,
         arg_tokens: Dict[Text, List[Text]]
     ) -> List[CompletionItem]:
         if self._cmd is None:
             return []
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
-        if role_oscap is None:
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
             return []
 
         action = None
@@ -303,11 +305,11 @@ class oscap_set_cmd(CommandSet):
             raise CompletionError(
                 "[!] Please specify an action first with `--action`")
 
-        if not role_oscap.has_settable_vars(action):
+        if not role_sec_tools.has_settable_vars(action):
             raise CompletionError(f"[!] {action} has no settable variable")
 
         try:
-            task_vars = role_oscap.actions[action]["vars"]
+            task_vars = role_sec_tools.actions[action]["vars"]
         except KeyError:
             raise CompletionError(f"[!] Invalid action: {action}")
 
@@ -317,14 +319,14 @@ class oscap_set_cmd(CommandSet):
             cmp.append(CompletionItem(var_key, detail))
         return cmp
 
-    def _choices_oscap_option_value(
+    def _choices_sec_tools_option_value(
         self: CommandSet,
         arg_tokens: Dict[Text, List[Text]]
     ) -> List[Text]:
         if self._cmd is None:
             return []
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
-        if role_oscap is None:
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
             return []
 
         action = None
@@ -341,7 +343,7 @@ class oscap_set_cmd(CommandSet):
         if option_key is None:
             return []
 
-        task_vars = role_oscap.actions[action]["vars"]
+        task_vars = role_sec_tools.actions[action]["vars"]
         for var_key, var in task_vars.items():
             if var_key != option_key:
                 continue
@@ -358,16 +360,16 @@ class oscap_set_cmd(CommandSet):
         "-a",
         "--action",
         dest="action",
-        choices_provider=_choices_oscap_action_w_vars_and_details,
+        choices_provider=_choices_sec_tools_action_w_vars_and_details,
         help="""narrow down to specific action with settable vars for \
 better tab completion"""
     )
     set_parser.add_argument("option_key",
-                            choices_provider=_choices_oscap_option_key,
+                            choices_provider=_choices_sec_tools_option_key,
                             help="name of option to be set")
     set_parser.add_argument("option_value",
                             nargs="+",
-                            choices_provider=_choices_oscap_option_value,
+                            choices_provider=_choices_sec_tools_option_value,
                             help="new option value")
     set_parser.add_argument("-g",
                             "--group-name",
@@ -385,12 +387,12 @@ better tab completion"""
         "-a",
         "--action",
         dest="action",
-        choices_provider=_choices_oscap_action_w_vars_and_details,
+        choices_provider=_choices_sec_tools_action_w_vars_and_details,
         help="""narrow down to specific action with settable vars for \
 better tab completion"""
     )
     unset_parser.add_argument("option_key",
-                              choices_provider=_choices_oscap_option_key,
+                              choices_provider=_choices_sec_tools_option_key,
                               help="name of option to be set")
     unset_parser.add_argument("-g",
                               "--group-name",
@@ -403,32 +405,32 @@ better tab completion"""
                               choices_provider=_choices_node_name,
                               help="apply setting to specified node name")
 
-    @as_subcommand_to("oscap", "set", set_parser,
+    @as_subcommand_to("sec_tools", "set", set_parser,
                       help="set subcommand")
-    def oscap_set(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_set(self: CommandSet, ns: argparse.Namespace):
         """
         If an option accepts a list of value, then every args separated by
         whitespaces after option_key would be considered as the list value
         """
         if self._cmd is None:
             return
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
         action = ns.action
         opt_key = ns.option_key
         opt_val = ns.option_value
-        if role_oscap is None:
-            self._cmd.poutput("[!] oscap object is None")
+        if role_sec_tools is None:
+            self._cmd.poutput("[!] sec_tools object is None")
             return
-        if not role_oscap.is_valid_action(action):
+        if not role_sec_tools.is_valid_action(action):
             self._cmd.poutput("[!] Invalid action")
             return
-        if not role_oscap.has_settable_vars(action):
+        if not role_sec_tools.has_settable_vars(action):
             self._cmd.poutput(f"[!] {action} has no settable variable")
             return
-        if not role_oscap.is_valid_option_key(action, opt_key):
+        if not role_sec_tools.is_valid_option_key(action, opt_key):
             self._cmd.poutput("[!] Invalid option key")
             return
-        opt_val = role_oscap.parse_option_val(action, opt_key, opt_val)
+        opt_val = role_sec_tools.parse_option_val(action, opt_key, opt_val)
         if opt_val is None:
             self._cmd.poutput("[!] Invalid option value")
             return
@@ -493,10 +495,11 @@ better tab completion"""
             self._cmd.poutput(f"    new: {val}")
             return
         else:
-            option = role_oscap.actions[action]["vars"][opt_key]
+            option = role_sec_tools.actions[action]["vars"][opt_key]
             old_value = option["value"]
             option["value"] = val
-            self._cmd._oscap_has_changed = True  # type: ignore[attr-defined]
+            # type: ignore[attr-defined]
+            self._cmd._sec_tools_has_changed = True
             if isinstance(old_value, TaggedScalar):
                 old_value = vault.load(old_value)
             if isinstance(val, TaggedScalar):
@@ -506,28 +509,28 @@ better tab completion"""
             self._cmd.poutput(f"    new: {val}")
             return
 
-    @as_subcommand_to("oscap", "unset", unset_parser,
+    @as_subcommand_to("sec_tools", "unset", unset_parser,
                       help="set subcommand")
-    def oscap_unset(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_unset(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
         action = ns.action
         opt_key = ns.option_key
-        if role_oscap is None:
-            self._cmd.poutput("[!] oscap object is None")
+        if role_sec_tools is None:
+            self._cmd.poutput("[!] sec_tools object is None")
             return
-        if not role_oscap.is_valid_action(action):
+        if not role_sec_tools.is_valid_action(action):
             self._cmd.poutput("[!] Invalid action")
             return
-        if not role_oscap.has_settable_vars(action):
+        if not role_sec_tools.has_settable_vars(action):
             self._cmd.poutput(f"[!] {action} has no unsettable variable")
             return
-        if not role_oscap.is_valid_option_key(action, opt_key):
+        if not role_sec_tools.is_valid_option_key(action, opt_key):
             self._cmd.poutput("[!] Invalid option key")
             return
 
-        option = role_oscap.actions[action]["vars"][opt_key]
+        option = role_sec_tools.actions[action]["vars"][opt_key]
 
         if ns.node_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
@@ -599,7 +602,8 @@ better tab completion"""
             old_value = option["value"]
             default_val = option["default"]
             option["value"] = default_val
-            self._cmd._oscap_has_changed = True  # type: ignore[attr-defined]
+            # type: ignore[attr-defined]
+            self._cmd._sec_tools_has_changed = True
 
             if isinstance(old_value, TaggedScalar):
                 old_value = vault.load(old_value)
@@ -612,8 +616,8 @@ better tab completion"""
             return
 
 
-@with_default_category("oscap")
-class oscap_search_cmd(CommandSet):
+@with_default_category("sec_tools")
+class sec_tools_search_cmd(CommandSet):
     search_parser = Cmd2ArgumentParser()
     search_parser.add_argument("-i",
                                "--ignore-case",
@@ -623,15 +627,15 @@ class oscap_search_cmd(CommandSet):
     search_parser.add_argument("pattern",
                                help="pattern in regex format to be searched")
 
-    @as_subcommand_to("oscap", "search", search_parser,
+    @as_subcommand_to("sec_tools", "search", search_parser,
                       help="search subcommand")
-    def oscap_search(self: CommandSet, ns: argparse.Namespace):
+    def sec_tools_search(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
         pattern = ns.pattern
         if ns.ignore_case:
             pattern = f"(?i){pattern}"
-        data = self._cmd._oscap.list_action_and_details(search_query=pattern)  # type: ignore  # noqa: E501
+        data = self._cmd._sec_tools.list_action_and_details(search_query=pattern)  # type: ignore  # noqa: E501
         columns = [
             Column("Action", width=24),
             Column("Enabled", width=8),

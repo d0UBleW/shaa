@@ -20,7 +20,7 @@ from shaa_shell.utils.path import (
     ANSIBLE_VAULT_PASSWORD,
     ROLE_PATH,
 )
-from shaa_shell.utils.preset import PRESETS
+from shaa_shell.utils.preset import PRESETS, PRESET_ROLE_MAP
 
 yaml = YAML(typ="rt")
 
@@ -164,10 +164,8 @@ def generate_playbook(profile: Profile,
         cis_vars = convert_cis_to_ansible_vars(presets["cis"])
         all_vars.update(cis_vars)
 
-    for role_type in PRESETS:
+    for role_type in presets:
         if role_type == "cis":
-            continue
-        if role_type not in presets:
             continue
         role_name = presets[role_type]
         if role_type in presets.keys() and role_name is not None:
@@ -186,17 +184,11 @@ def generate_playbook(profile: Profile,
     inv.groups["ungrouped"].group_vars = all_vars
     inv.save(name, ANSIBLE_INV_PATH, overwrite=True)
 
-    preset_role_map = {
-        "cis": "cis_independent_linux",
-        "oscap": "openscap",
-        "util": "util",
-        "wazuh_agent": "wazuh_agent",
-    }
     roles = []
     for preset, val in presets.items():
         if preset == "util" or val is None:
             continue
-        role = {"role": preset_role_map[preset]}
+        role = {"role": PRESET_ROLE_MAP[preset]}
         roles.append(role)
 
     data = [{
@@ -213,7 +205,7 @@ def generate_playbook(profile: Profile,
         "gather_facts": False,
         "hosts": "localhost",
         "roles": [{
-            "role": preset_role_map["util"],
+            "role": PRESET_ROLE_MAP["util"],
         }]
     }]
 
@@ -227,7 +219,7 @@ def generate_playbook(profile: Profile,
     with playbook_fpath.open("w") as f:
         if len(roles) > 0:
             yaml.dump(data, f)
-        if "util" in presets:
+        if "util" in presets and presets["util"] is not None:
             yaml.dump(util_pb, f)
 
     return True

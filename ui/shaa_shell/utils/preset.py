@@ -3,7 +3,14 @@ from __future__ import annotations
 from typing import Text, List
 from shaa_shell.utils import path
 
-PRESETS: List[Text] = ["cis", "oscap", "wazuh_agent", "util"]
+PRESETS: List[Text] = ["cis", "oscap", "sec_tools", "util"]
+
+PRESET_ROLE_MAP = {
+    "cis": "cis_independent_linux",
+    "oscap": "openscap",
+    "util": "util",
+    "sec_tools": "sec_tools",
+}
 
 
 def list_preset(_type: Text, pattern: Text = ".*") -> List[Text]:
@@ -14,6 +21,8 @@ def list_preset(_type: Text, pattern: Text = ".*") -> List[Text]:
         preset_path = path.OSCAP_PRESET_PATH
     elif _type == "util":
         preset_path = path.UTIL_PRESET_PATH
+    elif _type == "sec_tools":
+        preset_path = path.SEC_TOOLS_PRESET_PATH
     else:
         raise ValueError(f"preset type `{_type}` does not exist")
 

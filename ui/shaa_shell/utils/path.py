@@ -19,6 +19,9 @@ OSCAP_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/oscap.yml")
 UTIL_PRESET_PATH = ROOT_PATH.joinpath("data/custom/util/")
 UTIL_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/util.yml")
 
+SEC_TOOLS_PRESET_PATH = ROOT_PATH.joinpath("data/custom/sec_tools/")
+SEC_TOOLS_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/sec_tools.yml")
+
 PLAYBOOK_PATH = ROOT_PATH.joinpath("data/ansible/playbook")
 ANSIBLE_INV_PATH = ROOT_PATH.joinpath("data/ansible/inventory/")
 LOG_PATH = ROOT_PATH.joinpath("log/")
