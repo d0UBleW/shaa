@@ -18,6 +18,7 @@ from shaa_shell.utils.path import (
     SEC_TOOLS_PRESET_PATH,
 )
 from shaa_shell.utils.vault import vault
+from shaa_shell.utils import exception
 
 yaml = YAML(typ="rt")
 
@@ -130,22 +131,17 @@ class Role:
             except ValueError:
                 if valid is not None and val in valid:
                     return val
-                print("[!] Invalid value, number is expected")
-                return None
+                raise exception.ValueNotNumber(val)
             if val < range_start:
-                print("[!] Supplied value is lower than allowed value")
-                print(f"    Min: {range_start}")
-                return None
+                raise exception.ValueIsLower(val, range_start)
             if range_end is not None and val > range_end:
-                print("[!] Supplied value is higher than allowed value")
-                print(f"    Max: {range_end}")
-                return None
+                raise exception.ValueIsHigher(val, range_end)
             return option_val[0]
 
         if value_type == "choice":
             val = option_val[0]
             if val not in valid:
-                return None
+                raise exception.ValueNotInChoice(val, valid)
             return val
 
         if value_type == "list_choice":
@@ -153,9 +149,7 @@ class Role:
             valid_s = set(valid)
             diff = option_val_s - valid_s
             if len(diff) > 0:
-                print("[!] Invalid value provided")
-                print(f"    {diff}")
-                return None
+                raise exception.ValueNotInChoice(diff, valid)
             return list(set(option_val))
 
         if value_type == "list":
@@ -194,14 +188,14 @@ class Role:
         """
         if file_name is not None:
             if file_name in list_preset(self.role_type):
-                print(f"[!] Specified {self.role_type} preset name exists")
-                return False
+                raise exception.NameExist(f"{self.role_type} preset",
+                                          file_name)
 
         if file_name is None:
             file_name = self.name
 
         if not is_valid_file_path(self.preset_path, f"{file_name}.yml"):
-            return False
+            raise exception.InvalidName(f"{self.role_type} preset", file_name)
 
         file_path = self.preset_path.joinpath(f"{file_name}.yml").resolve()
 
@@ -216,8 +210,11 @@ class Role:
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
-        if not self.save(new_name):
-            return False
+        try:
+            if not self.save(new_name):
+                return False
+        except exception.ShaaNameError:
+            raise
 
         self.delete()
         new_name = resolve_path(new_name, self.preset_path)
@@ -231,12 +228,10 @@ class Role:
         """
         role = Role(role_type=role_type, name=name)
         if not is_valid_file_path(role.preset_path, f"{name}.yml"):
-            print(f"[!] Invalid {role_type} preset name")
-            return None
+            raise exception.InvalidName(f"{role_type} preset", name)
 
         if name not in list_preset(role_type):
-            print(f"[!] {role_type} preset name not found: {name}")
-            return None
+            raise exception.NameNotFound(f"{role_type} preset", name)
 
         file_path = role.preset_path.joinpath(f"{name}.yml").resolve()
         with file_path.open("r") as f:
@@ -250,15 +245,19 @@ class Role:
         """
         Function wrapper for creating Role object
         """
-        role = Role(role_type, name)
+        try:
+            role = Role(role_type, name)
+        except KeyError:
+            raise exception.InvalidFile(f"{role_type} preset template",
+                                        role.root_key)
 
         if not is_valid_file_path(role.preset_path, f"{name}.yml"):
-            return None
+            raise exception.InvalidName(f"{role_type} preset", name)
 
         name = resolve_path(name, role.preset_path)
         role.name = name
 
         if name in list_preset(role_type):
-            return None
+            raise exception.NameExist(f"{role_type} preset", name)
 
         return role

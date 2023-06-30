@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import List, Text, Dict, Optional
 from pathlib import Path
 from ruamel.yaml import YAML
+
 from shaa_shell.utils.path import PROFILE_PATH, is_valid_file_path, filter_file
 from shaa_shell.utils.preset import PRESETS
+from shaa_shell.utils import exception
 
 yaml = YAML(typ="rt")
 
@@ -32,11 +34,10 @@ class Profile:
             return None
 
         if name == "_shaa_unnamed_profile":
-            print("[!] Reserved profile name")
-            return None
+            raise exception.InvalidName(name, message="Reserved profile name")
 
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
-            return None
+            raise exception.InvalidName(name)
 
         profile = Profile(name)
         return profile
@@ -44,11 +45,11 @@ class Profile:
     @staticmethod
     def load(name: Text) -> Optional[Profile]:
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
-            print("[!] Invalid profile name")
+            raise exception.InvalidName(name)
             return None
 
         if name not in Profile.list_profile():
-            print("[!] Profile name not found")
+            raise exception.NameNotFound(name)
             return None
 
         file_path = PROFILE_PATH.joinpath(f"{name}.yml").resolve()
@@ -56,14 +57,12 @@ class Profile:
             data: Dict = yaml.load(f)
 
         if "inventory" not in data.keys():
-            print("[!] Invalid profile file: missing `inventory` key")
-            return None
+            raise exception.InvalidFile("profile", "inventory")
 
         inv_name = data["inventory"]
 
         if "presets" not in data.keys():
-            print("[!] Invalid profile file: missing `presets` key")
-            return None
+            raise exception.InvalidFile("profile", "presets")
 
         presets = data["presets"]
 
@@ -71,14 +70,13 @@ class Profile:
 
     def save(self, file_name: Optional[Text] = None) -> bool:
         if file_name is not None and file_name in Profile.list_profile():
-            print("[!] Specified profile name exists")
-            return False
+            raise exception.NameExist(file_name)
 
         if file_name is None:
             file_name = self.name
 
         if not is_valid_file_path(PROFILE_PATH, f"{file_name}.yml"):
-            return False
+            raise exception.InvalidName(file_name)
 
         file_path = PROFILE_PATH.joinpath(f"{file_name}.yml").resolve()
 
@@ -98,8 +96,11 @@ class Profile:
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
-        if not self.save(new_name):
-            return False
+        try:
+            if not self.save(new_name):
+                return False
+        except exception.ShaaNameError:
+            raise
         old_file_path = PROFILE_PATH.joinpath(f"{self.name}.yml").resolve()
         Path.unlink(old_file_path, missing_ok=True)
         self.name = new_name

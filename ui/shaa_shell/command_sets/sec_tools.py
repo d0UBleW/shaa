@@ -11,12 +11,14 @@ from cmd2 import (  # type: ignore[import]
     CompletionError,
 )
 from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
+from typing import List, Text, Dict, Optional
+from ruamel.yaml.comments import TaggedScalar
+
 from shaa_shell.utils.vault import vault
 from shaa_shell.utils.role import Role
 from shaa_shell.utils.parser import sec_tools_parser
 from shaa_shell.utils.inventory import Inventory, InventoryGroup, InventoryNode
-from typing import List, Text, Dict, Optional
-from ruamel.yaml.comments import TaggedScalar
+from shaa_shell.utils import exception
 
 
 @with_default_category("sec_tools")
@@ -55,7 +57,7 @@ class sec_tools_action_cmd(CommandSet):
         role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
 
         if role_sec_tools is None:
-            self._cmd.poutput("[!] No sec_tools preset is loaded")
+            self._cmd.perror("[!] No sec_tools preset is loaded")
             return
 
         data = role_sec_tools.list_action_and_details()  # type: ignore
@@ -94,7 +96,7 @@ class sec_tools_action_cmd(CommandSet):
         for arg_act in ns.action:
             if arg_act not in valid_action:
                 if not role_sec_tools.is_valid_action(arg_act):
-                    self._cmd.poutput("[!] Invalid action")
+                    self._cmd.perror("[!] Invalid action")
                     return
 
             if arg_act == "all":
@@ -119,7 +121,7 @@ class sec_tools_action_cmd(CommandSet):
         for arg_act in ns.action:
             if arg_act != "all" and not role_sec_tools.is_valid_action(
                     arg_act):
-                self._cmd.poutput(f"[!] Invalid action: {arg_act}")
+                self._cmd.perror(f"[!] Invalid action: {arg_act}")
                 return
 
             if arg_act == "all":
@@ -143,7 +145,7 @@ class sec_tools_action_cmd(CommandSet):
             return
 
         if not role_sec_tools.is_valid_action(ns.action):
-            self._cmd.poutput("[!] Invalid action")
+            self._cmd.perror("[!] Invalid action")
             return
 
         columns = [
@@ -439,20 +441,21 @@ better tab completion"""
         opt_key = ns.option_key
         opt_val = ns.option_value
         if role_sec_tools is None:
-            self._cmd.poutput("[!] sec_tools object is None")
+            self._cmd.perror("[!] sec_tools object is None")
             return
         if not role_sec_tools.is_valid_action(action):
-            self._cmd.poutput("[!] Invalid action")
+            self._cmd.perror("[!] Invalid action")
             return
         if not role_sec_tools.has_settable_vars(action):
-            self._cmd.poutput(f"[!] {action} has no settable variable")
+            self._cmd.perror(f"[!] {action} has no settable variable")
             return
         if not role_sec_tools.is_valid_option_key(action, opt_key):
-            self._cmd.poutput("[!] Invalid option key")
+            self._cmd.perror("[!] Invalid option key")
             return
-        opt_val = role_sec_tools.parse_option_val(action, opt_key, opt_val)
-        if opt_val is None:
-            self._cmd.poutput("[!] Invalid option value")
+        try:
+            opt_val = role_sec_tools.parse_option_val(action, opt_key, opt_val)
+        except exception.ShaaVariableError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
 
         val = opt_val
@@ -460,8 +463,8 @@ better tab completion"""
         if ns.node_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
-                self._cmd.poutput("[!] No inventory is loaded")
-                self._cmd.poutput("[!] Unable to set variable")
+                self._cmd.perror("[!] No inventory is loaded")
+                self._cmd.perror("[!] Unable to set variable")
                 return
             gname = ns.group_name
             nname = ns.node_name
@@ -469,7 +472,7 @@ better tab completion"""
                 gname = "ungrouped"
             nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
             if nname not in nodes.keys():
-                self._cmd.poutput("[!] Node name does not exist")
+                self._cmd.perror("[!] Node name does not exist")
                 return
             node = nodes[nname]
             old_value = None
@@ -489,15 +492,15 @@ better tab completion"""
         elif ns.group_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
-                self._cmd.poutput("[!] No inventory is loaded")
-                self._cmd.poutput("[!] Unable to set variable")
+                self._cmd.perror("[!] No inventory is loaded")
+                self._cmd.perror("[!] Unable to set variable")
                 return
             gname = ns.group_name
             if gname not in inv.groups:
-                self._cmd.poutput(f"[!] Group name not found: {gname}")
+                self._cmd.perror(f"[!] Group name not found: {gname}")
                 return
             if gname == "ungrouped":
-                self._cmd.poutput(f"[!] {gname} is not settable")
+                self._cmd.perror(f"[!] {gname} is not settable")
                 return
             group: InventoryGroup = inv.groups[gname]
             old_value = None
@@ -536,16 +539,16 @@ better tab completion"""
         action = ns.action
         opt_key = ns.option_key
         if role_sec_tools is None:
-            self._cmd.poutput("[!] sec_tools object is None")
+            self._cmd.perror("[!] sec_tools object is None")
             return
         if not role_sec_tools.is_valid_action(action):
-            self._cmd.poutput("[!] Invalid action")
+            self._cmd.perror("[!] Invalid action")
             return
         if not role_sec_tools.has_settable_vars(action):
-            self._cmd.poutput(f"[!] {action} has no unsettable variable")
+            self._cmd.perror(f"[!] {action} has no unsettable variable")
             return
         if not role_sec_tools.is_valid_option_key(action, opt_key):
-            self._cmd.poutput("[!] Invalid option key")
+            self._cmd.perror("[!] Invalid option key")
             return
 
         option = role_sec_tools.actions[action]["vars"][opt_key]
@@ -553,8 +556,8 @@ better tab completion"""
         if ns.node_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
-                self._cmd.poutput("[!] No inventory is loaded")
-                self._cmd.poutput("[!] Unable to set variable")
+                self._cmd.perror("[!] No inventory is loaded")
+                self._cmd.perror("[!] Unable to set variable")
                 return
             gname = ns.group_name
             nname = ns.node_name
@@ -562,7 +565,7 @@ better tab completion"""
                 gname = "ungrouped"
             nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
             if nname not in nodes.keys():
-                self._cmd.poutput("[!] Node name does not exist")
+                self._cmd.perror("[!] Node name does not exist")
                 return
             self._cmd.poutput(f"[+] Node: {nname} ({gname})")
             node = nodes[nname]
@@ -572,7 +575,7 @@ better tab completion"""
                 del node.host_vars[opt_key]
                 self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
             else:
-                self._cmd.poutput("[!] Option key not found")
+                self._cmd.perror("[!] Option key not found")
                 return
             if isinstance(old_value, TaggedScalar):
                 old_value = vault.load(old_value)
@@ -586,17 +589,17 @@ better tab completion"""
         elif ns.group_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
-                self._cmd.poutput(
+                self._cmd.perror(
                     "[!] No inventory is loaded")
-                self._cmd.poutput(
+                self._cmd.perror(
                     "[!] Unable to unset variable on this group name")
                 return
             gname = ns.group_name
             if gname not in inv.groups:
-                self._cmd.poutput(f"[!] Group name not found: {gname}")
+                self._cmd.perror(f"[!] Group name not found: {gname}")
                 return
             if gname == "ungrouped":
-                self._cmd.poutput(f"[!] {gname} is not unsettable")
+                self._cmd.perror(f"[!] {gname} is not unsettable")
                 return
             group: InventoryGroup = inv.groups[gname]
             self._cmd.poutput(f"[+] Group: {gname}")
@@ -605,7 +608,7 @@ better tab completion"""
                 del group.group_vars[opt_key]
                 self._cmd._inv_has_changed = True  # type: ignore
             else:
-                self._cmd.poutput("[!] Option key not found")
+                self._cmd.perror("[!] Option key not found")
                 return
             if isinstance(old_value, TaggedScalar):
                 old_value = vault.load(old_value)
@@ -651,7 +654,7 @@ class sec_tools_search_cmd(CommandSet):
             return
         role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
         if role_sec_tools is None:
-            self._cmd.poutput("[!] No sec_tools preset is loaded")
+            self._cmd.perror("[!] No sec_tools preset is loaded")
             return
 
         pattern = ns.pattern

@@ -14,6 +14,7 @@ from shaa_shell.utils.path import (
     resolve_path,
 )
 from shaa_shell.utils.vault import vault
+from shaa_shell.utils import exception
 
 yaml = YAML(typ="rt")
 
@@ -139,22 +140,17 @@ class CIS:
             except ValueError:
                 if valid is not None and val in valid:
                     return val
-                print("[!] Invalid value, number is expected")
-                return None
+                raise exception.ValueNotNumber(val)
             if val < range_start:
-                print("[!] Supplied value is lower than allowed value")
-                print(f"    Min: {range_start}")
-                return None
+                raise exception.ValueIsLower(val, range_start)
             if range_end is not None and val > range_end:
-                print("[!] Supplied value is higher than allowed value")
-                print(f"    Max: {range_end}")
-                return None
+                raise exception.ValueIsHigher(val, range_end)
             return option_val[0]
 
         if value_type == "choice":
             val = option_val[0]
             if val not in valid:
-                return None
+                raise exception.ValueNotInChoice(val, valid)
             return val
 
         if value_type == "list_choice":
@@ -162,9 +158,7 @@ class CIS:
             valid_s = set(valid)
             diff = option_val_s - valid_s
             if len(diff) > 0:
-                print("[!] Invalid value provided")
-                print(f"    {diff}")
-                return None
+                raise exception.ValueNotInChoice(diff, valid)
             return list(set(option_val))
 
         if value_type == "list":
@@ -218,14 +212,13 @@ class CIS:
         Dump CIS data into a YAML file
         """
         if file_name is not None and file_name in CIS.list_preset():
-            print("[!] Specified CIS preset name exists")
-            return False
+            raise exception.NameExist("CIS preset", file_name)
 
         if file_name is None:
             file_name = self.name
 
         if not is_valid_file_path(CIS_PRESET_PATH, f"{file_name}.yml"):
-            return False
+            raise exception.InvalidName("CIS preset", file_name)
 
         file_path = CIS_PRESET_PATH.joinpath(f"{file_name}.yml").resolve()
 
@@ -240,8 +233,11 @@ class CIS:
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
-        if not self.save(new_name):
-            return False
+        try:
+            if not self.save(new_name):
+                return False
+        except exception.ShaaNameError:
+            raise
 
         self.delete()
         new_name = resolve_path(new_name, CIS_PRESET_PATH)
@@ -254,12 +250,10 @@ class CIS:
         Load CIS preset from YAML file to Python object
         """
         if not is_valid_file_path(CIS_PRESET_PATH, f"{name}.yml"):
-            print("[!] Invalid CIS preset name")
-            return None
+            raise exception.InvalidName("CIS preset", name)
 
         if name not in CIS.list_preset():
-            print(f"[!] CIS preset name not found: {name}")
-            return None
+            raise exception.NameNotFound("CIS preset", name)
 
         file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
         with file_path.open("r") as f:
@@ -274,14 +268,18 @@ class CIS:
         Function wrapper for creating CIS object
         """
         if not is_valid_file_path(CIS_PRESET_PATH, f"{name}.yml"):
-            return None
+            raise exception.InvalidName("CIS preset", name)
 
         name = resolve_path(name, CIS_PRESET_PATH)
 
         if name in CIS.list_preset():
-            return None
+            raise exception.NameExist("CIS preset", name)
 
-        cis = CIS(name)
+        try:
+            cis = CIS(name)
+        except KeyError:
+            raise exception.InvalidFile("CIS preset template", "sections")
+
         return cis
 
     @staticmethod

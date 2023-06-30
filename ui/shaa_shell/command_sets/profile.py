@@ -18,6 +18,7 @@ from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.preset import list_preset, PRESETS
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.role import Role
+from shaa_shell.utils import exception
 
 
 @with_default_category("profile")
@@ -90,11 +91,13 @@ class profile_subcmd(CommandSet):
     def profile_create(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        profile = Profile.create(ns.name)
+        try:
+            profile = Profile.create(ns.name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
         if profile is None:
-            warning_text = "[!] Invalid name or specified profile name"
-            warning_text += "already existed"
-            self._cmd.poutput(warning_text)
+            self._cmd.perror("[!] profile is None")
             return
         self._cmd._profile = profile  # type: ignore
 
@@ -138,7 +141,11 @@ class profile_subcmd(CommandSet):
 
         arg_profile = profile
         if profile is None:
-            profile = Profile.load(ns.name)
+            try:
+                profile = Profile.load(ns.name)
+            except exception.ShaaNameError as ex:
+                self._cmd.perror(f"[!] {ex}")
+                return
             self._cmd._profile = profile  # type: ignore
 
         if profile is None:
@@ -193,10 +200,14 @@ class profile_subcmd(CommandSet):
             return
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
-            self._cmd.poutput("[!] Currently, there is no profile loaded")
+            self._cmd.perror("[!] Currently, there is no profile loaded")
             return
-        if not profile.save(ns.name):
-            self._cmd.poutput("[!] Invalid profile name")
+        try:
+            if not profile.save(ns.name):
+                self._cmd.perror("[!] Unable to save")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
 
         self._cmd._profile_has_changed = False  # type: ignore
@@ -210,11 +221,15 @@ automatically)""")
             return
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
-            self._cmd.poutput("[!] Currently, there is no profile loaded")
+            self._cmd.perror("[!] Currently, there is no profile loaded")
             return
         old_name = profile.name
-        if not profile.rename(ns.name):
-            self._cmd.poutput("[!] Invalid profile name")
+        try:
+            if not profile.rename(ns.name):
+                self._cmd.perror("[!] Unable to rename")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._profile_has_changed = False  # type: ignore
         self._cmd.poutput("[+] Profile has been renamed")
@@ -230,7 +245,7 @@ automatically)""")
 
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
-            self._cmd.poutput("[!] Currently, there is no profile loaded")
+            self._cmd.perror("[!] Currently, there is no profile loaded")
             return
         profile.delete()
         self._cmd.poutput("[+] Profile has been deleted successfully")
@@ -245,7 +260,7 @@ automatically)""")
 
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
-            self._cmd.poutput("[!] Currently, there is no profile loaded")
+            self._cmd.perror("[!] Currently, there is no profile loaded")
             return
 
         old_name = None
@@ -255,7 +270,7 @@ automatically)""")
             self._cmd.do_inventory("unload")  # type: ignore
         else:
             if ns.config not in PRESETS:
-                self._cmd.poutput(f"[!] Invalid preset: {ns.config}")
+                self._cmd.perror(f"[!] Invalid preset: {ns.config}")
                 return
             old_name = profile.presets[ns.config]
             profile.presets[ns.config] = None
@@ -277,13 +292,14 @@ automatically)""")
 
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is None:
-            self._cmd.poutput("[!] Currently, there is no profile loaded")
+            self._cmd.perror("[!] Currently, there is no profile loaded")
             return
 
         old_name = None
         if ns.config == "inventory":
             if ns.name not in Inventory.list_inventory():
-                self._cmd.poutput("[!] Inventory name does not exist")
+                self._cmd.perror(
+                    f"[!] Inventory name does not exist: {ns.name}")
                 return
             old_name = profile.inv_name
             profile.inv_name = ns.name
@@ -291,11 +307,11 @@ automatically)""")
             self._cmd.poutput("\n[+] Inventory set successfully")
         else:
             if ns.config not in PRESETS:
-                self._cmd.poutput(f"[!] Invalid preset: {ns.config}")
+                self._cmd.perror(f"[!] Invalid preset: {ns.config}")
                 return
             preset = ns.config
             if ns.name not in list_preset(preset):
-                self._cmd.poutput(f"[!] {preset} preset name does not exist")
+                self._cmd.perror(f"[!] {preset} preset name does not exist")
                 return
             if preset in profile.presets.keys():
                 old_name = profile.presets[preset]

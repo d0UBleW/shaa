@@ -18,13 +18,15 @@ from dataclasses import asdict
 import pprint
 import re
 from typing import List, Text, Dict
+from ruamel.yaml.comments import TaggedScalar
+
 from shaa_shell.utils.inventory import (
     Inventory,
     InventoryGroup,
 )
 from shaa_shell.utils.parser import inventory_group_parser
 from shaa_shell.utils.vault import vault
-from ruamel.yaml.comments import TaggedScalar
+from shaa_shell.utils import exception
 
 
 @with_default_category("inventory group")
@@ -142,9 +144,13 @@ class inventory_group_subcmd(CommandSet):
         if self._cmd is None:
             return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
-        if inv.rename_group(ns.name, ns.new_name) == 0:
-            self._cmd.poutput("[+] Group has been renamed successfully")
-            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+        try:
+            if inv.rename_group(ns.name, ns.new_name) == 0:
+                self._cmd.poutput("[+] Group has been renamed successfully")
+                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+        except exception.ShaaInventoryError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
 
     @as_subcommand_to("group", "create", create_parser,
                       aliases=["add"],
@@ -158,7 +164,7 @@ class inventory_group_subcmd(CommandSet):
             self._cmd.poutput("[+] Group has been created successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
-            self._cmd.poutput("[!] Specified group name already existed")
+            self._cmd.perror("[!] Specified group name already existed")
 
     @as_subcommand_to("group", "delete", delete_parser,
                       aliases=["del", "rm"],
@@ -167,19 +173,19 @@ class inventory_group_subcmd(CommandSet):
         if self._cmd is None:
             return
         if not ns.force:
-            self._cmd.poutput("[!] Deleting this group would also delete all")
-            self._cmd.poutput("    the nodes within this group.")
+            self._cmd.perror("[!] Deleting this group would also delete all")
+            self._cmd.perror("    the nodes within this group.")
             self._cmd.poutput("[*] Use -f/--force to skip this prompt")
             if (_ := self._cmd.read_input(
                     "[+] Do you want to proceed [y/N]? ")) != "y":
-                self._cmd.poutput("[!] Deletion aborted")
+                self._cmd.perror("[!] Deletion aborted")
                 return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         if inv.delete_group(ns.name) == 0:
             self._cmd.poutput("[+] Group has been deleted successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
-            self._cmd.poutput("[!] Specified group name does not exist")
+            self._cmd.perror("[!] Specified group name does not exist")
 
     @as_subcommand_to("group", "list", list_parser,
                       aliases=["ls"],

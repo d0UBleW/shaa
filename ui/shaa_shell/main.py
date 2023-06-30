@@ -28,6 +28,7 @@ from shaa_shell.utils.role import Role
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils.preset import PRESETS
 from shaa_shell.utils import play
+from shaa_shell.utils import exception
 
 STARTUP_SCRIPT = '~/.shaa_shell_rc'
 
@@ -187,7 +188,7 @@ class ShaaShell(cmd2.Cmd):
         """
         inv = self._inventory
         if inv is None:
-            self.poutput("[!] No inventory is loaded, aborting!")
+            self.perror("[!] No inventory is loaded, aborting!")
             return
 
         cis = self._cis
@@ -222,24 +223,39 @@ class ShaaShell(cmd2.Cmd):
             self.check_if_sec_tools_changed()
 
         self.poutput("[+] Generating playbook ...")
-        gen_pb = play.generate_playbook(profile, ns.preset)
+        try:
+            gen_pb = play.generate_playbook(profile, ns.preset)
+        except exception.ShaaNameError as ex:
+            self.perror(f"[!] {ex}")
+            return
+        except exception.ShaaInventoryError as ex:
+            self.perror(f"[!] {ex}")
+            return
         if gen_pb is not None and not gen_pb:
-            self.poutput("[!] Error in generating playbook")
-            self.poutput("    Inventory data is empty, try to save it first")
-            self.poutput("    or make sure it is set on current profile")
+            self.perror("[!] Error in generating playbook")
+            self.perror("    Inventory data is empty, try to save it first")
+            self.perror("    or make sure it is set on current profile")
             return
         if gen_pb is None:
             return
         self.poutput("[+] Done")
         self.poutput("[+] Generating tags ...")
-        tags = play.generate_tags(profile, ns.preset)
+        try:
+            tags = play.generate_tags(profile, ns.preset)
+        except exception.ShaaNameError as ex:
+            self.perror(f"[!] {ex}")
+            return
         self.poutput("[+] Done")
         self.poutput("[+] Running playbook ...")
-        play.run_playbook(
-            profile.name,
-            tags=tags,
-            verbose=ns.verbose,
-            color=ns.color)
+        try:
+            play.run_playbook(
+                profile.name,
+                tags=tags,
+                verbose=ns.verbose,
+                color=ns.color)
+        except exception.ShaaVaultError as ex:
+            self.perror(f"[!] {ex}")
+            return
 
     @cmd2.with_argparser(clear_parser)
     @cmd2.with_category("general")

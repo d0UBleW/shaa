@@ -21,9 +21,11 @@ from shaa_shell.utils.inventory import (
     Inventory,
     InventoryNode,
 )
+from ruamel.yaml.comments import TaggedScalar
+
+from shaa_shell.utils import exception
 from shaa_shell.utils.parser import inventory_node_parser
 from shaa_shell.utils.vault import vault
-from ruamel.yaml.comments import TaggedScalar
 
 
 @with_default_category("inventory node")
@@ -284,13 +286,17 @@ leaving it blank defaults to ungrouped)""",
         if self._cmd is None:
             return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
-        if inv.edit_node(node_name=ns.node_name,
-                         ip=ns.ip,
-                         user=ns.user,
-                         password=ns.password,
-                         group_name=ns.node_group) == 0:
-            self._cmd.poutput("[+] Node has been edited successfully")
-            self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+        try:
+            if inv.edit_node(node_name=ns.node_name,
+                             ip=ns.ip,
+                             user=ns.user,
+                             password=ns.password,
+                             group_name=ns.node_group) == 0:
+                self._cmd.poutput("[+] Node has been edited successfully")
+                self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+        except exception.ShaaInventoryError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
 
     @as_subcommand_to("node", "create", create_parser,
                       aliases=["add"],
@@ -309,7 +315,7 @@ leaving it blank defaults to ungrouped)""",
             self._cmd.poutput("[+] Node has been created successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
-            self._cmd.poutput("[!] Specified node name already existed")
+            self._cmd.perror("[!] Specified node name already existed")
 
     @as_subcommand_to("node", "delete", delete_parser,
                       aliases=["del", "rm"],
@@ -322,7 +328,7 @@ leaving it blank defaults to ungrouped)""",
             self._cmd.poutput("[+] Node has been deleted successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
-            self._cmd.poutput("[!] Specified node name does not exist")
+            self._cmd.perror("[!] Specified node name does not exist")
 
     @as_subcommand_to("node", "list", list_parser,
                       aliases=["ls"],

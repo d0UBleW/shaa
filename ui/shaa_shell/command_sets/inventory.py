@@ -13,6 +13,8 @@ from cmd2.table_creator import (
 )
 from cmd2.exceptions import CommandSetRegistrationError
 from typing import List, Text, Optional
+
+from shaa_shell.utils import exception
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.profile import Profile
 
@@ -53,11 +55,10 @@ class inventory_subcmd(CommandSet):
     def inventory_create(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        inv = Inventory.create_inventory(ns.name)
-        if inv is None:
-            warning_text = "[!] Invalid name or specified inventory name"
-            warning_text += " already existed"
-            self._cmd.poutput(warning_text)
+        try:
+            inv = Inventory.create_inventory(ns.name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._inventory = inv  # type: ignore[attr-defined]
         return self.inventory_load(None, inv)  # type: ignore[attr-defined]
@@ -70,14 +71,14 @@ class inventory_subcmd(CommandSet):
             return
         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
         if inv is None:
-            self._cmd.poutput("[!] Currently, there is no inventory loaded")
+            self._cmd.perror("[!] Currently, there is no inventory loaded")
             return
         warning_text = "[!] Deleting this inventory would also delete all of "
         warning_text += "its corresponding groups and nodes"
-        self._cmd.poutput(warning_text)
+        self._cmd.perror(warning_text)
         if (_ := self._cmd.read_input(
                 "[+] Do you want to proceed [y/N]? ")) != "y":
-            self._cmd.poutput("[!] Deletion aborted")
+            self._cmd.perror("[!] Deletion aborted")
             return
         inv.delete_inventory()
         self._cmd.poutput("[+] Inventory has been deleted successfully")
@@ -112,11 +113,15 @@ class inventory_subcmd(CommandSet):
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
 
         if inv is None:
-            inv = Inventory.load(ns.name)
+            try:
+                inv = Inventory.load(ns.name)
+            except exception.ShaaNameError as ex:
+                self._cmd.perror(f"[!] {ex}")
+                return
             self._cmd._inventory = inv  # type: ignore[attr-defined]
 
-        if inv is None:
-            return
+        # if inv is None:
+        #     return
 
         try:
             self._cmd.register_command_set(
@@ -161,10 +166,14 @@ class inventory_subcmd(CommandSet):
             return
         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
         if inv is None:
-            self._cmd.poutput("[!] Currently, there is no inventory loaded")
+            self._cmd.perror("[!] Currently, there is no inventory loaded")
             return
-        if not inv.save(ns.name):
-            self._cmd.poutput("[!] Invalid inventory name")
+        try:
+            if not inv.save(ns.name):
+                self._cmd.perror("[!] Unable to save")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] inventory has been saved")
@@ -177,11 +186,15 @@ automatically)""")
             return
         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
         if inv is None:
-            self._cmd.poutput("[!] Currently, there is no inventory loaded")
+            self._cmd.perror("[!] Currently, there is no inventory loaded")
             return
         old_name = inv.name
-        if not inv.rename_inventory(ns.name):
-            self._cmd.poutput("[!] Invalid inventory name")
+        try:
+            if not inv.rename_inventory(ns.name):
+                self._cmd.perror("[!] Unable to rename")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         profile: Optional[Profile] = self._cmd._profile  # type: ignore

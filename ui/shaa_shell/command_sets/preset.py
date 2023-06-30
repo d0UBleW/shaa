@@ -14,6 +14,7 @@ from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.role import Role
 from shaa_shell.utils.preset import list_preset
 from shaa_shell.utils.profile import Profile
+from shaa_shell.utils import exception
 
 
 @with_default_category("preset")
@@ -39,11 +40,10 @@ class preset_sec_tools_cmd(CommandSet):
     def preset_sec_tools_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        role_sec_tools: Optional[Role] = Role.create("sec_tools", ns.name)
-        if role_sec_tools is None:
-            warning_text = "[!] Invalid name or specified sec_tools preset"
-            warning_text += " name already existed"
-            self._cmd.poutput(warning_text)
+        try:
+            role_sec_tools: Optional[Role] = Role.create("sec_tools", ns.name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._sec_tools = role_sec_tools  # type: ignore[attr-defined]
         return self.preset_sec_tools_load(argparse.Namespace(), role_sec_tools)
@@ -54,13 +54,17 @@ class preset_sec_tools_cmd(CommandSet):
 
         role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
         if role_sec_tools is None:
-            self._cmd.poutput(
+            self._cmd.perror(
                 "[!] Currently, there is no sec_tools preset loaded")
             return
-        if not role_sec_tools.save(ns.name):
-            self._cmd.poutput(
-                "[!] Invalid sec_tools preset name or name existed")
+        try:
+            if not role_sec_tools.save(ns.name):
+                self._cmd.perror("[!] Unable to save")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
+
         self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] sec_tools preset has been saved")
 
@@ -70,13 +74,18 @@ class preset_sec_tools_cmd(CommandSet):
 
         role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
         if role_sec_tools is None:
-            self._cmd.poutput(
+            self._cmd.perror(
                 "[!] Currently, there is no sec_tools preset loaded")
             return
         old_name = role_sec_tools.name
-        if not role_sec_tools.rename(ns.name):
-            self._cmd.poutput("[!] Invalid sec_tools preset name")
+        try:
+            if not role_sec_tools.rename(ns.name):
+                self._cmd.perror("[!] Unable to rename")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
+
         self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is not None:
@@ -93,7 +102,7 @@ class preset_sec_tools_cmd(CommandSet):
 
         role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
         if role_sec_tools is None:
-            self._cmd.poutput(
+            self._cmd.perror(
                 "[!] Currently, there is no sec_tools preset loaded")
             return
         role_sec_tools.delete()
@@ -138,7 +147,11 @@ class preset_sec_tools_cmd(CommandSet):
             self._cmd._sec_tools_has_changed = True  # type: ignore
 
         if role_sec_tools is None:
-            role_sec_tools = Role.load("sec_tools", ns.name)
+            try:
+                role_sec_tools = Role.load("sec_tools", ns.name)
+            except exception.ShaaNameError as ex:
+                self._cmd.perror(f"[!] {ex}")
+                return
             self._cmd._sec_tools = role_sec_tools  # type: ignore[attr-defined]
 
         if role_sec_tools is None:
@@ -258,11 +271,10 @@ class preset_oscap_cmd(CommandSet):
     def preset_oscap_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        role_oscap: Optional[Role] = Role.create("oscap", ns.name)
-        if role_oscap is None:
-            warning_text = "[!] Invalid name or specified oscap preset name"
-            warning_text += " already existed"
-            self._cmd.poutput(warning_text)
+        try:
+            role_oscap: Optional[Role] = Role.create("oscap", ns.name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._oscap = role_oscap  # type: ignore[attr-defined]
         return self.preset_oscap_load(argparse.Namespace(), role_oscap)
@@ -273,11 +285,16 @@ class preset_oscap_cmd(CommandSet):
 
         role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
         if role_oscap is None:
-            self._cmd.poutput("[!] Currently, there is no oscap preset loaded")
+            self._cmd.perror("[!] Currently, there is no oscap preset loaded")
             return
-        if not role_oscap.save(ns.name):
-            self._cmd.poutput("[!] Invalid oscap preset name or name existed")
+        try:
+            if not role_oscap.save(ns.name):
+                self._cmd.perror("[!] Unable to save")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
+
         self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] oscap preset has been saved")
 
@@ -287,12 +304,17 @@ class preset_oscap_cmd(CommandSet):
 
         role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
         if role_oscap is None:
-            self._cmd.poutput("[!] Currently, there is no oscap preset loaded")
+            self._cmd.perror("[!] Currently, there is no oscap preset loaded")
             return
         old_name = role_oscap.name
-        if not role_oscap.rename(ns.name):
-            self._cmd.poutput("[!] Invalid oscap preset name")
+        try:
+            if not role_oscap.rename(ns.name):
+                self._cmd.perror("[!] Unable to rename")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
+
         self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is not None:
@@ -309,7 +331,7 @@ class preset_oscap_cmd(CommandSet):
 
         role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
         if role_oscap is None:
-            self._cmd.poutput("[!] Currently, there is no oscap preset loaded")
+            self._cmd.perror("[!] Currently, there is no oscap preset loaded")
             return
         role_oscap.delete()
         self._cmd.poutput("[+] oscap preset has been deleted successfully")
@@ -353,7 +375,11 @@ class preset_oscap_cmd(CommandSet):
             self._cmd._oscap_has_changed = True  # type: ignore[attr-defined]
 
         if role_oscap is None:
-            role_oscap = Role.load("oscap", ns.name)
+            try:
+                role_oscap = Role.load("oscap", ns.name)
+            except exception.ShaaNameError as ex:
+                self._cmd.perror(f"[!] {ex}")
+                return
             self._cmd._oscap = role_oscap  # type: ignore[attr-defined]
 
         if role_oscap is None:
@@ -472,11 +498,10 @@ class preset_util_cmd(CommandSet):
     def preset_util_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        role_util: Optional[Role] = Role.create("util", ns.name)
-        if role_util is None:
-            warning_text = "[!] Invalid name or specified util preset name"
-            warning_text += " already existed"
-            self._cmd.poutput(warning_text)
+        try:
+            role_util: Optional[Role] = Role.create("util", ns.name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._util = role_util  # type: ignore[attr-defined]
         return self.preset_util_load(argparse.Namespace(), role_util)
@@ -487,10 +512,14 @@ class preset_util_cmd(CommandSet):
 
         role_util: Optional[Role] = self._cmd._util  # type: ignore
         if role_util is None:
-            self._cmd.poutput("[!] Currently, there is no util preset loaded")
+            self._cmd.perror("[!] Currently, there is no util preset loaded")
             return
-        if not role_util.save(ns.name):
-            self._cmd.poutput("[!] Invalid util preset name or name existed")
+        try:
+            if not role_util.save(ns.name):
+                self._cmd.perror("[!] Unable to save")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] util preset has been saved")
@@ -501,12 +530,17 @@ class preset_util_cmd(CommandSet):
 
         role_util: Optional[Role] = self._cmd._util  # type: ignore
         if role_util is None:
-            self._cmd.poutput("[!] Currently, there is no util preset loaded")
+            self._cmd.perror("[!] Currently, there is no util preset loaded")
             return
         old_name = role_util.name
-        if not role_util.rename(ns.name):
-            self._cmd.poutput("[!] Invalid util preset name")
+        try:
+            if not role_util.rename(ns.name):
+                self._cmd.perror("[!] Unable to rename")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
+
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is not None:
@@ -523,7 +557,7 @@ class preset_util_cmd(CommandSet):
 
         role_util: Optional[Role] = self._cmd._util  # type: ignore
         if role_util is None:
-            self._cmd.poutput("[!] Currently, there is no util preset loaded")
+            self._cmd.perror("[!] Currently, there is no util preset loaded")
             return
         role_util.delete()
         self._cmd.poutput("[+] util preset has been deleted successfully")
@@ -567,7 +601,11 @@ class preset_util_cmd(CommandSet):
             self._cmd._util_has_changed = True  # type: ignore[attr-defined]
 
         if role_util is None:
-            role_util = Role.load("util", ns.name)
+            try:
+                role_util = Role.load("util", ns.name)
+            except exception.ShaaNameError as ex:
+                self._cmd.perror(f"[!] {ex}")
+                return
             self._cmd._util = role_util  # type: ignore[attr-defined]
 
         if role_util is None:
@@ -685,11 +723,10 @@ class preset_cis_cmd(CommandSet):
     def preset_cis_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        cis: Optional[CIS] = CIS.create(ns.name)
-        if cis is None:
-            warning_text = "[!] Invalid name or specified CIS preset name"
-            warning_text += " already existed"
-            self._cmd.poutput(warning_text)
+        try:
+            cis: Optional[CIS] = CIS.create(ns.name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._cis = cis  # type: ignore[attr-defined]
         return self.preset_cis_load(argparse.Namespace(), cis)
@@ -700,11 +737,16 @@ class preset_cis_cmd(CommandSet):
 
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
         if cis is None:
-            self._cmd.poutput("[!] Currently, there is no CIS preset loaded")
+            self._cmd.perror("[!] Currently, there is no CIS preset loaded")
             return
-        if not cis.save(ns.name):
-            self._cmd.poutput("[!] Invalid CIS preset name or name existed")
+        try:
+            if not cis.save(ns.name):
+                self._cmd.perror("[!] Unable to save")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
+
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
         self._cmd.poutput("[+] CIS preset has been saved")
 
@@ -714,12 +756,17 @@ class preset_cis_cmd(CommandSet):
 
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
         if cis is None:
-            self._cmd.poutput("[!] Currently, there is no CIS preset loaded")
+            self._cmd.perror("[!] Currently, there is no CIS preset loaded")
             return
         old_name = cis.name
-        if not cis.rename(ns.name):
-            self._cmd.poutput("[!] Invalid CIS preset name")
+        try:
+            if not cis.rename(ns.name):
+                self._cmd.perror("[!] Unable to rename")
+                return
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
             return
+
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
         profile: Optional[Profile] = self._cmd._profile  # type: ignore
         if profile is not None:
@@ -736,7 +783,7 @@ class preset_cis_cmd(CommandSet):
 
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
         if cis is None:
-            self._cmd.poutput("[!] Currently, there is no CIS preset loaded")
+            self._cmd.perror("[!] Currently, there is no CIS preset loaded")
             return
         cis.delete()
         self._cmd.poutput("[+] CIS preset has been deleted successfully")
@@ -780,7 +827,11 @@ class preset_cis_cmd(CommandSet):
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
 
         if cis is None:
-            cis = CIS.load(ns.name)
+            try:
+                cis = CIS.load(ns.name)
+            except exception.ShaaNameError as ex:
+                self._cmd.perror(f"[!] {ex}")
+                return
             self._cmd._cis = cis  # type: ignore[attr-defined]
 
         if cis is None:

@@ -7,8 +7,10 @@ import re
 from ruamel.yaml import YAML  # type: ignore[import]
 from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
 from typing import List, Text, Optional, Dict, Tuple, Any
-from shaa_shell.utils.vault import vault
 from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
+
+from shaa_shell.utils import exception
+from shaa_shell.utils.vault import vault
 from shaa_shell.utils.path import (
     INVENTORY_PATH,
     is_valid_file_path,
@@ -85,8 +87,7 @@ class InventoryGroup:
         Helper function to set `group_vars`
         """
         if self.name == "ungrouped":
-            print("[!] This operation is not valid for `ungrouped`")
-            return
+            raise exception.InvalidGroupOp(self.name)
         self.group_vars[key] = value
 
     def add_node(self, node: Optional[InventoryNode]) -> int:
@@ -174,14 +175,11 @@ class Inventory:
 
     def rename_group(self, group_name: Text, new_group_name: Text) -> int:
         if group_name not in self.groups.keys():
-            print(f"[!] Invalid group name: {group_name}")
-            return -1
+            raise exception.GroupNameNotFound(group_name)
         if group_name == "ungrouped":
-            print("[!] `ungrouped` is not rename-able")
-            return -1
+            raise exception.InvalidGroupOp(group_name)
         if new_group_name in self.groups.keys():
-            print("[!] Unable to rename, group name already exists")
-            return -1
+            raise exception.GroupNameExist(group_name)
         self.groups[group_name].name = new_group_name
         self.groups[new_group_name] = self.groups.pop(group_name)
         return 0
@@ -236,17 +234,14 @@ class Inventory:
         Edit a node object from an inventory
         """
         if group_name not in self.groups.keys():
-            print(f"[!] Invalid group name: {group_name}")
-            return -1
+            raise exception.GroupNameNotFound(group_name)
         nodes = self.groups[group_name].nodes
         if node_name not in nodes.keys():
-            print(f"[!] Invalid node name: {node_name}")
-            return -1
+            raise exception.NodeNameNotFound(node_name)
         node = nodes[node_name]
         if new_name is not None:
             if new_name in nodes.keys():
-                print("[!] Unable to rename, node name already exists")
-                return -1
+                raise exception.NodeNameExist(new_name)
             node.name = new_name
         if ip is not None:
             node.ip_address = ip
@@ -288,14 +283,13 @@ class Inventory:
         """
         if file_name is not None and file_name in Inventory.list_inventory():
             if not overwrite:
-                print("[!] Specified inventory name exists")
-                return False
+                raise exception.NameExist("inventory", file_name)
 
         if file_name is None:
             file_name = self.name
 
         if not is_valid_file_path(inv_path, f"{file_name}.yml"):
-            return False
+            raise exception.InvalidName("inventory", file_name)
 
         file_path = inv_path.joinpath(f"{file_name}.yml").resolve()
 
@@ -334,12 +328,10 @@ class Inventory:
         Load Ansible inventory from YAML file to Python object
         """
         if not is_valid_file_path(INVENTORY_PATH, f"{name}.yml"):
-            print("[!] Invalid inventory name")
-            return None
+            raise exception.InvalidName("inventory", name)
 
         if name not in Inventory.list_inventory():
-            print(f"[!] Inventory name not found: {name}")
-            return None
+            raise exception.NameNotFound("inventory", name)
 
         file_path = INVENTORY_PATH.joinpath(f"{name}.yml").resolve()
         with file_path.open("r") as f:
@@ -348,8 +340,7 @@ class Inventory:
         inv = Inventory(name)
 
         if "all" not in data.keys():
-            print("[!] Invalid inventory file: missing `all` key")
-            return None
+            raise exception.InvalidFile("inventory", "all")
 
         if data["all"] is None:
             return inv
@@ -367,8 +358,8 @@ class Inventory:
                     name=group_name, data=raw_group)
                 inv.add_group(group)
 
-        if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
-            return None
+        # if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
+        #     return None
 
         return inv
 
@@ -382,12 +373,12 @@ class Inventory:
     @staticmethod
     def create_inventory(name: Text) -> Optional[Inventory]:
         if not is_valid_file_path(INVENTORY_PATH, f"{name}.yml"):
-            return None
+            raise exception.InvalidName("inventory", name)
 
         name = resolve_path(name, INVENTORY_PATH)
 
         if name in Inventory.list_inventory():
-            return None
+            raise exception.NameExist("inventory", name)
 
         inv = Inventory(name)
         return inv
@@ -402,8 +393,11 @@ class Inventory:
         return
 
     def rename_inventory(self, new_name: Text) -> bool:
-        if not self.save(new_name):
-            return False
+        try:
+            if not self.save(new_name):
+                return False
+        except exception.ShaaNameError:
+            raise
         old_file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
         Path.unlink(old_file_path, missing_ok=True)
         new_name = resolve_path(new_name, INVENTORY_PATH)

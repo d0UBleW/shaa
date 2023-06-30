@@ -22,6 +22,7 @@ from shaa_shell.utils.path import (
     DATA_PATH,
 )
 from shaa_shell.utils.preset import PRESETS, PRESET_ROLE_MAP
+from shaa_shell.utils import exception
 
 yaml = YAML(typ="rt")
 
@@ -72,8 +73,8 @@ def convert_role_vars_to_ansible_vars(role_type: Text,
             if "." in var_key:
                 parent, _, child = var_key.partition(".")
                 if parent not in vars:
-                    vars[parent] = {}
-                vars[parent][child] = val
+                    vars[parent] = {}  # type: ignore[assignment]
+                vars[parent][child] = val  # type: ignore[index]
             else:
                 vars[var_key] = val
 
@@ -85,8 +86,7 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
     if len(arg_presets) > 0:
         for preset in arg_presets:
             if preset not in PRESETS:
-                print(f"[!] Invalid preset: {preset}")
-                return None
+                raise exception.ShaaNameError(f"Invalid preset: {preset}")
             presets[preset] = profile.presets[preset]
     else:
         presets = profile.presets
@@ -94,7 +94,10 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
     tags: List[Text] = []
 
     if "cis" in presets.keys():
-        cis_tags = generate_cis_tags(presets["cis"])
+        try:
+            cis_tags = generate_cis_tags(presets["cis"])
+        except exception.ShaaNameError:
+            raise
         if cis_tags is not None:
             tags += cis_tags
 
@@ -103,7 +106,10 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
             continue
         if role_type not in presets.keys():
             continue
-        role_tags = generate_role_tags(role_type, presets[role_type])
+        try:
+            role_tags = generate_role_tags(role_type, presets[role_type])
+        except exception.ShaaNameError:
+            raise
         if role_tags is not None:
             tags += role_tags
 
@@ -113,7 +119,10 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
 def generate_cis_tags(pre_name: Optional[Text]) -> Optional[List]:
     if pre_name is None:
         return None
-    cis: Optional[CIS] = CIS.load(pre_name)
+    try:
+        cis: Optional[CIS] = CIS.load(pre_name)
+    except exception.ShaaNameError:
+        raise
     if cis is None:
         print(f"[!] CIS preset name not found: {pre_name}")
         return None
@@ -134,7 +143,10 @@ def generate_role_tags(role_type: Text,
                        pre_name: Optional[Text]) -> Optional[List]:
     if pre_name is None:
         return None
-    role: Optional[Role] = Role.load(role_type, pre_name)
+    try:
+        role: Optional[Role] = Role.load(role_type, pre_name)
+    except exception.ShaaNameError:
+        raise
     if role is None:
         print(f"[!] {role_type} preset name not found: {pre_name}")
         return None
@@ -153,8 +165,7 @@ def generate_playbook(profile: Profile,
     if len(arg_presets) > 0:
         for preset in arg_presets:
             if preset not in PRESETS:
-                print(f"[!] Invalid preset: {preset}")
-                return None
+                raise exception.ShaaNameError(f"Invalid preset: {preset}")
             presets[preset] = profile.presets[preset]
     else:
         presets = profile.presets
@@ -179,9 +190,15 @@ def generate_playbook(profile: Profile,
     inv_name = profile.inv_name
     inv: Optional[Inventory] = None
     if inv_name is not None:
-        inv = Inventory.load(inv_name)
+        try:
+            inv = Inventory.load(inv_name)
+        except exception.ShaaInventoryError:
+            raise
 
     if inv is None:
+        return False
+
+    if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
         return False
 
     name = profile.name
@@ -214,8 +231,7 @@ def generate_playbook(profile: Profile,
     }]
 
     if len(roles) == 0 and "util" not in presets:
-        print("[!] No preset is provided, aborting!")
-        return None
+        raise exception.ShaaNameError("No preset is provided, aborting!")
 
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()
 
@@ -237,8 +253,7 @@ def run_playbook(name: Text,
     playbook_fpath = str(PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve())
     ansible_cfg = str(PLAYBOOK_PATH.joinpath("ansible.cfg").resolve())
     if vault_password is None:
-        print("Missing ansible vault password")
-        return
+        raise exception.ShaaVaultError("Missing ansible vault password")
     envs = {
         "ANSIBLE_CONFIG": ansible_cfg,
         "VAULT_PASSWORD": vault_password,
