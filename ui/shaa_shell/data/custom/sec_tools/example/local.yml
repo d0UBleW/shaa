@@ -1,0 +1,12 @@
+actions:
+  install_wazuh:
+    title: Install wazuh agent and connect it to wazuh manager
+    enabled: true
+    vars:
+      wazuh_manager:
+        value:
+        default: 192.168.100.100
+        description: |
+          IP address or hostname of wazuh manager
+        value_type: single
+        valid:

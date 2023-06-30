@@ -1,4 +1,4 @@
-inventory: local
+inventory: example/local
 presets:
   cis:
   oscap: example/after
