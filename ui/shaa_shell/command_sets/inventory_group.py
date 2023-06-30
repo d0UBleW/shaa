@@ -7,6 +7,7 @@ from cmd2 import (
     with_default_category,
     with_argparser,
     as_subcommand_to,
+    CompletionError,
 )
 from cmd2.table_creator import (
     SimpleTable,
@@ -16,7 +17,7 @@ from cmd2.table_creator import (
 from dataclasses import asdict
 import pprint
 import re
-from typing import List, Text
+from typing import List, Text, Dict
 from shaa_shell.utils.inventory import (
     Inventory,
     InventoryGroup,
@@ -52,6 +53,22 @@ class inventory_group_subcmd(CommandSet):
             return []
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         return list(inv.groups.keys())
+
+    def _choices_group_var(
+        self: CommandSet,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[Text]:
+        if self._cmd is None:
+            return []
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+
+        if "name" not in arg_tokens:
+            raise CompletionError("[!] Missing group name to be targeted")
+
+        group_name = arg_tokens["name"][0]
+
+        group: InventoryGroup = inv.groups[group_name]
+        return list(group.group_vars.keys())
 
     rename_parser = Cmd2ArgumentParser()
     rename_parser.add_argument(
@@ -105,6 +122,18 @@ class inventory_group_subcmd(CommandSet):
         metavar="pattern",
         help="group name regex pattern to be inspected",
         choices_provider=_choices_group_name
+    )
+
+    unset_parser = Cmd2ArgumentParser()
+    unset_parser.add_argument(
+        'name',
+        help="name of target group whose group variable to be unset",
+        choices_provider=_choices_group_name,
+    )
+    unset_parser.add_argument(
+        'group_var',
+        help="name of group variable to be unset",
+        choices_provider=_choices_group_var,
     )
 
     @as_subcommand_to("group", "rename", rename_parser,
@@ -230,3 +259,28 @@ class inventory_group_subcmd(CommandSet):
                                         include_header=False)
                 sep = "-" * 16
                 self._cmd.poutput(f"\n{sep}\n{tbl}\n{sep}\n")
+
+    @as_subcommand_to("group", "unset", unset_parser,
+                      help="unset group's group var")
+    def inv_node_unset(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore
+        if ns.name not in inv.groups.keys():
+            self._cmd.perror(f"[!] Invalid group name: {ns.name}")
+            return
+
+        group: InventoryGroup = inv.groups[ns.name]
+
+        if ns.group_var not in group.group_vars.keys():
+            self._cmd.perror(f"[!] Invalid group var: {ns.group_var}")
+            return
+
+        old_value = group.group_vars[ns.group_var]
+        del group.group_vars[ns.group_var]
+        if isinstance(old_value, TaggedScalar):
+            old_value = vault.load(old_value)
+
+        self._cmd.poutput(f"[+] {ns.group_var}:")
+        self._cmd.poutput(f"    old: {old_value}")
+        self._cmd._inv_has_changed = True  # type: ignore[attr-defined]

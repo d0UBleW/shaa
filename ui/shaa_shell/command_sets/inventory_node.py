@@ -7,6 +7,7 @@ from cmd2 import (
     with_default_category,
     with_argparser,
     as_subcommand_to,
+    CompletionError,
 )
 from cmd2.table_creator import (
     SimpleTable,
@@ -64,6 +65,27 @@ class inventory_node_subcmd(CommandSet):
         nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
         return nodes
 
+    def _choices_host_var(
+        self: CommandSet,
+        arg_tokens: Dict[Text, List[Text]]
+    ) -> List[Text]:
+        if self._cmd is None:
+            return []
+        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        group_name = "ungrouped"
+        if "node_group" in arg_tokens:
+            group_name = arg_tokens["node_group"][0]
+
+        node_name = None
+        if "node_name" in arg_tokens:
+            node_name = arg_tokens["node_name"][0]
+
+        if node_name is None:
+            raise CompletionError("[!] Missing node name to be targeted")
+
+        node: InventoryNode = inv.groups[group_name].nodes[node_name]
+        return list(node.host_vars.keys())
+
     rename_parser = Cmd2ArgumentParser()
     rename_parser.add_argument(
         '-g',
@@ -90,10 +112,7 @@ leaving it blank defaults to ungrouped)""",
 
     edit_parser = Cmd2ArgumentParser()
     edit_parser.add_argument(
-        "-n",
-        "--name",
-        dest="node_name",
-        metavar="node_name",
+        "node_name",
         choices_provider=_choices_node_name,
         help="node name to be edited",
     )
@@ -223,6 +242,30 @@ out ungrouped nodes)""",
         choices_provider=_choices_node_name,
     )
 
+    unset_parser = Cmd2ArgumentParser()
+    unset_parser.add_argument(
+        '-g',
+        '--group',
+        dest="node_group",
+        nargs='?',
+        default="ungrouped",
+        metavar='group_name',
+        type=str,
+        help="""node group name (ungrouped is a reserved group name, \
+leaving it blank defaults to ungrouped)""",
+        choices_provider=_choices_group_name,
+    )
+    unset_parser.add_argument(
+        'node_name',
+        help='name of target node whose host variable to be unset',
+        choices_provider=_choices_node_name,
+    )
+    unset_parser.add_argument(
+        'host_var',
+        help="name of host variable to be unset",
+        choices_provider=_choices_host_var,
+    )
+
     @as_subcommand_to("node", "rename", rename_parser,
                       help="rename node on current inventory")
     def inv_node_rename(self: CommandSet, ns: argparse.Namespace):
@@ -334,3 +377,30 @@ out ungrouped nodes)""",
                                         include_header=False)
                 sep = "-" * 16
                 self._cmd.poutput(f"\n{sep}\n{tbl}\n{sep}\n")
+
+    @as_subcommand_to("node", "unset", unset_parser,
+                      help="unset node host var")
+    def inv_node_unset(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+        inv: Inventory = self._cmd._inventory  # type: ignore
+        if ns.node_group not in inv.groups.keys():
+            self._cmd.perror(f"[!] Invalid group name: {ns.node_group}")
+            return
+        if ns.node_name not in inv.groups[ns.node_group].nodes.keys():
+            self._cmd.perror(f"[!] Invalid node name: {ns.node_name}")
+            return
+
+        node: InventoryNode = inv.groups[ns.node_group].nodes[ns.node_name]
+
+        if ns.host_var not in node.host_vars.keys():
+            self._cmd.perror(f"[!] Invalid host var: {ns.host_var}")
+            return
+        old_value = node.host_vars[ns.host_var]
+        del node.host_vars[ns.host_var]
+        if isinstance(old_value, TaggedScalar):
+            old_value = vault.load(old_value)
+
+        self._cmd.poutput(f"[+] {ns.host_var}:")
+        self._cmd.poutput(f"    old: {old_value}")
+        self._cmd._inv_has_changed = True  # type: ignore[attr-defined]

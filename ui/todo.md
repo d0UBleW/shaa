@@ -1,9 +1,5 @@
 # TODO
 
-```
-set key value [-n node_name] [-g group_name]
-```
-
 - [x] inventory create
 - [x] inventory save
 - [x] inventory delete
@@ -13,9 +9,9 @@ set key value [-n node_name] [-g group_name]
 - [x] group list
 - [x] group info
 - [x] group edit
-- [ ] group unset group_vars
+- [x] group unset group_vars
 - [x] node edit
-- [ ] node unset group_vars
+- [x] node unset group_vars
 - [x] preset cis load
 - [x] preset cis create
 - [x] preset cis delete

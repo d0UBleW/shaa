@@ -63,26 +63,32 @@ class ShaaShell(cmd2.Cmd):
         self.prompt = "shaa> "
         self.continuation_prompt = "... "
         self.default_category = "general"
+
         self._inventory_node_cmd = inv_node_cs.inventory_node_cmd()
         self._inventory_node_subcmd = inv_node_cs.inventory_node_subcmd()
         self._inventory_group_cmd = inv_group_cs.inventory_group_cmd()
         self._inventory_group_subcmd = inv_group_cs.inventory_group_subcmd()
+
         self._cis_cmd = cis_cs.cis_cmd()
         self._cis_section_cmd = cis_cs.cis_section_cmd()
         self._cis_set_cmd = cis_cs.cis_set_cmd()
         self._cis_search_cmd = cis_cs.cis_search_cmd()
+
         self._util_cmd = util_cs.util_cmd()
         self._util_action_cmd = util_cs.util_action_cmd()
         self._util_set_cmd = util_cs.util_set_cmd()
         self._util_search_cmd = util_cs.util_search_cmd()
+
         self._oscap_cmd = oscap_cs.oscap_cmd()
         self._oscap_action_cmd = oscap_cs.oscap_action_cmd()
         self._oscap_set_cmd = oscap_cs.oscap_set_cmd()
         self._oscap_search_cmd = oscap_cs.oscap_search_cmd()
+
         self._sec_tools_cmd = sec_tools_cs.sec_tools_cmd()
         self._sec_tools_action_cmd = sec_tools_cs.sec_tools_action_cmd()
         self._sec_tools_set_cmd = sec_tools_cs.sec_tools_set_cmd()
         self._sec_tools_search_cmd = sec_tools_cs.sec_tools_search_cmd()
+
         self.register_postloop_hook(self.check_if_inv_changed)
         self.register_postloop_hook(self.check_if_cis_changed)
         self.register_postloop_hook(self.check_if_util_changed)
