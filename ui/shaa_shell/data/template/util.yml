@@ -2,10 +2,8 @@
 actions:
   chpasswd:
     title: "Change password if expired"
-    enabled: true
     vars:
       new_passwd:
-        value:
         default:
         description: |
           New password to replace expired password

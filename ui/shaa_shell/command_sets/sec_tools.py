@@ -52,7 +52,13 @@ class sec_tools_action_cmd(CommandSet):
     def sec_tools_action_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        data = self._cmd._sec_tools.list_action_and_details()  # type: ignore
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+
+        if role_sec_tools is None:
+            self._cmd.poutput("[!] No sec_tools preset is loaded")
+            return
+
+        data = role_sec_tools.list_action_and_details()  # type: ignore
         columns = [
             Column("Action", width=24),
             Column("Enabled", width=8),
@@ -61,14 +67,15 @@ class sec_tools_action_cmd(CommandSet):
         st = SimpleTable(columns)
         data_list = []
         for act, task in data:
+            enabled = role_sec_tools.get_enabled(act)
             if ns.status == "all":
-                data_list.append([act, task["enabled"], task["title"]])
+                data_list.append([act, enabled, task["title"]])
                 continue
-            if ns.status == "enabled" and task["enabled"]:
-                data_list.append([act, task["enabled"], task["title"]])
+            if ns.status == "enabled" and enabled:
+                data_list.append([act, enabled, task["title"]])
                 continue
-            if ns.status == "disabled" and not task["enabled"]:
-                data_list.append([act, task["enabled"], task["title"]])
+            if ns.status == "disabled" and not enabled:
+                data_list.append([act, enabled, task["title"]])
 
         tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")
@@ -90,7 +97,7 @@ class sec_tools_action_cmd(CommandSet):
                     self._cmd.poutput("[!] Invalid action")
                     return
 
-            role_sec_tools.actions[arg_act]["enabled"] = True
+            role_sec_tools.set_enabled(arg_act, True)
             if ns.verbose:
                 self._cmd.poutput(f"[+] {arg_act} enabled successfully")
         self._cmd._sec_tools_has_changed = True  # type: ignore[attr-defined]
@@ -109,7 +116,7 @@ class sec_tools_action_cmd(CommandSet):
                 self._cmd.poutput(f"[!] Invalid action: {arg_act}")
                 return
 
-            role_sec_tools.actions[arg_act]["enabled"] = False
+            role_sec_tools.set_enabled(arg_act, False)
             if ns.verbose:
                 self._cmd.poutput(f"[+] {arg_act} disabled successfully")
         self._cmd._sec_tools_has_changed = True  # type: ignore[attr-defined]
@@ -137,9 +144,10 @@ class sec_tools_action_cmd(CommandSet):
         for key, value in task.items():
             if key == "vars":
                 continue
-            if key == "enabled":
-                value = bool(value)
             data_list.append([key, value])
+
+        data_list.append(["enabled", role_sec_tools.get_enabled(ns.action)])
+
         tbl = st.generate_table(data_list,
                                 row_spacing=0,
                                 include_header=False)
@@ -170,7 +178,7 @@ class sec_tools_action_cmd(CommandSet):
                         default_val = "\n".join(
                             list(map(lambda v: f"- {v}", var["default"])))
 
-                user_val = var["value"]
+                user_val = role_sec_tools.get_var(ns.action, var_key)
                 # format list type variable
                 if isinstance(user_val, list):
                     if isinstance(user_val[0], str):
@@ -495,11 +503,9 @@ better tab completion"""
             self._cmd.poutput(f"    new: {val}")
             return
         else:
-            option = role_sec_tools.actions[action]["vars"][opt_key]
-            old_value = option["value"]
-            option["value"] = val
-            # type: ignore[attr-defined]
-            self._cmd._sec_tools_has_changed = True
+            old_value = role_sec_tools.get_var(action, opt_key)
+            role_sec_tools.set_var(action, opt_key, val)
+            self._cmd._sec_tools_has_changed = True  # type: ignore
             if isinstance(old_value, TaggedScalar):
                 old_value = vault.load(old_value)
             if isinstance(val, TaggedScalar):
@@ -599,11 +605,10 @@ better tab completion"""
             self._cmd.poutput(f"    default: {default}")
             return
         else:
-            old_value = option["value"]
+            old_value = role_sec_tools.get_var(action, opt_key)
             default_val = option["default"]
-            option["value"] = default_val
-            # type: ignore[attr-defined]
-            self._cmd._sec_tools_has_changed = True
+            role_sec_tools.set_var(action, opt_key, default_val)
+            self._cmd._sec_tools_has_changed = True  # type: ignore
 
             if isinstance(old_value, TaggedScalar):
                 old_value = vault.load(old_value)

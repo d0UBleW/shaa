@@ -62,11 +62,11 @@ def convert_role_vars_to_ansible_vars(role_type: Text,
         return {}
     vars = {}
     for action, task in role.actions.items():
-        vars[action] = task["enabled"]
+        vars[action] = role.get_enabled(action)
         if not role.has_settable_vars(action):
             continue
         for var_key, var in task["vars"].items():
-            val = var["value"]
+            val = role.get_var(action, var_key)
             if val is None:
                 val = var["default"]
             if "." in var_key:
@@ -140,7 +140,7 @@ def generate_role_tags(role_type: Text,
         return None
     tags = []
     for action in role.actions.keys():
-        if not role.actions[action]["enabled"]:
+        if not role.get_enabled(action):
             continue
         tags.append(action)
     return tags

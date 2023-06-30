@@ -309,6 +309,7 @@ sections:
         default: "*"
         description: |-
           cron setting for weekday frequency
+          Possible value: 0-7 (0 and 7 is Sunday), * for every weekday
         value_type: range
         range_start: 0
         range_end: 7
@@ -318,6 +319,7 @@ sections:
         default: "*"
         description: |
           cron setting for month frequency
+          Possible value: 1-12, * for every month
         value_type: range
         range_start: 1
         range_end: 12
@@ -327,6 +329,7 @@ sections:
         default: "*"
         description: |
           cron setting for day frequency
+          Possible value: number of days in a month, * for every day
         value_type: range
         range_start: 1
         range_end: 31
@@ -336,6 +339,7 @@ sections:
         default: "1"
         description: |
           cron setting for hour frequency
+          Possible value: 0-23, * for every hour
         value_type: range
         range_start: 0
         range_end: 23
@@ -345,6 +349,7 @@ sections:
         default: "*"
         description: |
           cron setting for minute frequency
+          Possible value: 0-59, * for every minute
         value_type: range
         range_start: 0
         range_end: 59

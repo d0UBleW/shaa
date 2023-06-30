@@ -44,16 +44,58 @@ class Role:
         else:
             raise NotImplementedError(f"TODO: {role_type}")
 
-        if data is None:
-            with self.template_file.open("r") as f:
-                data = yaml.load(f)
+        with self.template_file.open("r") as f:
+            template = yaml.load(f)
 
-        if self.root_key not in data.keys():
+        if self.root_key not in template.keys():
             err_msg = f"[!] Invalid {self.role_type} preset file:"
             err_msg += f" missing `{self.root_key}` key"
             raise KeyError(err_msg)
 
-        self.actions = data[self.root_key]
+        self.actions = template[self.root_key]
+
+        self.conf: Dict[Text, Dict[Text, Any]] = {}
+        if data is not None:
+            self.conf = data
+
+    def get_enabled(self, action: Text) -> bool:
+        enabled = False
+        if action not in self.conf.keys():
+            return enabled
+
+        conf = self.conf[action]
+        if "enabled" not in conf.keys():
+            return enabled
+
+        return conf["enabled"]
+
+    def set_enabled(self, action: Text, enabled: bool) -> None:
+        if action not in self.conf.keys():
+            self.conf[action] = {}
+
+        self.conf[action]["enabled"] = enabled
+
+    def get_var(self, action: Text, var_key: Text) -> Optional[Any]:
+        if action not in self.conf.keys():
+            return None
+
+        conf = self.conf[action]
+        if "vars" not in conf.keys():
+            return None
+
+        if var_key not in conf["vars"]:
+            return None
+
+        return conf["vars"][var_key]
+
+    def set_var(self, action: Text, var_key: Text, var_val: Any):
+        if action not in self.conf.keys():
+            self.conf[action] = {}
+
+        if "vars" not in self.conf[action].keys():
+            self.conf[action]["vars"] = {}
+
+        self.conf[action]["vars"][var_key] = var_val
 
     def is_valid_action(self, action: Text) -> bool:
         return action in self.actions.keys()
@@ -163,13 +205,9 @@ class Role:
 
         file_path = self.preset_path.joinpath(f"{file_name}.yml").resolve()
 
-        data = {
-            self.root_key: self.actions
-        }
-
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with file_path.open('w') as f:
-            yaml.dump(data, f)
+            yaml.dump(self.conf, f)
 
         return True
 
@@ -204,13 +242,7 @@ class Role:
         with file_path.open("r") as f:
             data: Dict = yaml.load(f)
 
-        if role.root_key not in data.keys():
-            err_msg = f"[!] Invalid {role_type} preset file:"
-            err_msg += f" missing `{role.root_key}` key"
-            print(err_msg)
-            return None
-
-        role.actions = data[role.root_key]
+        role.conf = data
         return role
 
     @staticmethod
