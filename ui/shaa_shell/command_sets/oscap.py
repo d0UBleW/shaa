@@ -647,6 +647,11 @@ class oscap_search_cmd(CommandSet):
     def oscap_search(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+        if role_oscap is None:
+            self._cmd.poutput("[!] No oscap preset is loaded")
+            return
+
         pattern = ns.pattern
         if ns.ignore_case:
             pattern = f"(?i){pattern}"
@@ -659,7 +664,8 @@ class oscap_search_cmd(CommandSet):
         st = SimpleTable(columns)
         data_list = []
         for act, task in data:
-            data_list.append([act, task["enabled"], task["title"]])
+            enabled = role_oscap.get_enabled(act)
+            data_list.append([act, enabled, task["title"]])
 
         tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")

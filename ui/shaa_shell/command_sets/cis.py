@@ -671,10 +671,16 @@ class cis_search_cmd(CommandSet):
     def cis_search(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore
+        if cis is None:
+            self._cmd.poutput("[!] No CIS preset is loaded")
+            return
+
         pattern = ns.pattern
         if ns.ignore_case:
             pattern = f"(?i){pattern}"
-        data = self._cmd._cis.list_section_and_details(search_query=pattern)  # type: ignore  # noqa: E501
+        data = cis.list_section_and_details(search_query=pattern)
         columns = [
             Column("Section ID", width=10),
             Column("Enabled", width=8),
@@ -683,7 +689,8 @@ class cis_search_cmd(CommandSet):
         st = SimpleTable(columns)
         data_list = []
         for s_id, s in data:
-            data_list.append([s_id, s["enabled"], s["title"]])
+            enabled = cis.get_enabled(s_id)
+            data_list.append([s_id, enabled, s["title"]])
 
         tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")

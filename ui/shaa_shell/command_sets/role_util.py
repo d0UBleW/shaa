@@ -647,10 +647,15 @@ class util_search_cmd(CommandSet):
     def util_search(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        role_util: Optional[Role] = self._cmd._util  # type: ignore
+        if role_util is None:
+            self._cmd.poutput("[!] No util preset is loaded")
+            return
+
         pattern = ns.pattern
         if ns.ignore_case:
             pattern = f"(?i){pattern}"
-        data = self._cmd._util.list_action_and_details(search_query=pattern)  # type: ignore  # noqa: E501
+        data = role_util.list_action_and_details(search_query=pattern)
         columns = [
             Column("Action", width=24),
             Column("Enabled", width=8),
@@ -659,7 +664,8 @@ class util_search_cmd(CommandSet):
         st = SimpleTable(columns)
         data_list = []
         for act, task in data:
-            data_list.append([act, task["enabled"], task["title"]])
+            enabled = role_util.get_enabled(act)
+            data_list.append([act, enabled, task["title"]])
 
         tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")

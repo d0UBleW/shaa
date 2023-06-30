@@ -649,6 +649,11 @@ class sec_tools_search_cmd(CommandSet):
     def sec_tools_search(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
+        if role_sec_tools is None:
+            self._cmd.poutput("[!] No sec_tools preset is loaded")
+            return
+
         pattern = ns.pattern
         if ns.ignore_case:
             pattern = f"(?i){pattern}"
@@ -661,7 +666,8 @@ class sec_tools_search_cmd(CommandSet):
         st = SimpleTable(columns)
         data_list = []
         for act, task in data:
-            data_list.append([act, task["enabled"], task["title"]])
+            enabled = role_sec_tools.get_enabled(act)
+            data_list.append([act, enabled, task["title"]])
 
         tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")
