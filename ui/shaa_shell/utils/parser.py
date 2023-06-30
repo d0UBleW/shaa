@@ -12,6 +12,8 @@ clear_parser = Cmd2ArgumentParser()
 
 config_parser = Cmd2ArgumentParser()
 
+unload_parser = Cmd2ArgumentParser()
+
 inventory_parser = Cmd2ArgumentParser()
 inventory_parser.add_subparsers(title="action", help="action on inventory")
 

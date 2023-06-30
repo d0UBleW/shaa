@@ -20,11 +20,13 @@ from shaa_shell.utils.parser import (
     play_parser,
     clear_parser,
     config_parser,
+    unload_parser,
 )
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.role import Role
 from shaa_shell.utils.profile import Profile
+from shaa_shell.utils.preset import PRESETS
 from shaa_shell.utils import play
 
 STARTUP_SCRIPT = '~/.shaa_shell_rc'
@@ -158,6 +160,14 @@ class ShaaShell(cmd2.Cmd):
         else:
             self.poutput("No subcommand was provided")
             self.do_help("profile")
+
+    @cmd2.with_argparser(unload_parser)
+    @cmd2.with_category("general")
+    def do_unload(self, ns: argparse.Namespace):
+        self.do_inventory("unload")
+        for preset in PRESETS:
+            self.do_preset(f"{preset} unload")
+        self.do_profile("unload")
 
     @cmd2.with_argparser(play_parser)
     @cmd2.with_category("play")

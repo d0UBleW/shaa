@@ -127,6 +127,9 @@ class profile_subcmd(CommandSet):
                      profile: Optional[Profile] = None):
         if self._cmd is None:
             return
+
+        self._cmd.do_unload("")  # type: ignore
+
         self._cmd.check_if_profile_changed()  # type: ignore
 
         if profile is not None:
@@ -159,6 +162,9 @@ class profile_subcmd(CommandSet):
             return
         self._cmd.check_if_profile_changed()  # type: ignore
         self._cmd._profile = None  # type: ignore
+        self._cmd.do_inventory("unload")  # type: ignore
+        for preset in PRESETS:
+            self._cmd.do_preset(f"{preset} unload")  # type: ignore
 
     @as_subcommand_to("profile", "list", list_parser,
                       aliases=["ls"],
