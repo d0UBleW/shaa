@@ -22,15 +22,57 @@ class CIS:
     def __init__(self, name: Text, data: Optional[Dict] = None):
         self.name = name
 
-        if data is None:
-            with CIS_TEMPLATE_FILE.open("r") as f:
-                data = yaml.load(f)
+        with CIS_TEMPLATE_FILE.open("r") as f:
+            template = yaml.load(f)
 
-        if "sections" not in data.keys():
+        if "sections" not in template.keys():
             raise KeyError(
-                "[!] Invalid CIS preset file: missing `sections` key"
+                "[!] Invalid CIS preset template file: missing `sections` key"
             )
-        self.sections = data["sections"]
+        self.sections = template["sections"]
+
+        self.conf: Dict[Text, Dict[Text, Any]] = {}
+        if data is not None:
+            self.conf = data
+
+    def get_enabled(self, section_id: Text) -> bool:
+        enabled = False
+        if section_id not in self.conf.keys():
+            return enabled
+
+        conf = self.conf[section_id]
+        if "enabled" not in conf.keys():
+            return enabled
+
+        return conf["enabled"]
+
+    def set_enabled(self, section_id: Text, enabled: bool) -> None:
+        if section_id not in self.conf.keys():
+            self.conf[section_id] = {}
+
+        self.conf[section_id]["enabled"] = enabled
+
+    def get_var(self, section_id: Text, var_key: Text) -> Optional[Any]:
+        if section_id not in self.conf.keys():
+            return None
+
+        conf = self.conf[section_id]
+        if "vars" not in conf.keys():
+            return None
+
+        if var_key not in conf["vars"]:
+            return None
+
+        return conf["vars"][var_key]
+
+    def set_var(self, section_id: Text, var_key: Text, var_val: Any):
+        if section_id not in self.conf.keys():
+            self.conf[section_id] = {}
+
+        if "vars" not in self.conf[section_id].keys():
+            self.conf[section_id]["vars"] = {}
+
+        self.conf[section_id]["vars"][var_key] = var_val
 
     @staticmethod
     def is_subsection(parent: Text, child: Text) -> bool:
@@ -187,13 +229,9 @@ class CIS:
 
         file_path = CIS_PRESET_PATH.joinpath(f"{file_name}.yml").resolve()
 
-        data = {
-            "sections": self.sections
-        }
-
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with file_path.open('w') as f:
-            yaml.dump(data, f)
+            yaml.dump(self.conf, f)
 
         return True
 
@@ -226,10 +264,6 @@ class CIS:
         file_path = CIS_PRESET_PATH.joinpath(f"{name}.yml").resolve()
         with file_path.open("r") as f:
             data: Dict = yaml.load(f)
-
-        if "sections" not in data.keys():
-            print("[!] Invalid CIS preset file: missing `sections` key")
-            return None
 
         cis = CIS(name, data)
         return cis

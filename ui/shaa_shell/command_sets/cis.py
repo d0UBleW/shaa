@@ -70,8 +70,14 @@ class cis_section_cmd(CommandSet):
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        data = self._cmd._cis.list_section_and_details(  # type: ignore
-            ns.section_id)
+
+        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+
+        if cis is None:
+            self._cmd.poutput("[!] No CIS preset is loaded")
+            return
+
+        data = cis.list_section_and_details(ns.section_id)
         columns = [
             Column("Section ID", width=10),
             Column("Enabled", width=8),
@@ -80,14 +86,15 @@ class cis_section_cmd(CommandSet):
         st = SimpleTable(columns)
         data_list = []
         for s_id, s in data:
+            enabled = cis.get_enabled(s_id)
             if ns.status == "all":
-                data_list.append([s_id, s["enabled"], s["title"]])
+                data_list.append([s_id, enabled, s["title"]])
                 continue
-            if ns.status == "enabled" and s["enabled"]:
-                data_list.append([s_id, s["enabled"], s["title"]])
+            if ns.status == "enabled" and enabled:
+                data_list.append([s_id, enabled, s["title"]])
                 continue
-            if ns.status == "disabled" and not s["enabled"]:
-                data_list.append([s_id, s["enabled"], s["title"]])
+            if ns.status == "disabled" and not enabled:
+                data_list.append([s_id, enabled, s["title"]])
 
         tbl = st.generate_table(data_list, row_spacing=0)
         self._cmd.poutput(f"\n{tbl}\n")
@@ -95,8 +102,10 @@ class cis_section_cmd(CommandSet):
     def cis_section_enable(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
         if cis is None:
+            self._cmd.poutput("[!] No CIS preset is loaded")
             return
 
         valid_s_id = [
@@ -124,11 +133,11 @@ class cis_section_cmd(CommandSet):
                     s_profile = arg_s_id.replace("_", " ").title()
                     if s_profile not in section["profile"]:
                         continue
-                    cis.sections[s_id]["enabled"] = True
+                    cis.set_enabled(s_id, True)
                     if ns.verbose:
                         self._cmd.poutput(f"[+] {s_id} enabled successfully")
                 else:
-                    cis.sections[s_id]["enabled"] = True
+                    cis.set_enabled(s_id, True)
                     if ns.verbose:
                         self._cmd.poutput(f"[+] {s_id} enabled successfully")
         self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
@@ -148,7 +157,7 @@ class cis_section_cmd(CommandSet):
 
             for s_id in cis.sections.keys():
                 if CIS.is_subsection(arg_s_id, s_id) or arg_s_id == "all":
-                    cis.sections[s_id]["enabled"] = False
+                    cis.set_enabled(s_id, False)
                     if ns.verbose:
                         self._cmd.poutput(f"[+] {s_id} disabled successfully")
         self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
@@ -172,9 +181,10 @@ class cis_section_cmd(CommandSet):
         for key, value in section.items():
             if key == "vars":
                 continue
-            if key == "enabled":
-                value = bool(value)
             data_list.append([key, value])
+
+        data_list.append(["enabled", cis.get_enabled(ns.section_id)])
+
         tbl = st.generate_table(data_list,
                                 row_spacing=0,
                                 include_header=False)
@@ -200,7 +210,7 @@ class cis_section_cmd(CommandSet):
                     if isinstance(default_val[0], str):
                         default_val = "\n".join(
                             list(map(lambda v: f"- {v}", var["default"])))
-                user_val = var["value"]
+                user_val = cis.get_var(ns.section_id, var_key)
                 if isinstance(user_val, list):
                     if isinstance(user_val[0], str):
                         user_val = "\n".join(
@@ -527,9 +537,8 @@ better tab completion"""
             self._cmd.poutput(f"    new: {val}")
             return
         else:
-            option = cis.sections[s_id]["vars"][opt_key]
-            old_value = option["value"]
-            option["value"] = val
+            old_value = cis.get_var(s_id, opt_key)
+            cis.set_var(s_id, opt_key, val)
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
             if isinstance(old_value, TaggedScalar):
                 old_value = vault.load(old_value)
@@ -630,9 +639,9 @@ better tab completion"""
             self._cmd.poutput(f"    default: {default}")
             return
         else:
-            old_value = option["value"]
+            old_value = cis.get_var(s_id, opt_key)
             default_val = option["default"]
-            option["value"] = default_val
+            cis.set_var(s_id, opt_key, default_val)
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
 
             if isinstance(old_value, TaggedScalar):

@@ -35,11 +35,11 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
     if cis is None:
         return {}
     vars = {}
-    for section_id, section in cis.sections.items():
-        vars[section_var(section_id)] = section["enabled"]
+    for s_id, section in cis.sections.items():
+        vars[section_var(s_id)] = cis.get_enabled(s_id)
         if "vars" in section.keys() and section["vars"] is not None:
             for var_key, var in section["vars"].items():
-                val = var["value"]
+                val = cis.get_var(s_id, var_key)
                 if val is None:
                     val = var["default"]
                 # for variables with nested key
@@ -47,8 +47,8 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
                 if "." in var_key:
                     parent, _, child = var_key.partition(".")
                     if parent not in vars:
-                        vars[parent] = {}
-                    vars[parent][child] = val
+                        vars[parent] = {}  # type: ignore[assignment]
+                    vars[parent][child] = val  # type: ignore[index]
                 else:
                     vars[var_key] = val
 
@@ -121,7 +121,7 @@ def generate_cis_tags(pre_name: Optional[Text]) -> Optional[List]:
     for s_id in cis.sections.keys():
         if "subsections" in cis.sections[s_id].keys():
             continue
-        if not cis.sections[s_id]["enabled"]:
+        if not cis.get_enabled(s_id):
             continue
         if s_id.count('.') < 2:
             tags.append(f"{s_id}.x")

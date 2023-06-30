@@ -2,7 +2,6 @@
 sections:
   "1":
     title: Initial Setup
-    enabled: true
     subsections:
       - "1.1"
       - "1.2"
@@ -15,7 +14,6 @@ sections:
 
   "1.1":
     title: Filesystem Configuration
-    enabled: true
     subsections:
       - 1.1.1
       - 1.1.2
@@ -43,7 +41,6 @@ sections:
 
   1.1.1:
     title: Disable unused filesystems
-    enabled: true
     subsections:
       - "1.1.1.1"
       - "1.1.1.2"
@@ -56,7 +53,6 @@ sections:
 
   1.1.1.1:
     title: Ensure mounting of cramfs filesytems is disabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -64,7 +60,6 @@ sections:
 
   1.1.1.2:
     title: Ensure mounting of freevxfs filesystems is disabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -72,7 +67,6 @@ sections:
 
   1.1.1.3:
     title: Ensure mounting of jffs2 filesystems is disabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -80,7 +74,6 @@ sections:
 
   1.1.1.4:
     title: Ensure mounting of hfs filesystems is disabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -88,7 +81,6 @@ sections:
 
   1.1.1.5:
     title: Ensure mounting of hfsplus filesystems is disabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -96,7 +88,6 @@ sections:
 
   1.1.1.6:
     title: Ensure mounting of squashfs filesystems is disabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -104,7 +95,6 @@ sections:
 
   1.1.1.7:
     title: Ensure mounting of udf filesystems is disabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -112,7 +102,6 @@ sections:
 
   1.1.1.8:
     title: Ensure mounting of FAT filesystems is limited
-    enabled: true
     profile:
       - Level 2 - Server
       - Level 2 - Workstation
@@ -120,7 +109,6 @@ sections:
 
   1.1.2:
     title: Ensure /tmp is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -128,7 +116,6 @@ sections:
 
   1.1.3:
     title: Ensure nodev option set on /tmp partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -136,7 +123,6 @@ sections:
 
   1.1.4:
     title: Ensure nosuid option set on /tmp partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -144,7 +130,6 @@ sections:
 
   1.1.5:
     title: Ensure noexec option set on /tmp partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -152,7 +137,6 @@ sections:
 
   1.1.6:
     title: Ensure separate partition exists for /var
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -160,7 +144,6 @@ sections:
 
   1.1.7:
     title: Ensure separate partition exists for /var/tmp
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -168,7 +151,6 @@ sections:
 
   1.1.8:
     title: Ensure nodev option set on /var/tmp partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -176,7 +158,6 @@ sections:
 
   1.1.9:
     title: Ensure nosuid option set on /var/tmp partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -184,7 +165,6 @@ sections:
 
   1.1.10:
     title: Ensure noexec option set on /var/tmp partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -192,7 +172,6 @@ sections:
 
   1.1.11:
     title: Ensure noexec option set on /var/tmp partition
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -200,7 +179,6 @@ sections:
 
   1.1.12:
     title: Ensure noexec option set on /var/tmp partition
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -208,7 +186,6 @@ sections:
 
   1.1.13:
     title: Ensure separate parition exists for /home
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -216,7 +193,6 @@ sections:
 
   1.1.14:
     title: Ensure nodev option set on /home partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -224,7 +200,6 @@ sections:
 
   1.1.15:
     title: Ensure nodev option set on /dev/shm partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -232,7 +207,6 @@ sections:
 
   1.1.16:
     title: Ensure nosuid option set on /dev/shm partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -240,7 +214,6 @@ sections:
 
   1.1.17:
     title: Ensure noexec option set on /dev/shm partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -248,7 +221,6 @@ sections:
 
   1.1.18:
     title: Ensure nodev option set on removable media partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -256,7 +228,6 @@ sections:
 
   1.1.19:
     title: Ensure nosuid option set on removable media partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -264,7 +235,6 @@ sections:
 
   1.1.20:
     title: Ensure noexec option set on removable media partition
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -272,7 +242,6 @@ sections:
 
   1.1.21:
     title: Ensure sticky bit is set on all world-writable directories
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -280,7 +249,6 @@ sections:
 
   1.1.22:
     title: Disable automounting
-    enabled: true
     profile:
       - Level 1 Server
       - Level 2 Workstation
@@ -288,7 +256,6 @@ sections:
 
   1.1.23:
     title: Disable USB Storage
-    enabled: true
     profile:
       - Level 1 Server
       - Level 2 Workstation
@@ -296,14 +263,12 @@ sections:
 
   "1.2":
     title: Configure Software Update
-    enabled: true
     subsections:
       - 1.2.1
       - 1.2.2
 
   1.2.1:
     title: Ensure package manager repositories are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -311,7 +276,6 @@ sections:
 
   1.2.2:
     title: Ensure GPG keys are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -319,14 +283,12 @@ sections:
 
   "1.3":
     title: Filesystem Integrity Checking
-    enabled: true
     subsections:
       - 1.3.1
       - 1.3.2
 
   1.3.1:
     title: Ensure AIDE is installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -334,67 +296,55 @@ sections:
 
   1.3.2:
     title: Ensure filesystem integrity is regularly checked
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       aide_cron_user:
-        value:
         default: root
         description: user who will run the cron job
         value_type: single
         valid:
       aide_cron_weekday:
-        value:
         default: "*"
         description: |-
           cron setting for weekday frequency
-          Possible value: 0-7 (0 and 7 is Sunday), * for every weekday
         value_type: range
         range_start: 0
         range_end: 7
         valid:
           - "*"
       aide_cron_month:
-        value:
         default: "*"
         description: |
           cron setting for month frequency
-          Possible value: 1-12, * for every month
         value_type: range
         range_start: 1
         range_end: 12
         valid:
           - "*"
       aide_cron_day:
-        value:
         default: "*"
         description: |
           cron setting for day frequency
-          Possible value: number of days in a month, * for every day
         value_type: range
         range_start: 1
         range_end: 31
         valid:
           - "*"
       aide_cron_hour:
-        value:
         default: "1"
         description: |
           cron setting for hour frequency
-          Possible value: 0-23, * for every hour
         value_type: range
         range_start: 0
         range_end: 23
         valid:
           - "*"
       aide_cron_minute:
-        value:
         default: "*"
         description: |
           cron setting for minute frequency
-          Possible value: 0-59, * for every minute
         value_type: range
         range_start: 0
         range_end: 59
@@ -403,7 +353,6 @@ sections:
 
   "1.4":
     title: Secure Boot Settings
-    enabled: false
     subsections:
       - 1.4.1
       - 1.4.2
@@ -412,7 +361,6 @@ sections:
 
   1.4.1:
     title: Ensure permissions on bootloader config are configured
-    enabled: false
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -420,20 +368,17 @@ sections:
 
   1.4.2:
     title: Ensure bootloader password is set
-    enabled: false
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       bootloader_superuser:
-        value:
         default: "root"
         description: |
           Username to access bootloader
         value_type: single
         valid:
       bootloader_password:
-        value:
         default:
         description: |
           Password to access bootloader
@@ -442,13 +387,11 @@ sections:
 
   1.4.3:
     title: Ensure authentication required for single user mode
-    enabled: false
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       root_password:
-        value:
         default:
         description: |
           Password for root user
@@ -457,7 +400,6 @@ sections:
 
   1.4.4:
     title: Ensure interactive boot is not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -465,7 +407,6 @@ sections:
 
   "1.5":
     title: Additional Process Hardening
-    enabled: true
     subsections:
       - 1.5.1
       - 1.5.2
@@ -474,7 +415,6 @@ sections:
 
   1.5.1:
     title: Ensure core dumps are restricted
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -482,7 +422,6 @@ sections:
 
   1.5.2:
     title: Ensure XD/NX support is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -490,7 +429,6 @@ sections:
 
   1.5.3:
     title: Ensure address space layout randomization (ASLR) is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -498,7 +436,6 @@ sections:
 
   1.5.4:
     title: Ensure prelink is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -506,14 +443,12 @@ sections:
 
   "1.6":
     title: Mandatory Access Control
-    enabled: true
     subsections:
       - 1.6.1
       - 1.6.2
       - 1.6.3
     vars:
       debian_mac:
-        value:
         default: apparmor
         description: |
           Mandatory Access Control (MAC) for Debian-based distribution family
@@ -522,7 +457,6 @@ sections:
           - apparmor
           - selinux
       suse_mac:
-        value:
         default: selinux
         description: |
           Mandatory Access Control (MAC) for Suse-based distribution family
@@ -531,7 +465,6 @@ sections:
           - apparmor
           - selinux
       redhat_mac:
-        value:
         default: selinux
         description: |
           Mandatory Access Control (MAC) for RedHat-based distribution family
@@ -541,14 +474,12 @@ sections:
 
   1.6.1:
     title: Ensure Mandatory Access Control Software is installed
-    enabled: true
     subsections:
       - 1.6.1.1
     vars:
 
   1.6.1.1:
     title: Ensure mounting of cramfs filesystems is disabled
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -556,7 +487,6 @@ sections:
 
   1.6.2:
     title: Configure SELinux
-    enabled: true
     subsections:
       - 1.6.2.1
       - 1.6.2.2
@@ -567,7 +497,6 @@ sections:
 
   1.6.2.1:
     title: Ensure SELinux is not disabled in bootloader configuration
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -575,7 +504,6 @@ sections:
 
   1.6.2.2:
     title: Ensure the SELinux state is enforcing
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -583,13 +511,11 @@ sections:
 
   1.6.2.3:
     title: Ensure SELinux policy is configured
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
     vars:
       selinuxtype:
-        value:
         default: "targeted"
         description: |
           SELinux type, possible values: targeted, strict, mls
@@ -601,14 +527,12 @@ sections:
 
   1.6.2.4:
     title: Ensure SETroubleshoot is not installed
-    enabled: true
     profile:
       - Level 2 Server
     vars:
 
   1.6.2.5:
     title: Ensure the MCS Translation Service (mcstrans) is not installed
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -616,7 +540,6 @@ sections:
 
   1.6.2.6:
     title: Ensure no unconfined daemon exist
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -624,14 +547,12 @@ sections:
 
   1.6.3:
     title: Configure AppArmor
-    enabled: true
     subsections:
       - 1.6.3.1
       - 1.6.3.2
 
   1.6.3.1:
     title: Ensure AppArmor is not disabled in bootloader configuration
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -639,7 +560,6 @@ sections:
 
   1.6.3.2:
     title: Ensure AppArmor is not disabled in bootloader configuration
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -647,14 +567,12 @@ sections:
 
   "1.7":
     title: Warning Banners
-    enabled: true
     subsections:
       - 1.7.1
       - 1.7.2
 
   1.7.1:
     title: Command Line Warning Banners
-    enabled: true
     subsections:
       - 1.7.1.1
       - 1.7.1.2
@@ -665,13 +583,11 @@ sections:
 
   1.7.1.1:
     title: Ensure message of the day is configured properly
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       etc_motd:
-        value:
         default: "Hello"
         description: |
           Content of /etc/motd
@@ -680,7 +596,6 @@ sections:
 
   1.7.1.2:
     title: Ensure local login warning banner is configured properly
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -688,7 +603,6 @@ sections:
 
   1.7.1.3:
     title: Ensure remote login warning banner is configured properly
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -696,7 +610,6 @@ sections:
 
   1.7.1.4:
     title: Ensure permissions on /etc/motd are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -704,7 +617,6 @@ sections:
 
   1.7.1.5:
     title: Ensure permissions on /etc/issue are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -712,7 +624,6 @@ sections:
 
   1.7.1.6:
     title: Ensure permissions on /etc/issue.net are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -720,13 +631,11 @@ sections:
 
   1.7.2:
     title: Ensure GDM login banner is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       gdm_banner_message:
-        value:
         default: >-
           Authorized uses only. All activity may be monitored and reported
         description: |
@@ -737,7 +646,6 @@ sections:
   "1.8":
     title: >-
       Ensure update, patches, and additional security software are installed
-    enabled: false
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -745,7 +653,6 @@ sections:
 
   "2":
     title: Services
-    enabled: true
     subsections:
       - "2.1"
       - "2.2"
@@ -753,7 +660,6 @@ sections:
 
   "2.1":
     title: inetd Services
-    enabled: true
     subsections:
       - 2.1.1
       - 2.1.2
@@ -768,7 +674,6 @@ sections:
 
   2.1.1:
     title: Ensure chargen services are not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -776,7 +681,6 @@ sections:
 
   2.1.2:
     title: Ensure daytime services are not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -784,7 +688,6 @@ sections:
 
   2.1.3:
     title: Ensure discard services are not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -792,7 +695,6 @@ sections:
 
   2.1.4:
     title: Ensure echo services are not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -800,7 +702,6 @@ sections:
 
   2.1.5:
     title: Ensure time services are not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -808,7 +709,6 @@ sections:
 
   2.1.6:
     title: Ensure rsh server is not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -816,7 +716,6 @@ sections:
 
   2.1.7:
     title: Ensure talk server is not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -824,7 +723,6 @@ sections:
 
   2.1.8:
     title: Ensure telnet server is not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -832,7 +730,6 @@ sections:
 
   2.1.9:
     title: Ensure tftp server is not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -840,7 +737,6 @@ sections:
 
   2.1.10:
     title: Ensure xinetd is not enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -848,7 +744,6 @@ sections:
 
   "2.2":
     title: Special Purpose Services
-    enabled: true
     subsections:
       - 2.2.1
       - 2.2.2
@@ -870,7 +765,6 @@ sections:
 
   2.2.1:
     title: Time Synchronization
-    enabled: true
     subsections:
       - 2.2.1.1
       - 2.2.1.2
@@ -879,13 +773,11 @@ sections:
 
   2.2.1.1:
     title: Ensure time synchronization is in use
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
     vars:
       time_synchronization:
-        value:
         default: systemd-timesyncd
         description: |
           Time synchronization service name,
@@ -900,20 +792,17 @@ sections:
 
   2.2.1.2:
     title: Ensure ntp is configured
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
     vars:
       time_sync_remote_server:
-        value:
         default: "time1.google.com"
         description: |
           NTP remote server to sync with
         value_type: single
         valid:
       ntp_options:
-        value:
         default:
           - kod
           - nomodify
@@ -932,7 +821,6 @@ sections:
 
   2.2.1.3:
     title: Ensure chrony is configured
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -940,13 +828,11 @@ sections:
 
   2.2.1.4:
     title: Ensure systemd-timesyncd is configured
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
     vars:
       systemd_timesyncd.main_ntp:
-        value:
         default:
           - time1.google.com
           - time2.google.com
@@ -955,7 +841,6 @@ sections:
         value_type: list
         valid:
       systemd_timesyncd.fallback_ntp:
-        value:
         default:
           - time3.google.com
           - time4.google.com
@@ -965,7 +850,6 @@ sections:
         value_type: list
         valid:
       systemd_timesyncd.root_distance_max:
-        value:
         default: "1"
         description: |
           Maximum acceptable root distance, i.e. the maximum estimated time
@@ -978,14 +862,12 @@ sections:
 
   2.2.2:
     title: Ensure X Window System is not installed
-    enabled: true
     profile:
       - Level 1 - Server
     vars:
 
   2.2.3:
     title: Ensure Avahi Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -993,7 +875,6 @@ sections:
 
   2.2.4:
     title: Ensure CUPS is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1001,7 +882,6 @@ sections:
 
   2.2.5:
     title: Ensure DHCP Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1009,7 +889,6 @@ sections:
 
   2.2.6:
     title: Ensure LDAP Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1017,7 +896,6 @@ sections:
 
   2.2.7:
     title: Ensure NFS and RPC is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1025,7 +903,6 @@ sections:
 
   2.2.8:
     title: Ensure DNS Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1033,7 +910,6 @@ sections:
 
   2.2.9:
     title: Ensure FTP Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1041,7 +917,6 @@ sections:
 
   2.2.10:
     title: Ensure HTTP Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1049,7 +924,6 @@ sections:
 
   2.2.11:
     title: Ensure IMAP and POP3 Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1057,7 +931,6 @@ sections:
 
   2.2.12:
     title: Ensure Samba is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1065,7 +938,6 @@ sections:
 
   2.2.13:
     title: Ensure HTTP Proxy Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1073,7 +945,6 @@ sections:
 
   2.2.14:
     title: Ensure SNMP Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1081,7 +952,6 @@ sections:
 
   2.2.15:
     title: Ensure mail transfer agent is configured for local-only mode
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1089,7 +959,6 @@ sections:
 
   2.2.16:
     title: Ensure rsync service is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1097,7 +966,6 @@ sections:
 
   2.2.17:
     title: Ensure NIS Server is not enabled
-    enabled: true
     profile:
       - Level 1 - Server
       - Level 1 - Workstation
@@ -1105,7 +973,6 @@ sections:
 
   "2.3":
     title: Service Clients
-    enabled: true
     subsections:
       - 2.3.1
       - 2.3.2
@@ -1115,7 +982,6 @@ sections:
 
   2.3.1:
     title: Ensure NIS client is not installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1123,7 +989,6 @@ sections:
 
   2.3.2:
     title: Ensure rsh client is not installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1131,7 +996,6 @@ sections:
 
   2.3.3:
     title: Ensure talk client is not installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1139,7 +1003,6 @@ sections:
 
   2.3.4:
     title: Ensure telnet client is not installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1147,7 +1010,6 @@ sections:
 
   2.3.5:
     title: Ensure LDAP client is not installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1155,7 +1017,6 @@ sections:
 
   "3":
     title: Network Configuration
-    enabled: true
     subsections:
       - "3.1"
       - "3.2"
@@ -1167,14 +1028,12 @@ sections:
 
   "3.1":
     title: Network Parameters (Host Only)
-    enabled: true
     subsections:
       - 3.1.1
       - 3.1.2
 
   3.1.1:
     title: Ensure IP forwarding is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1182,7 +1041,6 @@ sections:
 
   3.1.2:
     title: Ensure packet redirect sending is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1190,7 +1048,6 @@ sections:
 
   "3.2":
     title: Network Parameters (Host and Router)
-    enabled: true
     subsections:
       - 3.2.1
       - 3.2.2
@@ -1204,7 +1061,6 @@ sections:
 
   3.2.1:
     title: Ensure source routed packets are not accepted
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1212,7 +1068,6 @@ sections:
 
   3.2.2:
     title: Ensure ICMP redirects are not accepted
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1220,7 +1075,6 @@ sections:
 
   3.2.3:
     title: Ensure secure ICMP redirects are not accepted
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1228,7 +1082,6 @@ sections:
 
   3.2.4:
     title: Ensure suspicious packets are logged
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1236,7 +1089,6 @@ sections:
 
   3.2.5:
     title: Ensure broadcast ICMP requests are ignored
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1244,7 +1096,6 @@ sections:
 
   3.2.6:
     title: Ensure bogus ICMP responses are ignored
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1252,7 +1103,6 @@ sections:
 
   3.2.7:
     title: Ensure Reverse Path Filtering is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1260,7 +1110,6 @@ sections:
 
   3.2.8:
     title: Ensure TCP SYN Cookies is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1268,7 +1117,6 @@ sections:
 
   3.2.9:
     title: Ensure IPv6 router advertisements are not accepted
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1276,7 +1124,6 @@ sections:
 
   "3.3":
     title: TCP Wrappers
-    enabled: true
     subsections:
       - 3.3.1
       - 3.3.2
@@ -1285,22 +1132,18 @@ sections:
 
   3.3.1:
     title: Ensure TCP Wrappers is installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
 
-  # TODO:
   3.3.2:
     title: Ensure /etc/hosts.allow is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       hosts_allow:
-        value:
         default:
           "ALL EXCEPT in.fingerd":
             - 192.168.0.0/255.255.255.0
@@ -1313,12 +1156,10 @@ sections:
             - 172.16.0.0/12
         description: |
           TCP wrappers rule for allowing hosts
-          Example on how to set this value:
           cis set -s 3.3.2 "ALL EXCEPT in.fingerd" .example.com,192.168.2.* "sshd" 10.
         value_type: dict
         valid:
       hosts_allow_cleanup:
-        value:
         default: true
         description: |
           Clean up unspecified rules
@@ -1327,13 +1168,11 @@ sections:
 
   3.3.3:
     title: Ensure /etc/hosts.deny is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       hosts_deny:
-        value:
         default:
           ALL:
             - ALL
@@ -1342,7 +1181,6 @@ sections:
         value_type: dict
         valid:
       hosts_deny_cleanup:
-        value:
         default: true
         description: |
           Clean up unspecified rules
@@ -1351,7 +1189,6 @@ sections:
 
   3.3.4:
     title: Ensure permissions on /etc/hosts.allow are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1359,7 +1196,6 @@ sections:
 
   3.3.5:
     title: Ensure permissions on /etc/hosts.deny are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1367,7 +1203,6 @@ sections:
 
   "3.4":
     title: Uncommon Network Protocols
-    enabled: true
     subsections:
       - 3.4.1
       - 3.4.2
@@ -1376,7 +1211,6 @@ sections:
 
   3.4.1:
     title: Ensure dccp module is disabled
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1384,7 +1218,6 @@ sections:
 
   3.4.2:
     title: Ensure sctp module is disabled
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1392,7 +1225,6 @@ sections:
 
   3.4.3:
     title: Ensure rds module is disabled
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1400,7 +1232,6 @@ sections:
 
   3.4.4:
     title: Ensure tipc module is disabled
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1408,7 +1239,6 @@ sections:
 
   "3.5":
     title: Firewall Configuration
-    enabled: true
     subsections:
       - 3.5.1
       - 3.5.2
@@ -1417,7 +1247,6 @@ sections:
 
   3.5.1:
     title: Configure IPv6 ip6tables
-    enabled: true
     subsections:
       - 3.5.1.1
       - 3.5.1.2
@@ -1425,7 +1254,6 @@ sections:
       - 3.5.1.4
     vars:
       flush_ip6tables:
-        value:
         default: true
         description: |
           Clean up ip6tables rules before configuring subsequent stuffs
@@ -1434,7 +1262,6 @@ sections:
 
   3.5.1.1:
     title: Ensure IPv6 default deny firewall policy
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1442,7 +1269,6 @@ sections:
 
   3.5.1.2:
     title: Ensure IPv6 loopback traffic is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1450,7 +1276,6 @@ sections:
 
   3.5.1.3:
     title: Ensure IPv6 outbound and established connections are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1458,13 +1283,11 @@ sections:
 
   3.5.1.4:
     title: Ensure IPv6 firewall rules exists for all open ports
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       ip6tables_rules:
-        value:
         default:
           - port: 22
             protocol: tcp
@@ -1472,12 +1295,10 @@ sections:
             protocol: tcp
         description: |
           Allow traffic to specified ports and protocols
-          Example on how to set this value:
           cis set -s 3.5.1.4 ip6tables_rules 22/tcp 80/tcp 443/tcp 8080/tcp
         value_type: list_dict
         valid:
       save_ip6tables_rules:
-        value:
         default: true
         description: |
           Persist ip6tables rules
@@ -1486,7 +1307,6 @@ sections:
 
   3.5.2:
     title: Configure IPv4 iptables
-    enabled: true
     subsections:
       - 3.5.2.1
       - 3.5.2.2
@@ -1494,7 +1314,6 @@ sections:
       - 3.5.2.4
     vars:
       flush_iptables:
-        value:
         default: true
         description: |
           Clean up iptables rules before configuring subsequent stuffs
@@ -1503,7 +1322,6 @@ sections:
 
   3.5.2.2:
     title: Ensure IPv4 loopback traffic is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1511,7 +1329,6 @@ sections:
 
   3.5.2.3:
     title: Ensure IPv4 outbound and established connections are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1519,13 +1336,11 @@ sections:
 
   3.5.2.4:
     title: Ensure IPv4 firewall rules exists for all open ports
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       iptables_rules:
-        value:
         default:
           - port: 22
             protocol: tcp
@@ -1539,7 +1354,6 @@ sections:
         value_type: list_dict
         valid:
       save_iptables_rules:
-        value:
         default: true
         description: |
           Persist iptables rules
@@ -1548,7 +1362,6 @@ sections:
 
   "3.6":
     title: Ensure wireless interfaces are disabled
-    enabled: false
     profile:
       - Level 1 Server
       - Level 2 Workstation
@@ -1556,7 +1369,6 @@ sections:
 
   "3.7":
     title: Disable IPv6
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1564,7 +1376,6 @@ sections:
 
   "4":
     title: Logging and Auditing
-    enabled: true
     subsections:
       - "4.1"
       - "4.2"
@@ -1572,7 +1383,6 @@ sections:
 
   "4.1":
     title: Configure System Auditing (auditd)
-    enabled: true
     subsections:
       - 4.1.1
       - 4.1.2
@@ -1596,7 +1406,6 @@ sections:
 
   4.1.1:
     title: Configure System Auditing (auditd)
-    enabled: true
     subsections:
       - 4.1.1.1
       - 4.1.1.2
@@ -1604,13 +1413,11 @@ sections:
 
   4.1.1.1:
     title: Ensure audit log storage size is configured
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
     vars:
       max_log_file:
-        value:
         default: 10
         description: |
           Maximum size measured in MB (Megabytes)
@@ -1621,13 +1428,11 @@ sections:
 
   4.1.1.2:
     title: Ensure system is disabled when audit logs are full
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
     vars:
       space_left_action:
-        value:
         default: syslog
         description: |
           Tells the system what action to take when the system has detected
@@ -1645,7 +1450,6 @@ sections:
 
   4.1.1.3:
     title: Ensure audit logs are not automatically deleted
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1653,7 +1457,6 @@ sections:
 
   4.1.2:
     title: Ensure auditd is installed
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1661,7 +1464,6 @@ sections:
 
   4.1.3:
     title: Ensure auditd service is enabled
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1669,7 +1471,6 @@ sections:
 
   4.1.4:
     title: Enable auditing for processes that start prior to auditd is
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1677,7 +1478,6 @@ sections:
 
   4.1.5:
     title: Ensure events that modify date and time information are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1685,7 +1485,6 @@ sections:
 
   4.1.6:
     title: Ensure events that modify user/group information are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1693,7 +1492,6 @@ sections:
 
   4.1.7:
     title: Ensure events that modify system's network environment are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1702,7 +1500,6 @@ sections:
   4.1.8:
     title: >
       Ensure events that modify system's Mandatory Access Controls are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1710,7 +1507,6 @@ sections:
 
   4.1.9:
     title: Ensure login and logout events are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1718,7 +1514,6 @@ sections:
 
   4.1.10:
     title: Ensure session initiation information is collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1728,7 +1523,6 @@ sections:
     title: >
       Ensure discretionary access control permission configuration events are
       collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1736,7 +1530,6 @@ sections:
 
   4.1.12:
     title: Ensure unsuccessful unauthorized file access attempts are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1744,7 +1537,6 @@ sections:
 
   4.1.13:
     title: Ensure use of privileged commands is collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1752,7 +1544,6 @@ sections:
 
   4.1.14:
     title: Ensure successful file system mounts are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1760,7 +1551,6 @@ sections:
 
   4.1.15:
     title: Ensure file deletion events by users are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1768,7 +1558,6 @@ sections:
 
   4.1.16:
     title: Ensure chanes to system administration scope (sudoers) is collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1776,7 +1565,6 @@ sections:
 
   4.1.17:
     title: Ensure system adminitration actions (sudolog) are collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1784,7 +1572,6 @@ sections:
 
   4.1.18:
     title: Ensure kernel module loading and unloading is collected
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1792,7 +1579,6 @@ sections:
 
   4.1.19:
     title: Ensure the audit configuration is immutable
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
@@ -1800,7 +1586,6 @@ sections:
 
   "4.2":
     title: Configure Logging
-    enabled: true
     subsections:
       - 4.2.1
       - 4.2.2
@@ -1808,7 +1593,6 @@ sections:
 
   4.2.1:
     title: Configure rsyslog
-    enabled: true
     subsections:
       - 4.2.1.1
       - 4.2.1.2
@@ -1819,41 +1603,35 @@ sections:
 
   4.2.1.1:
     title: Ensure rsyslog is installed
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   4.2.1.2:
     title: Ensure rsyslog Service is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   4.2.1.3:
     title: Ensure logging is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   4.2.1.4:
     title: Ensure rsyslog default file permissions configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   4.2.1.5:
     title: Ensure rsyslog is configured to send logs to a remote host
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       rsyslog_remote_host:
-        value:
         default: loghost.example.com
         description: |
           The target remote host to send logs to
@@ -1863,20 +1641,17 @@ sections:
   4.2.1.6:
     title: >
       Ensure remote syslog messages are only accepted on designated log hosts
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       rsyslog_is_log_hosts:
-        value:
         default: true
         description: |
           Denotes that the host is listening for remote logs
         value_type: bool
         valid:
       rsyslog_log_hosts_listen_port:
-        value:
         default: 514
         description: |
           Specify the port to listen for remote logs
@@ -1887,7 +1662,6 @@ sections:
 
   4.2.2:
     title: Configure journald
-    enabled: true
     subsections:
       - 4.2.1.1
       - 4.2.1.2
@@ -1898,7 +1672,6 @@ sections:
 
   4.2.2.1:
     title: Ensure journald is configured to send logs to rsyslog
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1906,7 +1679,6 @@ sections:
 
   4.2.2.2:
     title: Ensure journald is configured to compress large log files
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1914,7 +1686,6 @@ sections:
 
   4.2.2.3:
     title: Ensure journald is configured to write logfiles to persistent disk
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1922,7 +1693,6 @@ sections:
 
   4.2.3:
     title: Ensure permissions on all logfiles are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1930,13 +1700,11 @@ sections:
 
   "4.3":
     title: Ensure logrotate is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       rotate_period:
-        value:
         default: yearly
         description: |
           How frequent should log files be rotated
@@ -1951,7 +1719,6 @@ sections:
 
   "5":
     title: Access, Authentication and Authorization
-    enabled: true
     subsections:
       - "5.1"
       - "5.2"
@@ -1962,7 +1729,6 @@ sections:
 
   "5.1":
     title: Configure Cron
-    enabled: true
     subsections:
       - 5.1.1
       - 5.1.2
@@ -1975,7 +1741,6 @@ sections:
 
   5.1.1:
     title: Ensure cron daemon is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1983,7 +1748,6 @@ sections:
 
   5.1.2:
     title: Ensure permissions on /etc/crontab are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1991,7 +1755,6 @@ sections:
 
   5.1.3:
     title: Ensure permissions on /etc/cron.hourly are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -1999,7 +1762,6 @@ sections:
 
   5.1.4:
     title: Ensure permissions on /etc/cron.daily are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2007,7 +1769,6 @@ sections:
 
   5.1.5:
     title: Ensure permissions on /etc/cron.weekly are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2015,7 +1776,6 @@ sections:
 
   5.1.6:
     title: Ensure permissions on /etc/cron.monthly are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2023,7 +1783,6 @@ sections:
 
   5.1.7:
     title: Ensure permissions on /etc/cron.d are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2031,7 +1790,6 @@ sections:
 
   5.1.8:
     title: Ensure at/cron is restricted to authorized users
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2039,7 +1797,6 @@ sections:
 
   "5.2":
     title: SSH Server Configuration
-    enabled: true
     subsections:
       - 5.2.1
       - 5.2.2
@@ -2067,7 +1824,6 @@ sections:
 
   5.2.1:
     title: Ensure permisisons on /etc/ssh/sshd_config are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2075,7 +1831,6 @@ sections:
 
   5.2.2:
     title: Ensure permissions on SSH private host key files are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2083,7 +1838,6 @@ sections:
 
   5.2.3:
     title: Ensure permissions on SSH public host key files are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2091,7 +1845,6 @@ sections:
 
   5.2.4:
     title: Ensure SSH Protocol is set to 2
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2099,13 +1852,11 @@ sections:
 
   5.2.5:
     title: Ensure SSH LogLevel is appropriate
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_log_level:
-        value:
         default: "VERBOSE"
         description: |
           Possible values: VERBOSE, INFO
@@ -2116,7 +1867,6 @@ sections:
 
   5.2.6:
     title: Ensure SSH X11 forwarding is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2124,13 +1874,11 @@ sections:
 
   5.2.7:
     title: Ensure SSH MaxAuthTries is set to 4 or less
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       ssh_max_auth_tries:
-        value:
         default: 4
         description: |
           Number of authentication attempts allowed for each connection
@@ -2141,7 +1889,6 @@ sections:
 
   5.2.8:
     title: Ensure SSH IgnoreRhosts is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2149,7 +1896,6 @@ sections:
 
   5.2.9:
     title: Ensure SSH HostbasedAuthentication is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2157,7 +1903,6 @@ sections:
 
   5.2.10:
     title: Ensure SSH root login is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2165,7 +1910,6 @@ sections:
 
   5.2.11:
     title: Ensure SSH PermitEmptyPasswords is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2173,7 +1917,6 @@ sections:
 
   5.2.12:
     title: Ensure SSH PermitUserEnvironment is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2181,13 +1924,11 @@ sections:
 
   5.2.13:
     title: Ensure only strong Ciphers are used
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_ciphers:
-        value:
         default:
           - aes256-ctr
           - aes192-ctr
@@ -2202,13 +1943,11 @@ sections:
 
   5.2.14:
     title: Ensure only strong MAC algorithms are used
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_mac_algs:
-        value:
         default:
           - hmac-sha2-256
           - hmac-sha2-512
@@ -2221,13 +1960,11 @@ sections:
 
   5.2.15:
     title: Ensure only strong Key Exchange algorithms are used
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_kex_algs:
-        value:
         default:
           - ecdh-sha2-nistp256
           - ecdh-sha2-nistp384
@@ -2253,13 +1990,11 @@ sections:
 
   5.2.16:
     title: Ensure SSH Idle Timeout Interval is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_idle_timeout:
-        value:
         default: 300
         description: |
           Duration of idle measured in seconds.
@@ -2269,7 +2004,6 @@ sections:
         range_end:
         valid:
       sshd_idle_timeout_msg:
-        value:
         default: 0
         description: |
           Number of warnings before terminating the ssh connection.
@@ -2281,13 +2015,11 @@ sections:
 
   5.2.17:
     title: Ensure SSH LoginGraceTime is set to one minute or less
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_login_grace_time:
-        value:
         default: 60
         description: |
           Number of seconds before login attempt is terminated
@@ -2298,13 +2030,11 @@ sections:
 
   5.2.18:
     title: Ensure SSH access is limited
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_allow_users:
-        value:
         default:
           - "*"
         description: |
@@ -2313,7 +2043,6 @@ sections:
         value_type: list
         valid:
       sshd_allow_groups:
-        value:
         default:
           - "*"
         description: |
@@ -2322,7 +2051,6 @@ sections:
         value_type: list
         valid:
       sshd_deny_users:
-        value:
         default:
           - root
           - bar@10.0.0.1
@@ -2332,7 +2060,6 @@ sections:
         value_type: list
         valid:
       sshd_deny_groups:
-        value:
         default:
           - sudo
         description: |
@@ -2343,13 +2070,11 @@ sections:
 
   5.2.19:
     title: Ensure SSH warning banner is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_banner:
-        value:
         default: "/etc/issue.net"
         description: |
           Path to file used for displaying warning banner
@@ -2358,7 +2083,6 @@ sections:
 
   5.2.20:
     title: Ensure SSH PAM is enabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2366,7 +2090,6 @@ sections:
 
   5.2.21:
     title: Ensure SSH AllowTcpForwarding is disabled
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2374,13 +2097,11 @@ sections:
 
   5.2.22:
     title: Ensure SSH MaxStartups is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_max_startups:
-        value:
         default: "10:30:60"
         description: |
           Specifies the maximum number of concurrent unauthenticated connections
@@ -2399,13 +2120,11 @@ sections:
 
   5.2.23:
     title: Ensure SSH MaxSessions is set to 4 or less
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       sshd_max_sessions:
-        value:
         default: 4
         description: |
           Specify the max number of authenticated sessions.
@@ -2416,7 +2135,6 @@ sections:
 
   "5.3":
     title: Configure PAM
-    enabled: true
     subsections:
       - 5.3.1
       - 5.3.2
@@ -2425,13 +2143,11 @@ sections:
 
   5.3.1:
     title: Configure PAM
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       pwquality_retry:
-        value:
         default: 3
         description: |
           Number of password change attempts
@@ -2440,7 +2156,6 @@ sections:
         range_end: 3
         valid:
       pwquality_minlen:
-        value:
         default: 14
         description: |
           Minimal length of new password
@@ -2449,7 +2164,6 @@ sections:
         range_end:
         valid:
       pwquality_dcredit:
-        value:
         default: -1
         description: |
           Number of digit in new password
@@ -2459,7 +2173,6 @@ sections:
         range_end:
         valid:
       pwquality_ucredit:
-        value:
         default: -1
         description: |
           Number of uppercase letter in new password
@@ -2469,7 +2182,6 @@ sections:
         range_end:
         valid:
       pwquality_ocredit:
-        value:
         default: -1
         description: |
           Number of special symbol in new password
@@ -2479,7 +2191,6 @@ sections:
         range_end:
         valid:
       pwquality_lcredit:
-        value:
         default: -1
         description: |
           Number of lowercase letter in new password
@@ -2491,13 +2202,11 @@ sections:
 
   5.3.2:
     title: Ensure lockout for failed password attempts is configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       pam_auth_fail_try:
-        value:
         default: 2
         description: |
           Number of authentication attempts before getting locked out
@@ -2506,7 +2215,6 @@ sections:
         range_end:
         valid:
       pam_auth_lock_time:
-        value:
         default: 10
         description: |
           Lockout period measured in seconds
@@ -2517,13 +2225,11 @@ sections:
 
   5.3.3:
     title: Ensure password reuse is limited
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       pam_password_reuse_history:
-        value:
         default: 5
         description: |
           Prevent reuse of last N passwords
@@ -2534,13 +2240,11 @@ sections:
 
   5.3.4:
     title: Ensure password hashing algorithm is SHA-512
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       force_password_change:
-        value:
         default: true
         description: |
           Force password change on non system users
@@ -2549,7 +2253,6 @@ sections:
 
   "5.4":
     title: User Accounts and Environment
-    enabled: true
     subsections:
       - 5.4.1
       - 5.4.2
@@ -2559,7 +2262,6 @@ sections:
 
   5.4.1:
     title: Set Shadow Password Suite Parameters
-    enabled: true
     subsections:
       - 5.4.1.1
       - 5.4.1.2
@@ -2569,13 +2271,11 @@ sections:
 
   5.4.1.1:
     title: Ensure password expiration is 365 days or less
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       pass_max_days:
-        value:
         default: 365
         description: |
           Password lifetime
@@ -2586,13 +2286,11 @@ sections:
 
   5.4.1.2:
     title: Ensure minimum days between password change is 7 or more
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       pass_min_days:
-        value:
         default: 7
         description: |
           Minimum days before a password could be changed again
@@ -2603,13 +2301,11 @@ sections:
 
   5.4.1.3:
     title: Ensure password expiration warning days is 7 or more
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       pass_warn_age:
-        value:
         default: 14
         description: |
           Number of days before warning on password expiration is given
@@ -2620,13 +2316,11 @@ sections:
 
   5.4.1.4:
     title: Ensure inactive password lock is 30 days or less
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       inactive_days:
-        value:
         default: 30
         description: |
           Number of inactive days before the password is locked out
@@ -2637,7 +2331,6 @@ sections:
 
   5.4.1.5:
     title: Ensure all users last password change date is in the past
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2645,7 +2338,6 @@ sections:
 
   5.4.2:
     title: Ensure system accounts are secured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2653,7 +2345,6 @@ sections:
 
   5.4.3:
     title: Ensure default group for the root account is GID 0
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2661,13 +2352,11 @@ sections:
 
   5.4.4:
     title: Ensure default user umask is 027 or more restrictive
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       user_umask:
-        value:
         default: "027"
         description: |
           umask value
@@ -2676,13 +2365,11 @@ sections:
 
   5.4.5:
     title: Ensure default user shell timeout is 900 seconds or less
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       user_shell_timeout:
-        value:
         default: 900
         description: |
           Number of idle seconds before a user is logged out from the shell
@@ -2693,7 +2380,6 @@ sections:
 
   "5.5":
     title: Ensure root login is restricted to system console
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2701,7 +2387,6 @@ sections:
 
   "5.6":
     title: Ensure access to the su command is restricted
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2709,13 +2394,11 @@ sections:
 
   "6":
     title: System Maintenance
-    enabled: true
     subsections:
       - "6.1"
 
   "6.1":
     title: System File Permissions
-    enabled: true
     subsections:
       - 6.1.1
       - 6.1.2
@@ -2733,13 +2416,11 @@ sections:
 
   6.1.1:
     title: System File Permissions
-    enabled: true
     profile:
       - Level 2 Server
       - Level 2 Workstation
     vars:
       pkg_verification_file:
-        value:
         default: /root/pkg_verify
         description: |
           Output of package verification command in remote hosts
@@ -2748,83 +2429,71 @@ sections:
 
   6.1.2:
     title: Ensure permissions on /etc/passwd are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.3:
     title: Ensure permissions on /etc/shadow are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.4:
     title: Ensure permissions on /etc/group are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.5:
     title: Ensure permissions on /etc/gshadow are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.6:
     title: Ensure permissions on /etc/passwd- are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.7:
     title: Ensure permissions on /etc/shadow- are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.8:
     title: Ensure permissions on /etc/group- are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.9:
     title: Ensure permissions on /etc/gshadow- are configured
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.10:
     title: Ensure no world writable files exist
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.11:
     title: Ensure no unowned files or directories exist
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       create_dummy_user:
-        value:
         default: true
         description: |
           Create dummy user to own the unowned files or directories
         value_type: bool
         valid:
       dummy_username:
-        value:
         default: foobar
         description: |
           Username of dummy user to own unowned files or directories
@@ -2833,20 +2502,17 @@ sections:
 
   6.1.12:
     title: Ensure no ungrouped files or directories exist
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       create_dummy_group:
-        value:
         default: true
         description: |
           Create dummy group to own the unowned files or directories
         value_type: bool
         valid:
       dummy_groupname:
-        value:
         default: foobar
         description: |
           Group name of dummy group to own unowned files or directories
@@ -2855,21 +2521,18 @@ sections:
 
   6.1.13:
     title: Audit SUID executables
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.1.14:
     title: Audit SGID executables
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   "6.2":
     title: System File Permissions
-    enabled: true
     subsections:
       - 6.2.1
       - 6.2.2
@@ -2887,49 +2550,42 @@ sections:
 
   6.2.1:
     title: Ensure password fields are not empty
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.2:
     title: Ensure no legacy "+" entries exist in /etc/passwd
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.3:
     title: Ensure no legacy "+" entries exist in /etc/shadow
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.4:
     title: Ensure no legacy "+" entries exist in /etc/group
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.5:
     title: Ensure root is the only UID 0 account
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.6:
     title: Ensure root PATH integrity
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.7:
     title: Ensure all users' home directories exist
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
@@ -2937,13 +2593,11 @@ sections:
   6.2.8:
     title: >
       Ensure users' home directories permissions are 750 or more restrictive
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
     vars:
       home_dir_perms:
-        value:
         default: "0700"
         description: |
           Desired permissions for users' home directories
@@ -2952,42 +2606,36 @@ sections:
 
   6.2.9:
     title: Ensure users own their home directories
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.10:
     title: Ensure users' dot files are not group or world writable
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.11:
     title: Ensure no users have .forward files
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.12:
     title: Ensure no users have .netrc files
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.13:
     title: Ensure users' .netrc Files are not group or world accessible
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
 
   6.2.14:
     title: Ensure no users have .rhosts files
-    enabled: true
     profile:
       - Level 1 Server
       - Level 1 Workstation
