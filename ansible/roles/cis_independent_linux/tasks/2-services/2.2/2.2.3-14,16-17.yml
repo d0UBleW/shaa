@@ -13,8 +13,15 @@
             {{ svc.section_id }} Ensure {{ svc.desc }} is not enabled
             > Check if {{ svc.name }} exists via systemd
             ---
+          vars:
+            svc_name: >-
+              {%- if "." in svc.name -%}
+                {{ svc.name }}
+              {%- else -%}
+                {{ svc.name }}\.service
+              {%- endif -%}
           ansible.builtin.shell: >
-            systemctl list-unit-files | grep -qiP '^{{ svc.name }}\.service'
+            systemctl list-unit-files | grep -qiP '^{{ svc_name }}'
           register: svc_check
           changed_when: false
           failed_when:
@@ -32,6 +39,7 @@
             name: "{{ svc.name }}"
             state: stopped
             enabled: false
+            masked: true
 
     - name: For update-rc.d
       when:

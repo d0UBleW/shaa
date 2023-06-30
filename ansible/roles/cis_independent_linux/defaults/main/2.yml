@@ -79,6 +79,7 @@ disable_special_purpose_services:
   nfs: "{{ section_2_2_7_nfs }}"
   nfs-server: "{{ section_2_2_7_nfs_server }}"
   rpcbind: "{{ section_2_2_7_rpcbind }}"
+  rpcbind.socket: "{{ section_2_2_7 }}"
   named: "{{ section_2_2_8 }}"
   vsfptd: "{{ section_2_2_9 }}"
   httpd: "{{ section_2_2_10_httpd }}"

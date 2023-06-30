@@ -79,6 +79,10 @@
         section_id: 2.2.7
         desc: RPC
 
+      - name: rpcbind.socket
+        section_id: 2.2.7
+        desc: RPC
+
       - name: named
         section_id: 2.2.8
         desc: DNS Server
