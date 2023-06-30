@@ -128,7 +128,8 @@ class profile_subcmd(CommandSet):
         if self._cmd is None:
             return
 
-        self._cmd.do_unload("")  # type: ignore
+        if profile is None:
+            self._cmd.do_unload("")  # type: ignore
 
         self._cmd.check_if_profile_changed()  # type: ignore
 
