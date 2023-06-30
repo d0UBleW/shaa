@@ -97,9 +97,15 @@ class util_action_cmd(CommandSet):
                     self._cmd.poutput("[!] Invalid action")
                     return
 
-            role_util.set_enabled(arg_act, True)
-            if ns.verbose:
-                self._cmd.poutput(f"[+] {arg_act} enabled successfully")
+            if arg_act == "all":
+                for act in role_util.actions.keys():
+                    role_util.set_enabled(act, True)
+                    if ns.verbose:
+                        self._cmd.poutput(f"[+] {act} enabled successfully")
+            else:
+                role_util.set_enabled(arg_act, True)
+                if ns.verbose:
+                    self._cmd.poutput(f"[+] {arg_act} enabled successfully")
         self._cmd._util_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Enabled successfully")
 
@@ -115,9 +121,15 @@ class util_action_cmd(CommandSet):
                 self._cmd.poutput(f"[!] Invalid action: {arg_act}")
                 return
 
-            role_util.set_enabled(arg_act, False)
-            if ns.verbose:
-                self._cmd.poutput(f"[+] {arg_act} disabled successfully")
+            if arg_act == "all":
+                for act in role_util.actions.keys():
+                    role_util.set_enabled(act, False)
+                    if ns.verbose:
+                        self._cmd.poutput(f"[+] {act} disabled successfully")
+            else:
+                role_util.set_enabled(arg_act, False)
+                if ns.verbose:
+                    self._cmd.poutput(f"[+] {act} disabled successfully")
         self._cmd._util_has_changed = True  # type: ignore[attr-defined]
         self._cmd.poutput("[+] Disabled successfully")
 
