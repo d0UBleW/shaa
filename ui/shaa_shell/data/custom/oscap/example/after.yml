@@ -1,3 +1,4 @@
 scan:
   vars:
     report_output_prefix: after
+  enabled: true
