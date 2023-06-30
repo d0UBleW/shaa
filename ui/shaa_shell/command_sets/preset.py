@@ -181,7 +181,7 @@ class preset_sec_tools_cmd(CommandSet):
         title="subcommand", help="subcommand for preset sec_tools")
 
     @as_subcommand_to("preset", "sec_tools", pre_sec_tools_parser,
-                      help="cis subcommand")
+                      help="sec_tools subcommand")
     def preset_sec_tools(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -395,7 +395,7 @@ class preset_oscap_cmd(CommandSet):
         title="subcommand", help="subcommand for preset oscap")
 
     @as_subcommand_to("preset", "oscap", pre_oscap_parser,
-                      help="cis subcommand")
+                      help="oscap subcommand")
     def preset_oscap(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
@@ -609,7 +609,7 @@ class preset_util_cmd(CommandSet):
         title="subcommand", help="subcommand for preset util")
 
     @as_subcommand_to("preset", "util", pre_util_parser,
-                      help="cis subcommand")
+                      help="util subcommand")
     def preset_util(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
