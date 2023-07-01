@@ -168,11 +168,22 @@ class profile_subcmd(CommandSet):
     def profile_unload(self: CommandSet, _):
         if self._cmd is None:
             return
-        self._cmd.check_if_profile_changed()  # type: ignore
-        self._cmd._profile = None  # type: ignore
-        self._cmd.do_inventory("unload")  # type: ignore
-        for preset in PRESETS:
-            self._cmd.do_preset(f"{preset} unload")  # type: ignore
+        self._cmd.do_unload("")  # type: ignore[attr-defined]
+        # self._cmd.check_if_profile_changed()  # type: ignore
+        # self._cmd._profile = None  # type: ignore
+        # if self._cmd._inventory is not None:
+        #     self._cmd.do_inventory("unload")
+        # if self._cmd._cis is not None:
+        #     self._cmd.do_preset("cis unload")
+        # if self._cmd._oscap is not None:
+        #     self._cmd.do_preset("oscap unload")
+        # if self._cmd._util is not None:
+        #     self._cmd.do_preset("util unload")
+        # if self._cmd._sec_tools is not None:
+        #     self.do_preset("sec_tools unload")
+        # self._cmd.do_inventory("unload")  # type: ignore
+        # for preset in PRESETS:
+        #     self._cmd.do_preset(f"{preset} unload")  # type: ignore
 
     @as_subcommand_to("profile", "list", list_parser,
                       aliases=["ls"],

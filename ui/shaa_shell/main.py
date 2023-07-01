@@ -26,7 +26,6 @@ from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.role import Role
 from shaa_shell.utils.profile import Profile
-from shaa_shell.utils.preset import PRESETS
 from shaa_shell.utils import play
 from shaa_shell.utils import exception
 
@@ -180,10 +179,19 @@ class ShaaShell(cmd2.Cmd):
         """
         Unload inventory, all presets, and profile
         """
-        self.do_inventory("unload")
-        for preset in PRESETS:
-            self.do_preset(f"{preset} unload")
-        self.do_profile("unload")
+        if self._inventory is not None:
+            self.do_inventory("unload")
+        if self._cis is not None:
+            self.do_preset("cis unload")
+        if self._oscap is not None:
+            self.do_preset("oscap unload")
+        if self._util is not None:
+            self.do_preset("util unload")
+        if self._sec_tools is not None:
+            self.do_preset("sec_tools unload")
+        if self._profile is not None:
+            self.check_if_profile_changed()
+            self._profile = None
 
     def _choices_targets(self) -> List[cmd2.CompletionItem]:
         if self._inventory is None:
