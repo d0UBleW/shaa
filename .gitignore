@@ -17,3 +17,5 @@ ansible/*.yml
 ansible/inventory/*.yml
 !ansible/inventory/main.yml
 ansible/oscap-report
+build/
+dist/
