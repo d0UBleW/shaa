@@ -7,7 +7,7 @@ import re
 
 ROOT_PATH = Path(importlib.resources.files("shaa_shell").__str__())
 
-DATA_PATH = ROOT_PATH.joinpath("data/")
+OSCAP_REPORT_PATH = ROOT_PATH.joinpath("data/custom/oscap-report")
 
 PROFILE_PATH = ROOT_PATH.joinpath("data/custom/profile")
 INVENTORY_PATH = ROOT_PATH.joinpath("data/custom/inventory/")
@@ -26,11 +26,9 @@ SEC_TOOLS_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/sec_tools.yml")
 
 PLAYBOOK_PATH = ROOT_PATH.joinpath("data/ansible/playbook")
 ANSIBLE_INV_PATH = ROOT_PATH.joinpath("data/ansible/inventory/")
+ANSIBLE_VAULT_PASSWORD = ROOT_PATH.joinpath("data/ansible/vault-password.py")
+ANSIBLE_CFG_PATH = ROOT_PATH.joinpath("data/ansible/ansible.cfg")
 LOG_PATH = ROOT_PATH.joinpath("log/")
-
-ANSIBLE_PATH = ROOT_PATH.joinpath("../../ansible")
-ANSIBLE_VAULT_PASSWORD = ANSIBLE_PATH.joinpath("vault-password.py")
-ROLE_PATH = ANSIBLE_PATH.joinpath("roles/")
 
 
 def is_valid_file_path(parent: Path, file_name: Text) -> bool:

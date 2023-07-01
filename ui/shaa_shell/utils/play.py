@@ -18,8 +18,8 @@ from shaa_shell.utils.path import (
     ANSIBLE_INV_PATH,
     LOG_PATH,
     ANSIBLE_VAULT_PASSWORD,
-    ROLE_PATH,
-    DATA_PATH,
+    OSCAP_REPORT_PATH,
+    ANSIBLE_CFG_PATH,
 )
 from shaa_shell.utils.preset import PRESETS, PRESET_ROLE_MAP
 from shaa_shell.utils import exception
@@ -214,7 +214,7 @@ def generate_playbook(profile: Profile,
             role_vars = convert_role_vars_to_ansible_vars(role_type, role_name)
             all_vars.update(role_vars)
             if role_type == "oscap":
-                all_vars["oscap_report_dir"] = str(DATA_PATH)
+                all_vars["oscap_report_dir"] = str(OSCAP_REPORT_PATH)
 
     # Validate inventory data
     inv_name = profile.inv_name
@@ -287,7 +287,7 @@ def run_playbook(name: Text,
     """
     inv_fpath = str(ANSIBLE_INV_PATH.joinpath(f"{name}.yml").resolve())
     playbook_fpath = str(PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve())
-    ansible_cfg = str(PLAYBOOK_PATH.joinpath("ansible.cfg").resolve())
+    ansible_cfg = str(ANSIBLE_CFG_PATH.resolve())
 
     if vault_password is None:
         raise exception.ShaaVaultError("Missing ansible vault password")
@@ -299,7 +299,6 @@ def run_playbook(name: Text,
         "ANSIBLE_FORCE_COLOR": str(color),
         "ANSIBLE_HOST_KEY_CHECKING": "False",
         "ANSIBLE_VAULT_PASSWORD_FILE": str(ANSIBLE_VAULT_PASSWORD),
-        "ANSIBLE_ROLES_PATH": str(ROLE_PATH),
     }
     envs.update(os.environ)
 
