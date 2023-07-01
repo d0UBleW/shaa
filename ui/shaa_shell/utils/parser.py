@@ -58,7 +58,9 @@ play_parser.add_argument("-c",
                          "--color",
                          action="store_true",
                          help="enable colorized output")
-play_parser.add_argument("preset",
+play_parser.add_argument("-p",
+                         "--preset",
                          nargs="*",
+                         default=[],
                          choices_provider=_choices_presets,
                          help="preset(s) to be played, default to all")

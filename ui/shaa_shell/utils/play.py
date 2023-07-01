@@ -160,7 +160,12 @@ def generate_role_tags(role_type: Text,
 
 
 def generate_playbook(profile: Profile,
-                      arg_presets: List[Text]) -> Optional[bool]:
+                      arg_presets: List[Text],
+                      targets: Optional[List] = ["all"]
+                      ) -> Optional[bool]:
+    """
+    Generate playbook based on profile and specified presets
+    """
     presets = {}
 
     if len(arg_presets) > 0:
@@ -219,7 +224,7 @@ def generate_playbook(profile: Profile,
         "name": name,
         "become": True,
         "gather_facts": True,
-        "hosts": "all",  # TODO: allow group targeting
+        "hosts": targets,
         "roles": roles,
     }]
 

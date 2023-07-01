@@ -1,6 +1,6 @@
 import argparse
 import cmd2
-from typing import Optional
+from typing import Optional, List
 
 from shaa_shell.command_sets import (
     inventory as inv_cs,
@@ -176,6 +176,29 @@ class ShaaShell(cmd2.Cmd):
             self.do_preset(f"{preset} unload")
         self.do_profile("unload")
 
+    def _choices_targets(self) -> List[cmd2.CompletionItem]:
+        if self._inventory is None:
+            raise cmd2.CompletionError("[!] No inventory is loaded")
+        groups = self._inventory.groups
+        targets: List[cmd2.CompletionItem] = []
+        for group in groups.keys():
+            if group == "ungrouped":
+                continue
+            targets.append(cmd2.CompletionItem(group, "group"))
+        for group in groups.keys():
+            targets += list(map(lambda n: cmd2.CompletionItem(n, "node"),
+                                groups[group].nodes.keys()))
+        return targets
+
+    play_parser.add_argument(
+        "-t",
+        "--target",
+        nargs="*",
+        default=["all"],
+        help="specify list of playbook target node name or group name",
+        choices_provider=_choices_targets,
+    )
+
     @cmd2.with_argparser(play_parser)
     @cmd2.with_category("play")
     def do_play(self, ns: argparse.Namespace):
@@ -190,6 +213,19 @@ class ShaaShell(cmd2.Cmd):
         if inv is None:
             self.perror("[!] No inventory is loaded, aborting!")
             return
+
+        self.check_if_inv_changed()
+
+        if ns.target != ["all"]:
+            valid_targets = list(inv.groups.keys())
+            for group in inv.groups.keys():
+                valid_targets += inv.groups[group].nodes.keys()
+
+            for target in ns.target:
+                if target not in valid_targets:
+                    self.perror(f"[!] Invalid target: {target}")
+                    self.perror(f"    Available targets: {valid_targets}")
+                    return
 
         cis = self._cis
         role_util = self._util
@@ -209,7 +245,6 @@ class ShaaShell(cmd2.Cmd):
             if sec_tools is not None:
                 profile.presets["sec_tools"] = sec_tools.name
 
-        self.check_if_inv_changed()
         if len(ns.preset) == 0 or ("cis" in ns.preset and cis is not None):
             self.check_if_cis_changed()
         if len(ns.preset) == 0 or (
@@ -224,7 +259,9 @@ class ShaaShell(cmd2.Cmd):
 
         self.poutput("[+] Generating playbook ...")
         try:
-            gen_pb = play.generate_playbook(profile, ns.preset)
+            gen_pb = play.generate_playbook(profile,
+                                            ns.preset,
+                                            targets=ns.target)
         except exception.ShaaNameError as ex:
             self.perror(f"[!] {ex}")
             return
