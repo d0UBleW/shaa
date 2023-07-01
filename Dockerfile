@@ -36,6 +36,10 @@ COPY ./ansible/roles /home/shaa/.ansible/roles
 
 RUN chown -R shaa:shaa /home/shaa/
 
+RUN chmod -R 777 /opt/venv/lib/python3.9/site-packages/shaa_shell/data/custom/*
+
 USER shaa
 
 ENV PATH="/opt/venv/bin:$PATH"
+
+ENTRYPOINT [ "shaa-shell" ]
