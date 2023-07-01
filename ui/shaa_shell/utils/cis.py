@@ -37,6 +37,11 @@ class CIS:
             self.conf = data
 
     def get_enabled(self, section_id: Text) -> bool:
+        """
+        Get status of section_id whether it is enabled or disabled.
+        Default to disabled if section_id is not found or `enabled` key does
+        not exist.
+        """
         enabled = False
         if section_id not in self.conf.keys():
             return enabled
@@ -48,12 +53,20 @@ class CIS:
         return conf["enabled"]
 
     def set_enabled(self, section_id: Text, enabled: bool) -> None:
+        """
+        Set status of section_id
+        """
         if section_id not in self.conf.keys():
             self.conf[section_id] = {}
 
         self.conf[section_id]["enabled"] = enabled
 
     def get_var(self, section_id: Text, var_key: Text) -> Optional[Any]:
+        """
+        Get the variable of section_id named var_key.
+        Default to None if section_id is not found or the variable name does
+        not exist.
+        """
         if section_id not in self.conf.keys():
             return None
 
@@ -67,6 +80,9 @@ class CIS:
         return conf["vars"][var_key]
 
     def set_var(self, section_id: Text, var_key: Text, var_val: Any):
+        """
+        Set the variable `var_key` in section_id with `var_val`
+        """
         if section_id not in self.conf.keys():
             self.conf[section_id] = {}
 
@@ -77,6 +93,10 @@ class CIS:
 
     @staticmethod
     def is_subsection(parent: Text, child: Text) -> bool:
+        """
+        Check if a section is a subsection of another section.
+        Example: 1.2.1 is a subsection of 1 and 1.2
+        """
         while True:
             p_id, _, parent = parent.partition(".")
             c_id, _, child = child.partition(".")
@@ -86,13 +106,22 @@ class CIS:
                 return True
 
     def is_valid_section_id(self, section_id: Text) -> bool:
+        """
+        Check if section_id is valid
+        """
         return section_id in self.sections.keys()
 
     def has_settable_vars(self, section_id: Text) -> bool:
+        """
+        Check if section_id has settable variables
+        """
         section = self.sections[section_id]
         return "vars" in section.keys() and section["vars"] is not None
 
     def is_valid_option_key(self, section_id: Text, option_key: Text) -> bool:
+        """
+        Check if section_id has settable variables named option_key
+        """
         section_vars = self.sections[section_id]["vars"]
         return option_key in section_vars.keys()
 
@@ -102,6 +131,9 @@ class CIS:
         option_key: Text,
         option_val: List[Text]
     ) -> Optional[Union[List[Dict], List[Text], Text, Dict, TaggedScalar]]:
+        """
+        Parse option_val based on the option value type
+        """
         option = self.sections[section_id]["vars"][option_key]
         valid = option["valid"]
         value_type = option["value_type"]
@@ -109,6 +141,9 @@ class CIS:
         if value_type == "single":
             return option_val[0]
 
+        """
+        Handles value like: KEY1 VAL1_1,VAL1_2,VAL1_3 KEY2 VAL2_1,VAL2_2
+        """
         if value_type == "dict":
             if section_id in ["3.3.2", "3.3.3"]:
                 dict_data = {}
@@ -122,6 +157,9 @@ class CIS:
                 return dict_data
             return option_val[0]
 
+        """
+        Handles value like: 22/tcp 80/tcp 9001/udp
+        """
         if value_type == "list_dict":
             if section_id in ["3.5.1.4", "3.5.2.4"]:
                 data = []
@@ -132,19 +170,19 @@ class CIS:
             return option_val
 
         if value_type == "range":
-            range_start = option["range_start"]
-            range_end = option["range_end"]
+            range_start = int(option["range_start"])
+            range_end = int(option["range_end"])
             val = option_val[0]
             try:
-                val = int(val)  # type: ignore[assignment]
+                int_val = int(val)
             except ValueError:
                 if valid is not None and val in valid:
                     return val
                 raise exception.ValueNotNumber(val)
-            if val < range_start:
-                raise exception.ValueIsLower(val, range_start)
-            if range_end is not None and val > range_end:
-                raise exception.ValueIsHigher(val, range_end)
+            if int_val < range_start:
+                raise exception.ValueIsLower(int_val, range_start)
+            if range_end is not None and int_val > range_end:
+                raise exception.ValueIsHigher(int_val, range_end)
             return option_val[0]
 
         if value_type == "choice":
@@ -178,6 +216,10 @@ class CIS:
         section_id: Optional[Text] = None,
         search_query: Optional[Text] = None
     ) -> List[Tuple[Text, Any]]:
+        """
+        List all sections if section_id is None and filter based on its title
+        List section_id and its subsections and filter based on its title
+        """
         data: List[Tuple[Text, Text]] = []
         for s_id, section in self.sections.items():
             if search_query is not None:
@@ -193,6 +235,10 @@ class CIS:
 
     def list_section_unit(self,
                           section_id: Optional[Text] = None) -> List[Text]:
+        """
+        List all sections id that has settable variables or section_id and its
+        subsections id
+        """
         section_units = []
         for s_id in self.sections.keys():
             if self.has_settable_vars(s_id):
@@ -200,6 +246,10 @@ class CIS:
         return section_units
 
     def list_section_unit_and_details(self) -> List[Tuple[Text, Any]]:
+        """
+        List all sections id and its detail that has settable variables or
+        section_id and its subsections
+        """
         data: List[Tuple[Text, Text]] = []
         for s_id, section in self.sections.items():
             if not self.has_settable_vars(s_id):
@@ -229,10 +279,16 @@ class CIS:
         return True
 
     def delete(self) -> None:
+        """
+        Delete CIS preset file
+        """
         file_path = CIS_PRESET_PATH.joinpath(f"{self.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
+        """
+        Rename CIS preset file
+        """
         try:
             if not self.save(new_name):
                 return False

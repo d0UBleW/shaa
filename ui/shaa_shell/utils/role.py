@@ -60,6 +60,11 @@ class Role:
             self.conf = data
 
     def get_enabled(self, action: Text) -> bool:
+        """
+        Get status of action whether it is enabled or disabled.
+        Default to disabled if action is not found or `enabled` key does not
+        exist.
+        """
         enabled = False
         if action not in self.conf.keys():
             return enabled
@@ -71,12 +76,20 @@ class Role:
         return conf["enabled"]
 
     def set_enabled(self, action: Text, enabled: bool) -> None:
+        """
+        Set status of action
+        """
         if action not in self.conf.keys():
             self.conf[action] = {}
 
         self.conf[action]["enabled"] = enabled
 
     def get_var(self, action: Text, var_key: Text) -> Optional[Any]:
+        """
+        Get the variable of action named var_key.
+        Default to None if action is not fonud or the variable name does not
+        exist.
+        """
         if action not in self.conf.keys():
             return None
 
@@ -90,6 +103,9 @@ class Role:
         return conf["vars"][var_key]
 
     def set_var(self, action: Text, var_key: Text, var_val: Any):
+        """
+        Set the variable `var_key` in action with `var_val`
+        """
         if action not in self.conf.keys():
             self.conf[action] = {}
 
@@ -99,13 +115,22 @@ class Role:
         self.conf[action]["vars"][var_key] = var_val
 
     def is_valid_action(self, action: Text) -> bool:
+        """
+        Check if action is valid
+        """
         return action in self.actions.keys()
 
     def has_settable_vars(self, arg_action: Text) -> bool:
+        """
+        Check if an action has settable variables
+        """
         action = self.actions[arg_action]
         return "vars" in action.keys() and action["vars"] is not None
 
     def is_valid_option_key(self, arg_action: Text, option_key: Text) -> bool:
+        """
+        Check if action has settable variables named option_key
+        """
         action_vars = self.actions[arg_action]["vars"]
         return option_key in action_vars.keys()
 
@@ -115,6 +140,9 @@ class Role:
         option_key: Text,
         option_val: List[Text]
     ) -> Optional[Union[List[Dict], List[Text], Text, Dict, TaggedScalar]]:
+        """
+        Parse option_val based on option value type
+        """
         option = self.actions[action]["vars"][option_key]
         valid = option["valid"]
         value_type = option["value_type"]
@@ -123,19 +151,19 @@ class Role:
             return option_val[0]
 
         if value_type == "range":
-            range_start = option["range_start"]
-            range_end = option["range_end"]
+            range_start = int(option["range_start"])
+            range_end = int(option["range_end"])
             val = option_val[0]
             try:
-                val = int(val)  # type: ignore[assignment]
+                int_val = int(val)
             except ValueError:
                 if valid is not None and val in valid:
                     return val
                 raise exception.ValueNotNumber(val)
-            if val < range_start:
-                raise exception.ValueIsLower(val, range_start)
-            if range_end is not None and val > range_end:
-                raise exception.ValueIsHigher(val, range_end)
+            if int_val < range_start:
+                raise exception.ValueIsLower(int_val, range_start)
+            if range_end is not None and int_val > range_end:
+                raise exception.ValueIsHigher(int_val, range_end)
             return option_val[0]
 
         if value_type == "choice":
@@ -165,6 +193,9 @@ class Role:
         self,
         search_query: Optional[Text] = None,
     ) -> List[Tuple[Text, Any]]:
+        """
+        List action and its details
+        """
         data: List[Tuple[Text, Text]] = []
         for action_key, task in self.actions.items():
             if search_query is not None:
@@ -175,6 +206,9 @@ class Role:
         return data
 
     def list_action_w_vars_and_details(self) -> List[Tuple[Text, Any]]:
+        """
+        List action with settable variables and its details
+        """
         data: List[Tuple[Text, Text]] = []
         for action, task in self.actions.items():
             if not self.has_settable_vars(action):
@@ -206,10 +240,16 @@ class Role:
         return True
 
     def delete(self) -> None:
+        """
+        Delete role
+        """
         file_path = self.preset_path.joinpath(f"{self.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
+        """
+        Edit role preset name
+        """
         try:
             if not self.save(new_name):
                 return False

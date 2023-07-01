@@ -24,6 +24,9 @@ from ruamel.yaml.comments import TaggedScalar
 class cis_cmd(CommandSet):
     @with_argparser(cis_parser)
     def do_cis(self: CommandSet, ns: argparse.Namespace):
+        """
+        Manage CIS preset settings
+        """
         if self._cmd is None:
             return
         handler = ns.cmd2_handler.get()
@@ -37,12 +40,18 @@ class cis_cmd(CommandSet):
 @with_default_category("cis")
 class cis_section_cmd(CommandSet):
     def _choices_cis_section_title(self) -> List[CompletionItem]:
+        """
+        Provide completion on section id while showing its title
+        """
         if self._cmd is None:
             return []
         data = self._cmd._cis.list_section_and_details()  # type: ignore
         return [CompletionItem(s_id, s["title"]) for s_id, s in data]
 
     def _choices_cis_section_enable(self) -> List[CompletionItem]:
+        """
+        Provide completion on available options for enabling CIS sections
+        """
         if self._cmd is None:
             return []
         data = self._cmd._cis.list_section_and_details()  # type: ignore
@@ -61,6 +70,9 @@ class cis_section_cmd(CommandSet):
         return cmp
 
     def _choices_cis_section_disable(self) -> List[CompletionItem]:
+        """
+        Provide completion on available options for disabling CIS sections
+        """
         if self._cmd is None:
             return []
         data = self._cmd._cis.list_section_and_details()  # type: ignore
@@ -69,6 +81,9 @@ class cis_section_cmd(CommandSet):
         return cmp
 
     def cis_section_list(self: CommandSet, ns: argparse.Namespace):
+        """
+        List CIS sections with its status and title
+        """
         if self._cmd is None:
             return
 
@@ -101,6 +116,9 @@ class cis_section_cmd(CommandSet):
         self._cmd.poutput(f"\n{tbl}\n")
 
     def cis_section_enable(self: CommandSet, ns: argparse.Namespace):
+        """
+        Handles CIS section enabling
+        """
         if self._cmd is None:
             return
 
@@ -109,7 +127,7 @@ class cis_section_cmd(CommandSet):
             self._cmd.perror("[!] No CIS preset is loaded")
             return
 
-        valid_s_id = [
+        special_id = [
             "all",
             "level_1_server",
             "level_2_server",
@@ -118,15 +136,25 @@ class cis_section_cmd(CommandSet):
         ]
 
         for arg_s_id in ns.section_id:
-            if arg_s_id not in valid_s_id:
+            # Validate passed arguments
+            if arg_s_id not in special_id:
                 if not cis.is_valid_section_id(arg_s_id):
                     self._cmd.perror("[!] Invalid section id")
                     return
 
+            """
+            Loop through all available section id and enable its corresponding
+            subsections
+            """
             for s_id in cis.sections.keys():
                 is_sub = CIS.is_subsection(arg_s_id, s_id)
-                if not is_sub and arg_s_id not in valid_s_id:
+                """
+                1.2.3 is subsection of 1.2
+                1.2 is also subection of 1.2
+                """
+                if not is_sub and arg_s_id not in special_id:
                     continue
+                # Handle special arguments
                 if arg_s_id.startswith("level_"):
                     section = cis.sections[s_id]
                     if "profile" not in section.keys():
@@ -138,6 +166,7 @@ class cis_section_cmd(CommandSet):
                     if ns.verbose:
                         self._cmd.poutput(f"[+] {s_id} enabled successfully")
                 else:
+                    # Handle `all` and valid subsection
                     cis.set_enabled(s_id, True)
                     if ns.verbose:
                         self._cmd.poutput(f"[+] {s_id} enabled successfully")
@@ -145,6 +174,9 @@ class cis_section_cmd(CommandSet):
         self._cmd.poutput("[+] Enabled successfully")
 
     def cis_section_disable(self: CommandSet, ns: argparse.Namespace):
+        """
+        Handles CIS section enabling
+        """
         if self._cmd is None:
             return
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
@@ -165,6 +197,9 @@ class cis_section_cmd(CommandSet):
         self._cmd.poutput("[+] Disabled successfully")
 
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):
+        """
+        Function to show section details
+        """
         if self._cmd is None:
             return
         cis: CIS = self._cmd._cis  # type: ignore[attr-defined]
@@ -306,6 +341,9 @@ has subsections)""")
 @with_default_category("cis")
 class cis_set_cmd(CommandSet):
     def _choices_group_name(self) -> List[Text]:
+        """
+        Provide completion on available group name based on loaded inventory
+        """
         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
         if inv is None:
             raise CompletionError(
@@ -316,6 +354,10 @@ class cis_set_cmd(CommandSet):
         self: CommandSet,
         arg_tokens: Dict[Text, List[Text]]
     ) -> List[Text]:
+        """
+        Provide completion on available node name based on loaded inventory
+        and specified group name
+        """
         if self._cmd is None:
             return []
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
@@ -326,6 +368,9 @@ class cis_set_cmd(CommandSet):
         return nodes
 
     def _choices_cis_section_unit_and_title(self) -> List[CompletionItem]:
+        """
+        Provide completion on sections with settable variables
+        """
         if self._cmd is None:
             return []
         data = self._cmd._cis.list_section_unit_and_details()  # type: ignore
@@ -335,6 +380,9 @@ class cis_set_cmd(CommandSet):
         self: CommandSet,
         arg_tokens: Dict[Text, List[Text]]
     ) -> List[CompletionItem]:
+        """
+        Provide completion on settable variables based on specified section id
+        """
         if self._cmd is None:
             return []
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
@@ -366,6 +414,9 @@ class cis_set_cmd(CommandSet):
         self: CommandSet,
         arg_tokens: Dict[Text, List[Text]]
     ) -> List[Text]:
+        """
+        Provide completion on appropriate variable value where applicable
+        """
         if self._cmd is None:
             return []
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
@@ -481,6 +532,7 @@ better tab completion"""
 
         val = opt_val
 
+        # node-level setting
         if ns.node_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
@@ -510,6 +562,7 @@ better tab completion"""
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    new: {val}")
             return
+        # group-level setting
         elif ns.group_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
@@ -538,6 +591,7 @@ better tab completion"""
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    new: {val}")
             return
+        # global-level setting
         else:
             old_value = cis.get_var(s_id, opt_key)
             cis.set_var(s_id, opt_key, val)
@@ -554,6 +608,9 @@ better tab completion"""
     @as_subcommand_to("cis", "unset", unset_parser,
                       help="set subcommand")
     def cis_unset(self: CommandSet, ns: argparse.Namespace):
+        """
+        Set a variable key back to its default value
+        """
         if self._cmd is None:
             return
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
@@ -574,6 +631,7 @@ better tab completion"""
 
         option = cis.sections[s_id]["vars"][opt_key]
 
+        # node-level setting
         if ns.node_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
@@ -607,6 +665,7 @@ better tab completion"""
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    default: {default}")
             return
+        # group-level setting
         elif ns.group_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
             if inv is None:
@@ -640,6 +699,7 @@ better tab completion"""
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    default: {default}")
             return
+        # global-level setting
         else:
             old_value = cis.get_var(s_id, opt_key)
             default_val = option["default"]
@@ -671,6 +731,9 @@ class cis_search_cmd(CommandSet):
     @as_subcommand_to("cis", "search", search_parser,
                       help="search subcommand")
     def cis_search(self: CommandSet, ns: argparse.Namespace):
+        """
+        Search through CIS section title
+        """
         if self._cmd is None:
             return
 

@@ -174,6 +174,9 @@ class Inventory:
         return 0
 
     def rename_group(self, group_name: Text, new_group_name: Text) -> int:
+        """
+        Edit group name
+        """
         if group_name not in self.groups.keys():
             raise exception.GroupNameNotFound(group_name)
         if group_name == "ungrouped":
@@ -372,6 +375,9 @@ class Inventory:
 
     @staticmethod
     def create_inventory(name: Text) -> Optional[Inventory]:
+        """
+        Function wrapper to create an inventory object
+        """
         if not is_valid_file_path(INVENTORY_PATH, f"{name}.yml"):
             raise exception.InvalidName("inventory", name)
 
@@ -384,6 +390,9 @@ class Inventory:
         return inv
 
     def delete_inventory(self) -> None:
+        """
+        Delete inventory
+        """
         groups: List[Text] = [group_name for group_name in self.groups.keys()]
         for group in groups:
             self.delete_group(group)
@@ -393,6 +402,9 @@ class Inventory:
         return
 
     def rename_inventory(self, new_name: Text) -> bool:
+        """
+        Edit inventory name
+        """
         try:
             if not self.save(new_name):
                 return False

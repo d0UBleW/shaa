@@ -30,6 +30,9 @@ class Profile:
 
     @staticmethod
     def create(name: Text) -> Optional[Profile]:
+        """
+        Function wrapper to create a profile object
+        """
         if name in Profile.list_profile():
             return None
 
@@ -45,6 +48,9 @@ class Profile:
 
     @staticmethod
     def load(name: Text) -> Optional[Profile]:
+        """
+        Load profile YAML file to Python object
+        """
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
             raise exception.InvalidName("profile", name)
             return None
@@ -70,6 +76,9 @@ class Profile:
         return Profile(name=name, inv_name=inv_name, presets=presets)
 
     def save(self, file_name: Optional[Text] = None) -> bool:
+        """
+        Save Python object to YAML file
+        """
         if file_name is not None and file_name in Profile.list_profile():
             raise exception.NameExist("profile", file_name)
 
@@ -93,10 +102,16 @@ class Profile:
         return True
 
     def delete(self) -> None:
+        """
+        Delete profile
+        """
         file_path = PROFILE_PATH.joinpath(f"{self.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
+        """
+        Edit profile name
+        """
         try:
             if not self.save(new_name):
                 return False

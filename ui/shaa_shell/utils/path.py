@@ -34,6 +34,9 @@ ROLE_PATH = ANSIBLE_PATH.joinpath("roles/")
 
 
 def is_valid_file_path(parent: Path, file_name: Text) -> bool:
+    """
+    Check for directory traversal
+    """
     for c in file_name:
         if c in "~`!@#$%^&*()+='\";:{}[]":
             return False
@@ -48,6 +51,9 @@ def is_valid_file_path(parent: Path, file_name: Text) -> bool:
 
 
 def filter_file(parent_path: Path, glob_pattern, search_pattern) -> List[Text]:
+    """
+    Filter file based on globbing and file name
+    """
     files = parent_path.rglob(glob_pattern)
     result = []
     for file in files:
@@ -61,6 +67,9 @@ def filter_file(parent_path: Path, glob_pattern, search_pattern) -> List[Text]:
 
 
 def resolve_path(str_path: Text, parent_path: Path) -> Text:
+    """
+    Resolve name with ../ or ./
+    """
     final = parent_path.joinpath(str_path).resolve()
     fname_no_ext = final.parent.joinpath(final.stem)
     relative_path = fname_no_ext.relative_to(parent_path)

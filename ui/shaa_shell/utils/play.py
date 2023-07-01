@@ -28,10 +28,16 @@ yaml = YAML(typ="rt")
 
 
 def section_var(section_id: Text):
+    """
+    Convert section id with dots to underscore to match ansible role variables
+    """
     return f"section_{section_id.replace('.', '_')}"
 
 
 def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
+    """
+    Convert CIS preset to ansible role variables
+    """
     cis = CIS.load(name)
     if cis is None:
         return {}
@@ -58,6 +64,9 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
 
 def convert_role_vars_to_ansible_vars(role_type: Text,
                                       name: Text) -> Dict[Text, Any]:
+    """
+    Convert role preset to ansible role variables
+    """
     role: Optional[Role] = Role.load(role_type, name)
     if role is None:
         return {}
@@ -82,6 +91,9 @@ def convert_role_vars_to_ansible_vars(role_type: Text,
 
 
 def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
+    """
+    Generate ansible tags based on enabled sections or actions
+    """
     presets = {}
     if len(arg_presets) > 0:
         for preset in arg_presets:
@@ -93,6 +105,9 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
 
     tags: List[Text] = []
 
+    """
+    Generate tags for CIS preset
+    """
     if "cis" in presets.keys():
         try:
             cis_tags = generate_cis_tags(presets["cis"])
@@ -118,6 +133,9 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
 
 
 def generate_cis_tags(pre_name: Optional[Text]) -> Optional[List]:
+    """
+    Generate CIS tags
+    """
     if pre_name is None:
         return None
     try:
@@ -142,6 +160,9 @@ def generate_cis_tags(pre_name: Optional[Text]) -> Optional[List]:
 
 def generate_role_tags(role_type: Text,
                        pre_name: Optional[Text]) -> Optional[List]:
+    """
+    Generate tags for role preset other than CIS
+    """
     if pre_name is None:
         return None
     try:
@@ -195,6 +216,7 @@ def generate_playbook(profile: Profile,
             if role_type == "oscap":
                 all_vars["oscap_report_dir"] = str(DATA_PATH)
 
+    # Validate inventory data
     inv_name = profile.inv_name
     inv: Optional[Inventory] = None
     if inv_name is not None:
@@ -209,10 +231,12 @@ def generate_playbook(profile: Profile,
     if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
         return False
 
+    # Generate inventory file with all variables
     name = profile.name
     inv.groups["ungrouped"].group_vars = all_vars
     inv.save(name, ANSIBLE_INV_PATH, overwrite=True)
 
+    # Collect roles that need to be run
     roles = []
     for preset, val in presets.items():
         if preset == "util" or val is None:
@@ -243,6 +267,7 @@ def generate_playbook(profile: Profile,
 
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()
 
+    # Create the playbook
     playbook_fpath.parent.mkdir(parents=True, exist_ok=True)
     with playbook_fpath.open("w") as f:
         if len(roles) > 0:
@@ -257,11 +282,17 @@ def run_playbook(name: Text,
                  tags: Optional[List],
                  verbose: Optional[bool] = True,
                  color: Optional[bool] = True) -> None:
+    """
+    Run playbook
+    """
     inv_fpath = str(ANSIBLE_INV_PATH.joinpath(f"{name}.yml").resolve())
     playbook_fpath = str(PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve())
     ansible_cfg = str(PLAYBOOK_PATH.joinpath("ansible.cfg").resolve())
+
     if vault_password is None:
         raise exception.ShaaVaultError("Missing ansible vault password")
+
+    # Setup environment variable
     envs = {
         "ANSIBLE_CONFIG": ansible_cfg,
         "VAULT_PASSWORD": vault_password,
@@ -271,13 +302,19 @@ def run_playbook(name: Text,
         "ANSIBLE_ROLES_PATH": str(ROLE_PATH),
     }
     envs.update(os.environ)
+
     args = ["ansible-playbook", "-i", inv_fpath, playbook_fpath]
+
+    # Prepare tags
     if not verbose and tags is not None:
         if len(tags) == 0:
             tags.append("NON_EXISTENT")
         args.append("--tags")
         args.append(",".join(tags))
+
     print(f"[*] {' '.join(args)}")
+
+    # Run the playbook
     start_time = time.time()
     with subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=envs
@@ -291,7 +328,5 @@ def run_playbook(name: Text,
                     data: Text = proc.stdout.readline().decode('utf-8')
                     sys.stdout.write(data)
                     f.write(data)
-
-        # sys.stdout.write(f"return code: {proc.poll()}")
     end_time = time.time()
     print(f"[*] Time taken: {timedelta(seconds=end_time-start_time)}")

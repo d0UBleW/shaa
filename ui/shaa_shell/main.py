@@ -151,6 +151,9 @@ class ShaaShell(cmd2.Cmd):
     @cmd2.with_argparser(preset_parser)
     @cmd2.with_category("preset")
     def do_preset(self, ns: argparse.Namespace):
+        """
+        Manage preset
+        """
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)
@@ -161,6 +164,9 @@ class ShaaShell(cmd2.Cmd):
     @cmd2.with_argparser(profile_parser)
     @cmd2.with_category("profile")
     def do_profile(self, ns: argparse.Namespace):
+        """
+        Manage profile
+        """
         handler = ns.cmd2_handler.get()
         if handler is not None:
             handler(ns)
@@ -171,6 +177,9 @@ class ShaaShell(cmd2.Cmd):
     @cmd2.with_argparser(unload_parser)
     @cmd2.with_category("general")
     def do_unload(self, ns: argparse.Namespace):
+        """
+        Unload inventory, all presets, and profile
+        """
         self.do_inventory("unload")
         for preset in PRESETS:
             self.do_preset(f"{preset} unload")
@@ -232,6 +241,7 @@ class ShaaShell(cmd2.Cmd):
         oscap = self._oscap
         sec_tools = self._sec_tools
 
+        # Handle case when play is fired without a profile loaded
         profile = self._profile
         if profile is None:
             profile = Profile(name="_shaa_unnamed_profile")
