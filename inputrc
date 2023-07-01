@@ -1,0 +1,11 @@
+"\C-n": menu-complete
+"\C-p": menu-complete-backward
+"\en": history-search-forward
+"\ep": history-search-backward
+"\C-x\C-u": universal-argument
+
+set completion-ignore-case on
+set meta-flag on
+set input-meta on
+set convert-meta on
+set output-meta on

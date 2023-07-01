@@ -1,0 +1,17 @@
+.envrc
+*.egg-info
+.git/
+*.key
+*.pub
+.mypy_cache/
+__pycache__/
+.env
+.vault_pass
+vagrant/
+venv/
+ui/shaa_shell/data/custom/
+ui/shaa_shell/data/ansible/
+ui/shaa_shell/log
+docker/
+Dockerfile
+build.sh
