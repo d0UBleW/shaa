@@ -119,17 +119,17 @@ class preset_sec_tools_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_action_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] sec_tools action module loaded")
+        self._cmd.poutput("[*] sec_tools action module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] sec_tools set module loaded")
+        self._cmd.poutput("[*] sec_tools set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] sec_tools search module loaded")
+        self._cmd.poutput("[*] sec_tools search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_cmd  # type: ignore[attr-defined]
@@ -347,17 +347,17 @@ class preset_oscap_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._oscap_action_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] oscap action module loaded")
+        self._cmd.poutput("[*] oscap action module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._oscap_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] oscap set module loaded")
+        self._cmd.poutput("[*] oscap set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._oscap_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] oscap search module loaded")
+        self._cmd.poutput("[*] oscap search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._oscap_cmd  # type: ignore[attr-defined]
@@ -573,17 +573,17 @@ class preset_util_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._util_action_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] util action module loaded")
+        self._cmd.poutput("[*] util action module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._util_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] util set module loaded")
+        self._cmd.poutput("[*] util set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._util_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] util search module loaded")
+        self._cmd.poutput("[*] util search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._util_cmd  # type: ignore[attr-defined]
@@ -799,17 +799,17 @@ class preset_cis_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._cis_section_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] cis section module loaded")
+        self._cmd.poutput("[*] cis section module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._cis_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] cis set module loaded")
+        self._cmd.poutput("[*] cis set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._cis_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] cis search module loaded")
+        self._cmd.poutput("[*] cis search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._cis_cmd  # type: ignore[attr-defined]
