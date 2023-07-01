@@ -35,9 +35,9 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
     cis = CIS.load(name)
     if cis is None:
         return {}
-    vars = {}
+    ansible_vars = {}
     for s_id, section in cis.sections.items():
-        vars[section_var(s_id)] = cis.get_enabled(s_id)
+        ansible_vars[section_var(s_id)] = cis.get_enabled(s_id)
         if "vars" in section.keys() and section["vars"] is not None:
             for var_key, var in section["vars"].items():
                 val = cis.get_var(s_id, var_key)
@@ -47,13 +47,13 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
                 # e.g., systemd_timesyncd.fallback_ntp
                 if "." in var_key:
                     parent, _, child = var_key.partition(".")
-                    if parent not in vars:
-                        vars[parent] = {}  # type: ignore[assignment]
-                    vars[parent][child] = val  # type: ignore[index]
+                    if parent not in ansible_vars:
+                        ansible_vars[parent] = {}  # type: ignore[assignment]
+                    ansible_vars[parent][child] = val  # type: ignore[index]
                 else:
-                    vars[var_key] = val
+                    ansible_vars[var_key] = val
 
-    return vars
+    return ansible_vars
 
 
 def convert_role_vars_to_ansible_vars(role_type: Text,
@@ -61,9 +61,9 @@ def convert_role_vars_to_ansible_vars(role_type: Text,
     role: Optional[Role] = Role.load(role_type, name)
     if role is None:
         return {}
-    vars = {}
+    ansible_vars = {}
     for action, task in role.actions.items():
-        vars[action] = role.get_enabled(action)
+        ansible_vars[action] = role.get_enabled(action)
         if not role.has_settable_vars(action):
             continue
         for var_key, var in task["vars"].items():
@@ -72,13 +72,13 @@ def convert_role_vars_to_ansible_vars(role_type: Text,
                 val = var["default"]
             if "." in var_key:
                 parent, _, child = var_key.partition(".")
-                if parent not in vars:
-                    vars[parent] = {}  # type: ignore[assignment]
-                vars[parent][child] = val  # type: ignore[index]
+                if parent not in ansible_vars:
+                    ansible_vars[parent] = {}  # type: ignore[assignment]
+                ansible_vars[parent][child] = val  # type: ignore[index]
             else:
-                vars[var_key] = val
+                ansible_vars[var_key] = val
 
-    return vars
+    return ansible_vars
 
 
 def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
@@ -101,10 +101,11 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
         if cis_tags is not None:
             tags += cis_tags
 
-    for role_type in PRESETS:
+    """
+    Generate tags for presets other than CIS
+    """
+    for role_type in presets.keys():
         if role_type == "cis":
-            continue
-        if role_type not in presets.keys():
             continue
         try:
             role_tags = generate_role_tags(role_type, presets[role_type])
@@ -171,12 +172,14 @@ def generate_playbook(profile: Profile,
         presets = profile.presets
 
     all_vars = {}
+    # Convert CIS variables
     if "cis" in presets.keys() and presets["cis"] is not None:
         print("[+] Converting CIS preset variables")
         cis_vars = convert_cis_to_ansible_vars(presets["cis"])
         all_vars.update(cis_vars)
 
-    for role_type in presets:
+    # Convert role presets variables aside from CIS
+    for role_type in presets.keys():
         if role_type == "cis":
             continue
         role_name = presets[role_type]

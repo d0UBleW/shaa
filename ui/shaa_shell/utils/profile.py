@@ -34,10 +34,11 @@ class Profile:
             return None
 
         if name == "_shaa_unnamed_profile":
-            raise exception.InvalidName(name, message="Reserved profile name")
+            raise exception.InvalidName("profile", name,
+                                        message="Reserved profile name")
 
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
-            raise exception.InvalidName(name)
+            raise exception.InvalidName("profile", name)
 
         profile = Profile(name)
         return profile
@@ -45,11 +46,11 @@ class Profile:
     @staticmethod
     def load(name: Text) -> Optional[Profile]:
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
-            raise exception.InvalidName(name)
+            raise exception.InvalidName("profile", name)
             return None
 
         if name not in Profile.list_profile():
-            raise exception.NameNotFound(name)
+            raise exception.NameNotFound("profile", name)
             return None
 
         file_path = PROFILE_PATH.joinpath(f"{name}.yml").resolve()
@@ -70,13 +71,13 @@ class Profile:
 
     def save(self, file_name: Optional[Text] = None) -> bool:
         if file_name is not None and file_name in Profile.list_profile():
-            raise exception.NameExist(file_name)
+            raise exception.NameExist("profile", file_name)
 
         if file_name is None:
             file_name = self.name
 
         if not is_valid_file_path(PROFILE_PATH, f"{file_name}.yml"):
-            raise exception.InvalidName(file_name)
+            raise exception.InvalidName("profile", file_name)
 
         file_path = PROFILE_PATH.joinpath(f"{file_name}.yml").resolve()
 
