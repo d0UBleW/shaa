@@ -6,7 +6,7 @@ from pathlib import Path
 import re
 from ruamel.yaml import YAML  # type: ignore[import]
 from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
-from typing import List, Text, Optional, Dict, Tuple, Any
+from typing import List, Text, Optional, Dict, Tuple, Any, Union
 from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
 
 from shaa_shell.utils import exception
@@ -26,7 +26,8 @@ class InventoryNode:
     name: Text
     ip_address: Text
     user: Text
-    password: Text
+    password: Optional[Text]
+    ssh_priv_key_path: Optional[Text]
     host_vars: Dict[Text, Any] = field(default_factory=dict)
 
     def set_var(self, key: Text, value: Any) -> None:
@@ -39,11 +40,16 @@ class InventoryNode:
         """
         Convert node data into Ansible compatible format
         """
-        data = dict()
+        data: Dict[Text, Union[Text, TaggedScalar]] = dict()
         data['ansible_host'] = self.ip_address
         data['ansible_user'] = self.user
-        data['ansible_password'] = TaggedScalar(  # type: ignore[assignment]
-            value=vault.dump(self.password), tag="!vault")
+        if self.password is not None:
+            data['ansible_password'] = TaggedScalar(
+                value=vault.dump(self.password),
+                tag="!vault"
+            )
+        if self.ssh_priv_key_path is not None:
+            data['ansible_ssh_private_key_file'] = self.ssh_priv_key_path
         data.update(self.host_vars)
         return data
 
@@ -55,17 +61,23 @@ class InventoryNode:
         try:
             n_ip = data.pop("ansible_host")
             n_user = data.pop("ansible_user")
-            n_password = vault.load(data.pop("ansible_password"))
+            n_password = None
+            if "ansible_password" in data.keys():
+                n_password = vault.load(data.pop("ansible_password"))
+            n_ssh_priv_key_path = None
+            if "ansible_ssh_private_key_file" in data.keys():
+                n_ssh_priv_key_path = data.pop("ansible_ssh_private_key_file")
             n_host_vars = data
             node = InventoryNode(
                 name=name,
                 ip_address=n_ip,
                 user=n_user,
                 password=n_password,
+                ssh_priv_key_path=n_ssh_priv_key_path,
                 host_vars=n_host_vars)
             return node
         except KeyError as ex:
-            print(f"[{name}] Key not found: {ex}")
+            print(f"[!] {name}: key not found: {ex}")
             return None
         except AnsibleVaultError as ex:
             if "no vault secrets were found that could decrypt" in ex.message:
@@ -231,6 +243,7 @@ class Inventory:
                   ip: Optional[Text] = None,
                   user: Optional[Text] = None,
                   password: Optional[Text] = None,
+                  ssh_priv_key_path: Optional[Text] = None,
                   new_name: Optional[Text] = None,
                   group_name: Text = "ungrouped") -> int:
         """
@@ -250,8 +263,28 @@ class Inventory:
             node.ip_address = ip
         if user is not None:
             node.user = user
+
+        old_password = node.password
+        old_key = node.ssh_priv_key_path
+
         if password is not None:
             node.password = password
+        if ssh_priv_key_path is not None:
+            node.ssh_priv_key_path = ssh_priv_key_path
+
+        if node.password == "":
+            node.password = None
+        if node.ssh_priv_key_path == "":
+            node.ssh_priv_key_path = None
+
+        if node.password is None and node.ssh_priv_key_path is None:
+            node.password = old_password
+            node.ssh_priv_key_path = old_key
+            err_msg = "Edit operation caused both password and SSH private\n"
+            err_msg += "    key to be unset. Please ensure that at least\n"
+            err_msg += "    one of them remain set"
+            raise exception.ShaaInventoryError(err_msg)
+
         return 0
 
     def list_node(

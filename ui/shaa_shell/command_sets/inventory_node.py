@@ -23,6 +23,7 @@ from shaa_shell.utils.inventory import (
 )
 from ruamel.yaml.comments import TaggedScalar
 
+from shaa_shell.utils import path
 from shaa_shell.utils import exception
 from shaa_shell.utils.parser import inventory_node_parser
 from shaa_shell.utils.vault import vault
@@ -48,6 +49,16 @@ class inventory_node_cmd(CommandSet):
 
 @with_default_category("inventory node")
 class inventory_node_subcmd(CommandSet):
+    def _choices_priv_key(self: CommandSet) -> List[Text]:
+        if self._cmd is None:
+            return []
+        key_list = list(path.filter_file(path.SSH_PRIV_KEY_PATH,
+                                         "*",
+                                         with_ext=True))
+        if len(key_list) == 0:
+            raise CompletionError('[!] No private key found in search path')
+        return key_list
+
     def _choices_group_name(self: CommandSet) -> List[Text]:
         if self._cmd is None:
             return []
@@ -145,7 +156,14 @@ leaving it blank defaults to ungrouped)""",
         "-p",
         "--password",
         nargs="?",
-        help="node SSH password",
+        help="node SSH password, pass empty string to unset the field",
+    )
+    edit_parser.add_argument(
+        "-k",
+        "--key",
+        nargs="?",
+        help="node SSH private key path, pass empty string to unset the field",
+        choices_provider=_choices_priv_key,
     )
 
     create_parser = Cmd2ArgumentParser()
@@ -162,8 +180,22 @@ leaving it blank defaults to ungrouped)""",
         help="node SSH user")
 
     create_parser.add_argument(
-        "node_password",
+        "-p",
+        "--password",
+        dest="node_password",
+        metavar="node_password",
+        nargs="?",
         help="node SSH password")
+
+    create_parser.add_argument(
+        '-k',
+        '--key',
+        dest="node_ssh_priv_key_path",
+        metavar="node_ssh_priv_key_path",
+        help="node SSH private key path",
+        nargs="?",
+        choices_provider=_choices_priv_key,
+    )
 
     create_parser.add_argument(
         '-g',
@@ -291,6 +323,7 @@ leaving it blank defaults to ungrouped)""",
                              ip=ns.ip,
                              user=ns.user,
                              password=ns.password,
+                             ssh_priv_key_path=ns.key,
                              group_name=ns.node_group) == 0:
                 self._cmd.poutput("[+] Node has been edited successfully")
                 self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
@@ -305,17 +338,23 @@ leaving it blank defaults to ungrouped)""",
         if self._cmd is None:
             return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        if ns.node_password is None and ns.node_ssh_priv_key_path is None:
+            self._cmd.perror("[!] Missing both password and SSH private key")
+            self._cmd.perror("    Please specify either one of them")
+            return
         node = InventoryNode(
             name=ns.node_name,
             ip_address=ns.node_ip,
             user=ns.node_user,
             password=ns.node_password,
+            ssh_priv_key_path=ns.node_ssh_priv_key_path,
         )
         if inv.add_node(node, ns.node_group) == 0:
             self._cmd.poutput("[+] Node has been created successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
-            self._cmd.perror("[!] Specified node name already existed")
+            self._cmd.perror("[!] Specified node name already exists")
+            return
 
     @as_subcommand_to("node", "delete", delete_parser,
                       aliases=["del", "rm"],
@@ -362,7 +401,7 @@ leaving it blank defaults to ungrouped)""",
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
 
         columns: List[Column] = [
-            Column("Key", width=16),
+            Column("Key", width=20),
             Column("Value", width=64),
         ]
         st = SimpleTable(columns)

@@ -20,6 +20,7 @@ from shaa_shell.utils.path import (
     ANSIBLE_VAULT_PASSWORD,
     OSCAP_REPORT_PATH,
     ANSIBLE_CFG_PATH,
+    SSH_PRIV_KEY_PATH,
 )
 from shaa_shell.utils.preset import PRESETS, PRESET_ROLE_MAP
 from shaa_shell.utils import exception
@@ -234,6 +235,13 @@ def generate_playbook(profile: Profile,
     # Generate inventory file with all variables
     name = profile.name
     inv.groups["ungrouped"].group_vars = all_vars
+
+    for group in inv.groups.values():
+        for node in group.nodes.values():
+            if node.ssh_priv_key_path is not None:
+                node.ssh_priv_key_path = str(SSH_PRIV_KEY_PATH.joinpath(
+                    node.ssh_priv_key_path))
+
     inv.save(name, ANSIBLE_INV_PATH, overwrite=True)
 
     # Collect roles that need to be run

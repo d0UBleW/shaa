@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import importlib.resources
 from pathlib import Path
-from typing import Text, List
+from typing import Text, List, Optional
 import re
 
 ROOT_PATH = Path(importlib.resources.files("shaa_shell").__str__())
 USER_DATA_PATH = Path.home().joinpath(".shaa")
 TEMP_PATH = Path("/tmp/shaa")
+
+SSH_PRIV_KEY_PATH = USER_DATA_PATH.joinpath("data/ssh")
 
 OSCAP_REPORT_PATH = USER_DATA_PATH.joinpath("data/oscap-report")
 
@@ -50,7 +52,10 @@ def is_valid_file_path(parent: Path, file_name: Text) -> bool:
     return True
 
 
-def filter_file(parent_path: Path, glob_pattern, search_pattern) -> List[Text]:
+def filter_file(parent_path: Path,
+                glob_pattern: Text,
+                search_pattern: Optional[Text] = None,
+                with_ext: bool = False) -> List[Text]:
     """
     Filter file based on globbing and file name
     """
@@ -59,8 +64,13 @@ def filter_file(parent_path: Path, glob_pattern, search_pattern) -> List[Text]:
     for file in files:
         if not file.is_file():
             continue
-        fname_no_ext = file.parent.joinpath(file.stem)
-        relative_path = fname_no_ext.relative_to(parent_path)
+        fname = file
+        if not with_ext:
+            fname = file.parent.joinpath(file.stem)
+        relative_path = fname.relative_to(parent_path)
+        if search_pattern is None:
+            result.append(str(relative_path))
+            continue
         if re.search(search_pattern, str(relative_path)):
             result.append(str(relative_path))
     return result
