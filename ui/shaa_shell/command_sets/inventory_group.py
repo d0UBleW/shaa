@@ -199,7 +199,7 @@ class inventory_group_subcmd(CommandSet):
         data_list: List[List] = []
         for group in groups:
             vars = []
-            for key, val in data_list[2][1].items():
+            for key, val in group.group_vars.items():
                 if isinstance(val, TaggedScalar):
                     val = vault.load(val)
                 val = pprint.pformat(val, sort_dicts=False)
