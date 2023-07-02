@@ -359,7 +359,7 @@ class Inventory:
         return True
 
     @staticmethod
-    def load(name: Text) -> Optional[Inventory]:
+    def load(name: Text) -> Inventory:
         """
         Load Ansible inventory from YAML file to Python object
         """

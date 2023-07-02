@@ -208,7 +208,7 @@ def generate_role_tags(role_type: Text,
     return tags
 
 
-def generate_inventory(profile: Profile, arg_presets: List[Text]) -> bool:
+def generate_inventory(profile: Profile, arg_presets: List[Text]) -> None:
     try:
         presets = final_presets(profile, arg_presets)
     except exception.ShaaNameError:
@@ -237,18 +237,18 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> bool:
 
     # Validate inventory data
     inv_name = profile.inv_name
-    inv: Optional[Inventory] = None
+    if inv_name is None:
+        raise exception.ShaaInventoryError(
+            "No inventory is set on current profile")
     if inv_name is not None:
         try:
             inv = Inventory.load(inv_name)
         except exception.ShaaInventoryError:
             raise
 
-    if inv is None:
-        return False
-
     if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
-        return False
+        raise exception.ShaaInventoryError(
+            "Inventory data is empty, try to save it first if you have not")
 
     # Generate inventory file with all variables
     inv.groups["ungrouped"].group_vars = all_vars
@@ -260,7 +260,7 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> bool:
                     node.ssh_priv_key_path))
             expand_nested_key(node.host_vars)
 
-    return inv.save(profile.name, ANSIBLE_INV_PATH, overwrite=True)
+    inv.save(profile.name, ANSIBLE_INV_PATH, overwrite=True)
 
 
 def generate_playbook(profile: Profile,

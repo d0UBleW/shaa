@@ -279,15 +279,9 @@ class ShaaShell(cmd2.Cmd):
 
         self.poutput("[+] Generating final inventory file ...")
         try:
-            gen_inv = play.generate_inventory(profile, ns.preset)
+            play.generate_inventory(profile, ns.preset)
         except exception.ShaaInventoryError as ex:
             self.perror(f"[!] {ex}")
-            return
-
-        if not gen_inv:
-            self.perror("[!] Error in generating final inventory file")
-            self.perror("    Inventory data is empty, try to save it first")
-            self.perror("    or make sure it is set on current profile")
             return
 
         self.poutput("[+] Generating playbook ...")
