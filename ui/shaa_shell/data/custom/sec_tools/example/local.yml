@@ -1,4 +1,0 @@
-install_wazuh:
-  enabled: true
-  vars:
-    wazuh_manager: 192.168.56.143

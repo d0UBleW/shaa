@@ -1,6 +1,0 @@
-inventory: example/local
-presets:
-  cis: example/part-2
-  oscap:
-  sec_tools:
-  util: example/local

@@ -1,4 +1,0 @@
-scan:
-  vars:
-    report_output_prefix: before
-  enabled: true
