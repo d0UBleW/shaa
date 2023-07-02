@@ -225,7 +225,7 @@ class inventory_group_subcmd(CommandSet):
             return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         columns: List[Column] = [
-            Column("Key", width=16),
+            Column("Key", width=20),
             Column("Value", width=64),
         ]
         st = SimpleTable(columns)
@@ -236,6 +236,9 @@ class inventory_group_subcmd(CommandSet):
                 nodes = []
                 for node in group.nodes.values():
                     node_data_list = list(asdict(node).items())
+                    for i in range(len(node_data_list[:-1])):
+                        if node_data_list[i][1] is None:
+                            node_data_list[i] = (node_data_list[i][0], "")
                     node_vars = []
                     for key, val in node_data_list[-1][1].items():
                         if isinstance(val, TaggedScalar):

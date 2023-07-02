@@ -202,6 +202,10 @@ class util_action_cmd(CommandSet):
                 if isinstance(user_val, TaggedScalar):
                     user_val = vault.load(user_val)
 
+                if default_val is None:
+                    default_val = ""
+                if user_val is None:
+                    user_val = ""
                 vars_data_list.append([
                     var_key,
                     detail,
@@ -482,6 +486,10 @@ better tab completion"""
                 old_value = vault.load(old_value)
             if isinstance(val, TaggedScalar):
                 val = vault.load(val)
+            if old_value is None:
+                old_value = ""
+            if val is None:
+                val = ""
             self._cmd.poutput(f"[+] Node: {nname} ({gname})")
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
@@ -510,6 +518,10 @@ better tab completion"""
                 old_value = vault.load(old_value)
             if isinstance(val, TaggedScalar):
                 val = vault.load(val)
+            if old_value is None:
+                old_value = ""
+            if val is None:
+                val = ""
             self._cmd.poutput(f"[+] Group: {gname}")
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
@@ -523,6 +535,10 @@ better tab completion"""
                 old_value = vault.load(old_value)
             if isinstance(val, TaggedScalar):
                 val = vault.load(val)
+            if old_value is None:
+                old_value = ""
+            if val is None:
+                val = ""
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    new: {val}")
@@ -580,6 +596,10 @@ better tab completion"""
             default = option["default"]
             if isinstance(default, TaggedScalar):
                 default = vault.load(default)
+            if old_value is None:
+                old_value = ""
+            if default is None:
+                default = ""
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    default: {default}")
@@ -613,14 +633,17 @@ better tab completion"""
             default = option["default"]
             if isinstance(default, TaggedScalar):
                 default = vault.load(default)
+            if old_value is None:
+                old_value = ""
+            if default is None:
+                default = ""
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    default: {default}")
             return
         else:
             old_value = role_util.get_var(action, opt_key)
-            default_val = option["default"]
-            role_util.set_var(action, opt_key, default_val)
+            role_util.set_var(action, opt_key, None)
             self._cmd._util_has_changed = True  # type: ignore[attr-defined]
 
             if isinstance(old_value, TaggedScalar):
@@ -628,6 +651,10 @@ better tab completion"""
             default = option["default"]
             if isinstance(default, TaggedScalar):
                 default = vault.load(default)
+            if old_value is None:
+                old_value = ""
+            if default is None:
+                default = ""
             self._cmd.poutput(f"[+] {opt_key}:")
             self._cmd.poutput(f"    old: {old_value}")
             self._cmd.poutput(f"    default: {default}")

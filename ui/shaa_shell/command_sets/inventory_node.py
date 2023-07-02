@@ -409,6 +409,9 @@ leaving it blank defaults to ungrouped)""",
         for node in inv.groups[ns.node_group].nodes.values():
             if re.search(ns.pattern, node.name):
                 data_list = list(asdict(node).items())
+                for i in range(len(data_list[:-1])):
+                    if data_list[i][1] is None:
+                        data_list[i] = (data_list[i][0], "")
                 # node host vars
                 vars = []
                 for key, val in data_list[-1][1].items():
