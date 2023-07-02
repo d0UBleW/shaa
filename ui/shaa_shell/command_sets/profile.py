@@ -13,6 +13,7 @@ from cmd2.table_creator import (  # type: ignore[import]
     SimpleTable,
     Column,
 )
+
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils.inventory import Inventory
 from shaa_shell.utils.preset import list_preset, PRESETS
@@ -193,15 +194,29 @@ class profile_subcmd(CommandSet):
             return
         columns = [
             Column("Name", width=32),
+            Column("Inventory", width=32),
+            Column("Presets", width=48),
         ]
 
         st = SimpleTable(columns)
 
         data_list = []
-        for profile in Profile.list_profile(ns.pattern):
-            data_list.append([profile])
+        for profile_name in Profile.list_profile(ns.pattern):
+            try:
+                profile: Profile = Profile.load(profile_name)
+            except exception.ShaaNameError as ex:
+                self._cmd.perror(f"[!] {ex}")
+                return
+            presets = []
+            for preset_name, preset in profile.presets.items():
+                if preset is None:
+                    preset = ""
+                presets.append(f"{preset_name}: {preset}")
+            data_list.append([profile_name,
+                              profile.inv_name,
+                              "\n".join(presets)])
 
-        tbl = st.generate_table(data_list, row_spacing=0)
+        tbl = st.generate_table(data_list, row_spacing=1)
         self._cmd.poutput(f"\n{tbl}\n")
 
     @as_subcommand_to("profile", "save", save_parser,

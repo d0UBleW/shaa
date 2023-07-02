@@ -47,17 +47,15 @@ class Profile:
         return profile
 
     @staticmethod
-    def load(name: Text) -> Optional[Profile]:
+    def load(name: Text) -> Profile:
         """
         Load profile YAML file to Python object
         """
         if not is_valid_file_path(PROFILE_PATH, f"{name}.yml"):
             raise exception.InvalidName("profile", name)
-            return None
 
         if name not in Profile.list_profile():
             raise exception.NameNotFound("profile", name)
-            return None
 
         file_path = PROFILE_PATH.joinpath(f"{name}.yml").resolve()
         with file_path.open("r") as f:
