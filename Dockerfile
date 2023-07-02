@@ -31,7 +31,6 @@ RUN ln -s /opt/venv/lib/python3.9/site-packages/shaa_shell /shaa_shell
 
 RUN useradd shaa
 
-COPY ./inputrc /home/shaa/.inputrc
 COPY ./ansible/roles /home/shaa/.ansible/roles
 
 RUN chown -R shaa:shaa /home/shaa/
