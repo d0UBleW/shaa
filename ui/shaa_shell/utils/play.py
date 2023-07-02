@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ruamel.yaml import YAML
-from typing import Text, Dict, Any, Optional, List
+from typing import Text, Dict, Any, Optional, List, Tuple
 from datetime import datetime, timedelta
 import time
 import subprocess
@@ -28,6 +28,32 @@ from shaa_shell.utils import exception
 yaml = YAML(typ="rt")
 
 
+def expand_nested_key(d: Dict[Text, Any]):
+    nested_key = []
+    for key in d.keys():
+        if "." in key:
+            nested_key.append(key)
+
+    for key in nested_key:
+        val = d[key]
+        del d[key]
+        ref = None
+        child = key
+        while child != "":
+            parent, _, child = child.partition(".")
+            if ref is None:
+                if parent not in d.keys():
+                    d[parent] = {}
+                ref = d[parent]
+            else:
+                if child == "":
+                    ref[parent] = val
+                    break
+                if parent not in ref.keys():
+                    ref[parent] = {}
+                ref = ref[parent]
+
+
 def section_var(section_id: Text):
     """
     Convert section id with dots to underscore to match ansible role variables
@@ -50,16 +76,11 @@ def convert_cis_to_ansible_vars(name: Text) -> Dict[Text, Any]:
                 val = cis.get_var(s_id, var_key)
                 if val is None:
                     val = var["default"]
-                # for variables with nested key
-                # e.g., systemd_timesyncd.fallback_ntp
-                if "." in var_key:
-                    parent, _, child = var_key.partition(".")
-                    if parent not in ansible_vars:
-                        ansible_vars[parent] = {}  # type: ignore[assignment]
-                    ansible_vars[parent][child] = val  # type: ignore[index]
-                else:
-                    ansible_vars[var_key] = val
+                ansible_vars[var_key] = val
 
+    # for variables with nested key
+    # e.g., systemd_timesyncd.fallback_ntp
+    expand_nested_key(ansible_vars)
     return ansible_vars
 
 
@@ -80,21 +101,15 @@ def convert_role_vars_to_ansible_vars(role_type: Text,
             val = role.get_var(action, var_key)
             if val is None:
                 val = var["default"]
-            if "." in var_key:
-                parent, _, child = var_key.partition(".")
-                if parent not in ansible_vars:
-                    ansible_vars[parent] = {}  # type: ignore[assignment]
-                ansible_vars[parent][child] = val  # type: ignore[index]
-            else:
-                ansible_vars[var_key] = val
+            ansible_vars[var_key] = val
 
+    # for variables with nested key
+    # e.g., systemd_timesyncd.fallback_ntp
+    expand_nested_key(ansible_vars)
     return ansible_vars
 
 
-def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
-    """
-    Generate ansible tags based on enabled sections or actions
-    """
+def final_presets(profile: Profile, arg_presets: List[Text]) -> Dict:
     presets = {}
     if len(arg_presets) > 0:
         for preset in arg_presets:
@@ -103,6 +118,18 @@ def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
             presets[preset] = profile.presets[preset]
     else:
         presets = profile.presets
+
+    return presets
+
+
+def generate_tags(profile: Profile, arg_presets: List[Text]) -> Optional[List]:
+    """
+    Generate ansible tags based on enabled sections or actions
+    """
+    try:
+        presets = final_presets(profile, arg_presets)
+    except exception.ShaaNameError:
+        raise
 
     tags: List[Text] = []
 
@@ -181,22 +208,11 @@ def generate_role_tags(role_type: Text,
     return tags
 
 
-def generate_playbook(profile: Profile,
-                      arg_presets: List[Text],
-                      targets: Optional[List] = ["all"]
-                      ) -> Optional[bool]:
-    """
-    Generate playbook based on profile and specified presets
-    """
-    presets = {}
-
-    if len(arg_presets) > 0:
-        for preset in arg_presets:
-            if preset not in PRESETS:
-                raise exception.ShaaNameError(f"Invalid preset: {preset}")
-            presets[preset] = profile.presets[preset]
-    else:
-        presets = profile.presets
+def generate_inventory(profile: Profile, arg_presets: List[Text]) -> bool:
+    try:
+        presets = final_presets(profile, arg_presets)
+    except exception.ShaaNameError:
+        raise
 
     all_vars = {}
     # Convert CIS variables
@@ -204,6 +220,7 @@ def generate_playbook(profile: Profile,
         print("[+] Converting CIS preset variables")
         cis_vars = convert_cis_to_ansible_vars(presets["cis"])
         all_vars.update(cis_vars)
+        print("[+] Done converting CIS preset variable")
 
     # Convert role presets variables aside from CIS
     for role_type in presets.keys():
@@ -216,6 +233,7 @@ def generate_playbook(profile: Profile,
             all_vars.update(role_vars)
             if role_type == "oscap":
                 all_vars["oscap_report_dir"] = str(OSCAP_REPORT_PATH)
+            print(f"[+] Done converting {role_type} preset variable")
 
     # Validate inventory data
     inv_name = profile.inv_name
@@ -233,7 +251,6 @@ def generate_playbook(profile: Profile,
         return False
 
     # Generate inventory file with all variables
-    name = profile.name
     inv.groups["ungrouped"].group_vars = all_vars
 
     for group in inv.groups.values():
@@ -241,8 +258,22 @@ def generate_playbook(profile: Profile,
             if node.ssh_priv_key_path is not None:
                 node.ssh_priv_key_path = str(SSH_PRIV_KEY_PATH.joinpath(
                     node.ssh_priv_key_path))
+            expand_nested_key(node.host_vars)
 
-    inv.save(name, ANSIBLE_INV_PATH, overwrite=True)
+    return inv.save(profile.name, ANSIBLE_INV_PATH, overwrite=True)
+
+
+def generate_playbook(profile: Profile,
+                      arg_presets: List[Text],
+                      targets: Optional[List] = ["all"]
+                      ) -> None:
+    """
+    Generate playbook based on profile and specified presets
+    """
+    try:
+        presets = final_presets(profile, arg_presets)
+    except exception.ShaaNameError:
+        raise
 
     # Collect roles that need to be run
     roles = []
@@ -251,6 +282,8 @@ def generate_playbook(profile: Profile,
             continue
         role = {"role": PRESET_ROLE_MAP[preset]}
         roles.append(role)
+
+    name = profile.name
 
     data = [{
         "name": name,
@@ -282,8 +315,6 @@ def generate_playbook(profile: Profile,
             yaml.dump(data, f)
         if "util" in presets and presets["util"] is not None:
             yaml.dump(util_pb, f)
-
-    return True
 
 
 def run_playbook(name: Text,

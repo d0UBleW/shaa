@@ -277,25 +277,27 @@ class ShaaShell(cmd2.Cmd):
                 "sec_tools" in ns.preset and sec_tools is not None):
             self.check_if_sec_tools_changed()
 
-        self.poutput("[+] Generating playbook ...")
+        self.poutput("[+] Generating final inventory file ...")
         try:
-            gen_pb = play.generate_playbook(profile,
-                                            ns.preset,
-                                            targets=ns.target)
-        except exception.ShaaNameError as ex:
-            self.perror(f"[!] {ex}")
-            return
+            gen_inv = play.generate_inventory(profile, ns.preset)
         except exception.ShaaInventoryError as ex:
             self.perror(f"[!] {ex}")
             return
-        if gen_pb is not None and not gen_pb:
-            self.perror("[!] Error in generating playbook")
+
+        if not gen_inv:
+            self.perror("[!] Error in generating final inventory file")
             self.perror("    Inventory data is empty, try to save it first")
             self.perror("    or make sure it is set on current profile")
             return
-        if gen_pb is None:
+
+        self.poutput("[+] Generating playbook ...")
+        try:
+            play.generate_playbook(profile, ns.preset, targets=ns.target)
+        except exception.ShaaNameError as ex:
+            self.perror(f"[!] {ex}")
             return
         self.poutput("[+] Done")
+
         self.poutput("[+] Generating tags ...")
         try:
             tags = play.generate_tags(profile, ns.preset)
