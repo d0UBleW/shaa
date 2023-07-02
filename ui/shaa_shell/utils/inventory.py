@@ -26,8 +26,8 @@ class InventoryNode:
     name: Text
     ip_address: Text
     user: Text
-    password: Optional[Text]
-    ssh_priv_key_path: Optional[Text]
+    password: Optional[Text] = None
+    ssh_priv_key_path: Optional[Text] = None
     host_vars: Dict[Text, Any] = field(default_factory=dict)
 
     def set_var(self, key: Text, value: Any) -> None:
