@@ -28,8 +28,10 @@ from shaa_shell.utils.role import Role
 from shaa_shell.utils.profile import Profile
 from shaa_shell.utils import play
 from shaa_shell.utils import exception
+from shaa_shell.utils.path import USER_DATA_PATH
 
-STARTUP_SCRIPT = '~/.shaa_shell_rc'
+STARTUP_SCRIPT = USER_DATA_PATH.joinpath("shaashrc")
+HIST_FILE = USER_DATA_PATH.joinpath("shaash_hist")
 
 
 class ShaaShell(cmd2.Cmd):
@@ -54,7 +56,7 @@ class ShaaShell(cmd2.Cmd):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
             *args,
-            persistent_history_file='~/.shaa_shell_hist',
+            persistent_history_file=HIST_FILE,
             startup_script=STARTUP_SCRIPT,
             silence_startup_script=True,
             auto_load_commands=False,

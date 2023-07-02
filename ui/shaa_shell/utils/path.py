@@ -6,29 +6,31 @@ from typing import Text, List
 import re
 
 ROOT_PATH = Path(importlib.resources.files("shaa_shell").__str__())
+USER_DATA_PATH = Path.home().joinpath(".shaa")
+TEMP_PATH = Path("/tmp/shaa")
 
-OSCAP_REPORT_PATH = ROOT_PATH.joinpath("data/custom/oscap-report")
+OSCAP_REPORT_PATH = USER_DATA_PATH.joinpath("data/oscap-report")
 
-PROFILE_PATH = ROOT_PATH.joinpath("data/custom/profile")
-INVENTORY_PATH = ROOT_PATH.joinpath("data/custom/inventory/")
+PROFILE_PATH = USER_DATA_PATH.joinpath("data/custom/profile")
+INVENTORY_PATH = USER_DATA_PATH.joinpath("data/custom/inventory/")
 
-CIS_PRESET_PATH = ROOT_PATH.joinpath("data/custom/cis/")
+CIS_PRESET_PATH = USER_DATA_PATH.joinpath("data/custom/cis/")
 CIS_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/cis.yml")
 
-OSCAP_PRESET_PATH = ROOT_PATH.joinpath("data/custom/oscap/")
+OSCAP_PRESET_PATH = USER_DATA_PATH.joinpath("data/custom/oscap/")
 OSCAP_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/oscap.yml")
 
-UTIL_PRESET_PATH = ROOT_PATH.joinpath("data/custom/util/")
+UTIL_PRESET_PATH = USER_DATA_PATH.joinpath("data/custom/util/")
 UTIL_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/util.yml")
 
-SEC_TOOLS_PRESET_PATH = ROOT_PATH.joinpath("data/custom/sec_tools/")
+SEC_TOOLS_PRESET_PATH = USER_DATA_PATH.joinpath("data/custom/sec_tools/")
 SEC_TOOLS_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/sec_tools.yml")
 
-PLAYBOOK_PATH = ROOT_PATH.joinpath("data/ansible/playbook")
-ANSIBLE_INV_PATH = ROOT_PATH.joinpath("data/ansible/inventory/")
+PLAYBOOK_PATH = TEMP_PATH.joinpath("data/ansible/playbook")
+ANSIBLE_INV_PATH = TEMP_PATH.joinpath("data/ansible/inventory/")
 ANSIBLE_VAULT_PASSWORD = ROOT_PATH.joinpath("data/ansible/vault-password.py")
-ANSIBLE_CFG_PATH = ROOT_PATH.joinpath("data/ansible/ansible.cfg")
-LOG_PATH = ROOT_PATH.joinpath("log/")
+ANSIBLE_CFG_PATH = USER_DATA_PATH.joinpath("data/ansible/ansible.cfg")
+LOG_PATH = USER_DATA_PATH.joinpath("log/")
 
 
 def is_valid_file_path(parent: Path, file_name: Text) -> bool:
