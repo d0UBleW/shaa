@@ -361,6 +361,7 @@ def run_playbook(name: Text,
         log_file = LOG_PATH.joinpath(f"{name}-{now}")
         log_file.parent.mkdir(parents=True, exist_ok=True)
         with log_file.open("w") as f:
+            f.write(f"[*] {' '.join(args)}\n\n")
             while proc.poll() is None:
                 if proc.stdout is not None:
                     data: Text = proc.stdout.readline().decode('utf-8')
