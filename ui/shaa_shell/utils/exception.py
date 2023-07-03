@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Text, Any, List
+from typing import Any, List, Optional, Text
 
 
 class ShaaVaultError(Exception):

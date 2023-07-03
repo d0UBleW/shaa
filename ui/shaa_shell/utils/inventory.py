@@ -1,22 +1,19 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from itertools import product
 from pathlib import Path
-import re
+from typing import Any, Dict, List, Optional, Text, Tuple, Union
+
+from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
 from ruamel.yaml import YAML  # type: ignore[import]
 from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
-from typing import List, Text, Optional, Dict, Tuple, Any, Union
-from ansible.parsing.vault import AnsibleVaultError  # type: ignore[import]
 
 from shaa_shell.utils import exception
+from shaa_shell.utils.path import (INVENTORY_PATH, filter_file,
+                                   is_valid_file_path, resolve_path)
 from shaa_shell.utils.vault import vault
-from shaa_shell.utils.path import (
-    INVENTORY_PATH,
-    is_valid_file_path,
-    resolve_path,
-    filter_file,
-)
 
 yaml = YAML(typ="rt")
 

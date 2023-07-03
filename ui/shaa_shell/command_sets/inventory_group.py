@@ -1,32 +1,20 @@
 from __future__ import annotations
 
 import argparse
-from cmd2 import (
-    Cmd2ArgumentParser,
-    CommandSet,
-    with_default_category,
-    with_argparser,
-    as_subcommand_to,
-    CompletionError,
-)
-from cmd2.table_creator import (
-    SimpleTable,
-    Column,
-    HorizontalAlignment,
-)
-from dataclasses import asdict
 import pprint
 import re
-from typing import List, Text, Dict
+from dataclasses import asdict
+from typing import Dict, List, Text
+
+from cmd2 import (Cmd2ArgumentParser, CommandSet, CompletionError,
+                  as_subcommand_to, with_argparser, with_default_category)
+from cmd2.table_creator import Column, HorizontalAlignment, SimpleTable
 from ruamel.yaml.comments import TaggedScalar
 
-from shaa_shell.utils.inventory import (
-    Inventory,
-    InventoryGroup,
-)
+from shaa_shell.utils import exception
+from shaa_shell.utils.inventory import Inventory, InventoryGroup
 from shaa_shell.utils.parser import inventory_group_parser
 from shaa_shell.utils.vault import vault
-from shaa_shell.utils import exception
 
 
 @with_default_category("inventory group")

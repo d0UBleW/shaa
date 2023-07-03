@@ -1,20 +1,17 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Text, Tuple, Union
+
 from ruamel.yaml import YAML  # type: ignore[import]
 from ruamel.yaml.comments import TaggedScalar  # type: ignore[import]
-from typing import Optional, Text, Dict, List, Tuple, Any, Union
-from pathlib import Path
 
-from shaa_shell.utils.preset import list_preset
-from shaa_shell.utils.path import (
-    CIS_PRESET_PATH,
-    CIS_TEMPLATE_FILE,
-    is_valid_file_path,
-    resolve_path,
-)
-from shaa_shell.utils.vault import vault
 from shaa_shell.utils import exception
+from shaa_shell.utils.path import (CIS_PRESET_PATH, CIS_TEMPLATE_FILE,
+                                   is_valid_file_path, resolve_path)
+from shaa_shell.utils.preset import list_preset
+from shaa_shell.utils.vault import vault
 
 yaml = YAML(typ="rt")
 

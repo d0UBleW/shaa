@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Text, List
+from typing import List, Text
+
 from shaa_shell.utils import path
 
 PRESETS: List[Text] = ["cis", "oscap", "sec_tools", "util"]

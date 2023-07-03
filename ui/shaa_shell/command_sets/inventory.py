@@ -1,18 +1,12 @@
 from __future__ import annotations
 
 import argparse
-from cmd2 import (
-    Cmd2ArgumentParser,
-    CommandSet,
-    with_default_category,
-    as_subcommand_to,
-)
-from cmd2.table_creator import (
-    SimpleTable,
-    Column,
-)
+from typing import List, Optional, Text
+
+from cmd2 import (Cmd2ArgumentParser, CommandSet, as_subcommand_to,
+                  with_default_category)
 from cmd2.exceptions import CommandSetRegistrationError
-from typing import List, Text, Optional
+from cmd2.table_creator import Column, SimpleTable
 
 from shaa_shell.utils import exception
 from shaa_shell.utils.inventory import Inventory

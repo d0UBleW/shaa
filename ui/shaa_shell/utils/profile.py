@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import List, Text, Dict, Optional
 from pathlib import Path
+from typing import Dict, List, Optional, Text
+
 from ruamel.yaml import YAML
 
-from shaa_shell.utils.path import PROFILE_PATH, is_valid_file_path, filter_file
-from shaa_shell.utils.preset import PRESETS
 from shaa_shell.utils import exception
+from shaa_shell.utils.path import PROFILE_PATH, filter_file, is_valid_file_path
+from shaa_shell.utils.preset import PRESETS
 
 yaml = YAML(typ="rt")
 

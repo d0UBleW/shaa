@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from cmd2 import Cmd2ArgumentParser
+
 from shaa_shell.utils.preset import PRESETS
 
 

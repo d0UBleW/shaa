@@ -1,30 +1,18 @@
 from __future__ import annotations
 
 import argparse
-from cmd2 import (
-    Cmd2ArgumentParser,
-    CommandSet,
-    with_default_category,
-    with_argparser,
-    as_subcommand_to,
-    CompletionError,
-)
-from cmd2.table_creator import (
-    SimpleTable,
-    Column,
-)
-from dataclasses import asdict
 import pprint
 import re
-from typing import List, Text, Tuple, Dict
-from shaa_shell.utils.inventory import (
-    Inventory,
-    InventoryNode,
-)
+from dataclasses import asdict
+from typing import Dict, List, Text, Tuple
+
+from cmd2 import (Cmd2ArgumentParser, CommandSet, CompletionError,
+                  as_subcommand_to, with_argparser, with_default_category)
+from cmd2.table_creator import Column, SimpleTable
 from ruamel.yaml.comments import TaggedScalar
 
-from shaa_shell.utils import path
-from shaa_shell.utils import exception
+from shaa_shell.utils import exception, path
+from shaa_shell.utils.inventory import Inventory, InventoryNode
 from shaa_shell.utils.parser import inventory_node_parser
 from shaa_shell.utils.vault import vault
 

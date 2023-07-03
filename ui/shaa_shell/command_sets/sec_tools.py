@@ -1,24 +1,19 @@
 from __future__ import annotations
 
 import argparse
-from cmd2 import (  # type: ignore[import]
-    Cmd2ArgumentParser,
-    CommandSet,
-    with_default_category,
-    as_subcommand_to,
-    with_argparser,
-    CompletionItem,
-    CompletionError,
-)
-from cmd2.table_creator import SimpleTable, Column  # type: ignore[import]
-from typing import List, Text, Dict, Optional
+from typing import Dict, List, Optional, Text
+
+from cmd2 import (Cmd2ArgumentParser, CommandSet,  # type: ignore[import]
+                  CompletionError, CompletionItem, as_subcommand_to,
+                  with_argparser, with_default_category)
+from cmd2.table_creator import Column, SimpleTable  # type: ignore[import]
 from ruamel.yaml.comments import TaggedScalar
 
-from shaa_shell.utils.vault import vault
-from shaa_shell.utils.role import Role
-from shaa_shell.utils.parser import sec_tools_parser
-from shaa_shell.utils.inventory import Inventory, InventoryGroup, InventoryNode
 from shaa_shell.utils import exception
+from shaa_shell.utils.inventory import Inventory, InventoryGroup, InventoryNode
+from shaa_shell.utils.parser import sec_tools_parser
+from shaa_shell.utils.role import Role
+from shaa_shell.utils.vault import vault
 
 
 @with_default_category("sec_tools")

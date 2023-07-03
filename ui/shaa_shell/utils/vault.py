@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import os
+
 from ansible_vault import Vault  # type: ignore[import]
 from dotenv import dotenv_values  # type: ignore[import]
+
 from shaa_shell.utils.path import USER_DATA_PATH
-import os
 
 VAR_NAME = "VAULT_PASSWORD"
 dotenv_file = USER_DATA_PATH.joinpath(".env")

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import importlib.resources
-from pathlib import Path
-from typing import Text, List, Optional
 import re
+from pathlib import Path
+from typing import List, Optional, Text
 
 ROOT_PATH = Path(importlib.resources.files("shaa_shell").__str__())
 USER_DATA_PATH = Path.home().joinpath(".shaa")

@@ -1,29 +1,25 @@
 from __future__ import annotations
 
-from ruamel.yaml import YAML
-from typing import Text, Dict, Any, Optional, List, Tuple
-from datetime import datetime, timedelta
-import time
-import subprocess
 import os
+import subprocess
 import sys
+import time
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Text, Tuple
 
-from shaa_shell.utils.vault import vault_password
-from shaa_shell.utils.cis import CIS
-from shaa_shell.utils.role import Role
-from shaa_shell.utils.inventory import Inventory
-from shaa_shell.utils.profile import Profile
-from shaa_shell.utils.path import (
-    PLAYBOOK_PATH,
-    ANSIBLE_INV_PATH,
-    LOG_PATH,
-    ANSIBLE_VAULT_PASSWORD,
-    OSCAP_REPORT_PATH,
-    ANSIBLE_CFG_PATH,
-    SSH_PRIV_KEY_PATH,
-)
-from shaa_shell.utils.preset import PRESETS, PRESET_ROLE_MAP
+from ruamel.yaml import YAML
+
 from shaa_shell.utils import exception
+from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.path import (ANSIBLE_CFG_PATH, ANSIBLE_INV_PATH,
+                                   ANSIBLE_VAULT_PASSWORD, LOG_PATH,
+                                   OSCAP_REPORT_PATH, PLAYBOOK_PATH,
+                                   SSH_PRIV_KEY_PATH)
+from shaa_shell.utils.preset import PRESET_ROLE_MAP, PRESETS
+from shaa_shell.utils.profile import Profile
+from shaa_shell.utils.role import Role
+from shaa_shell.utils.vault import vault_password
 
 yaml = YAML(typ="rt")
 

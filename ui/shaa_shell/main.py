@@ -1,34 +1,27 @@
 import argparse
-import cmd2
-from typing import Optional, List
+from typing import List, Optional
 
-from shaa_shell.command_sets import (
-    inventory as inv_cs,
-    inventory_node as inv_node_cs,
-    inventory_group as inv_group_cs,
-    cis as cis_cs,
-    role_util as util_cs,
-    preset as pre_cs,
-    profile as pro_cs,
-    oscap as oscap_cs,
-    sec_tools as sec_tools_cs,
-)
-from shaa_shell.utils.parser import (
-    inventory_parser,
-    preset_parser,
-    profile_parser,
-    play_parser,
-    clear_parser,
-    config_parser,
-    unload_parser,
-)
-from shaa_shell.utils.inventory import Inventory
+import cmd2
+
+from shaa_shell.command_sets import cis as cis_cs
+from shaa_shell.command_sets import inventory as inv_cs
+from shaa_shell.command_sets import inventory_group as inv_group_cs
+from shaa_shell.command_sets import inventory_node as inv_node_cs
+from shaa_shell.command_sets import oscap as oscap_cs
+from shaa_shell.command_sets import preset as pre_cs
+from shaa_shell.command_sets import profile as pro_cs
+from shaa_shell.command_sets import role_util as util_cs
+from shaa_shell.command_sets import sec_tools as sec_tools_cs
+from shaa_shell.utils import exception, play
 from shaa_shell.utils.cis import CIS
-from shaa_shell.utils.role import Role
-from shaa_shell.utils.profile import Profile
-from shaa_shell.utils import play
-from shaa_shell.utils import exception
+from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.parser import (clear_parser, config_parser,
+                                     inventory_parser, play_parser,
+                                     preset_parser, profile_parser,
+                                     unload_parser)
 from shaa_shell.utils.path import USER_DATA_PATH
+from shaa_shell.utils.profile import Profile
+from shaa_shell.utils.role import Role
 
 STARTUP_SCRIPT = USER_DATA_PATH.joinpath("shaashrc")
 HIST_FILE = USER_DATA_PATH.joinpath("shaash_hist")
@@ -56,8 +49,8 @@ class ShaaShell(cmd2.Cmd):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(
             *args,
-            persistent_history_file=HIST_FILE,
-            startup_script=STARTUP_SCRIPT,
+            persistent_history_file=str(HIST_FILE),
+            startup_script=str(STARTUP_SCRIPT),
             silence_startup_script=True,
             auto_load_commands=False,
             **kwargs,
@@ -324,7 +317,7 @@ class ShaaShell(cmd2.Cmd):
         """
         Configure startup script
         """
-        self.do_edit(STARTUP_SCRIPT)
+        self.do_edit(str(STARTUP_SCRIPT))
 
     def check_if_inv_changed(self) -> None:
         if self._inv_has_changed:

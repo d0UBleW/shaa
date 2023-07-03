@@ -1,25 +1,18 @@
 from __future__ import annotations
 
 import argparse
-from typing import List, Text, Optional, Dict
-from cmd2 import (  # type: ignore[import]
-    Cmd2ArgumentParser,
-    CommandSet,
-    with_default_category,
-    as_subcommand_to,
-    CompletionError,
-)
-from cmd2.table_creator import (  # type: ignore[import]
-    SimpleTable,
-    Column,
-)
+from typing import Dict, List, Optional, Text
 
-from shaa_shell.utils.profile import Profile
-from shaa_shell.utils.inventory import Inventory
-from shaa_shell.utils.preset import list_preset, PRESETS
-from shaa_shell.utils.cis import CIS
-from shaa_shell.utils.role import Role
+from cmd2 import (Cmd2ArgumentParser, CommandSet,  # type: ignore[import]
+                  CompletionError, as_subcommand_to, with_default_category)
+from cmd2.table_creator import Column, SimpleTable  # type: ignore[import]
+
 from shaa_shell.utils import exception
+from shaa_shell.utils.cis import CIS
+from shaa_shell.utils.inventory import Inventory
+from shaa_shell.utils.preset import PRESETS, list_preset
+from shaa_shell.utils.profile import Profile
+from shaa_shell.utils.role import Role
 
 
 @with_default_category("profile")
