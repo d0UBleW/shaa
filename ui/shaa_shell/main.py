@@ -26,6 +26,21 @@ from shaa_shell.utils.role import Role
 STARTUP_SCRIPT = USER_DATA_PATH.joinpath("shaashrc")
 HIST_FILE = USER_DATA_PATH.joinpath("shaash_hist")
 
+banner = r"""
+ _____  _   _   ___    ___
+/  ___|| | | | / _ \  / _ \
+\ `--. | |_| |/ /_\ \/ /_\ \
+ `--. \|  _  ||  _  ||  _  |
+/\__/ /| | | || | | || | | |
+\____/ \_| |_/\_| |_/\_| |_/
+
+"""
+
+metadata = f"""\
+v{__import__("importlib").metadata.version("shaa_shell")}
+by: William Wijaya (d0UBleW)\
+"""
+
 
 class ShaaShell(cmd2.Cmd):
     _inventory: Optional[Inventory] = None
@@ -390,6 +405,9 @@ class ShaaShell(cmd2.Cmd):
 
 
 def main():
+    print(banner)
+    print()
+    print(metadata)
     shaa_shell = ShaaShell(command_sets=[
         inv_cs.inventory_subcmd(),
         pre_cs.preset_cis_cmd(),
