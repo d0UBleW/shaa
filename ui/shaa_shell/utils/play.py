@@ -210,6 +210,21 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> None:
     except exception.ShaaNameError:
         raise
 
+    # Validate inventory data
+    inv_name = profile.inv_name
+    if inv_name is None:
+        raise exception.ShaaInventoryError(
+            "No inventory is set on current profile")
+    if inv_name is not None:
+        try:
+            inv = Inventory.load(inv_name)
+        except exception.ShaaInventoryError:
+            raise
+
+    if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
+        raise exception.ShaaInventoryError(
+            "Inventory data is empty, try to save it first if you have not")
+
     all_vars = {}
     # Convert CIS variables
     if "cis" in presets.keys() and presets["cis"] is not None:
@@ -230,21 +245,6 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> None:
             if role_type == "oscap":
                 all_vars["oscap_report_dir"] = str(OSCAP_REPORT_PATH)
             print(f"[+] Done converting {role_type} preset variable")
-
-    # Validate inventory data
-    inv_name = profile.inv_name
-    if inv_name is None:
-        raise exception.ShaaInventoryError(
-            "No inventory is set on current profile")
-    if inv_name is not None:
-        try:
-            inv = Inventory.load(inv_name)
-        except exception.ShaaInventoryError:
-            raise
-
-    if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
-        raise exception.ShaaInventoryError(
-            "Inventory data is empty, try to save it first if you have not")
 
     # Generate inventory file with all variables
     inv.groups["ungrouped"].group_vars = all_vars
@@ -299,7 +299,7 @@ def generate_playbook(profile: Profile,
         }]
     }]
 
-    if len(roles) == 0 and "util" not in presets:
+    if len(roles) == 0 and ("util" not in presets or presets["util"] is None):
         raise exception.ShaaNameError("No preset is provided, aborting!")
 
     playbook_fpath = PLAYBOOK_PATH.joinpath(f"{name}.yml").resolve()

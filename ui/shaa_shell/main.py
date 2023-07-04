@@ -285,13 +285,16 @@ class ShaaShell(cmd2.Cmd):
             return
         self.poutput("[+] Done")
 
-        self.poutput("[+] Generating tags ...")
-        try:
-            tags = play.generate_tags(profile, ns.preset)
-        except exception.ShaaNameError as ex:
-            self.perror(f"[!] {ex}")
-            return
-        self.poutput("[+] Done")
+        tags = None
+        if ns.verbose:
+            self.poutput("[+] Generating tags ...")
+            try:
+                tags = play.generate_tags(profile, ns.preset)
+            except exception.ShaaNameError as ex:
+                self.perror(f"[!] {ex}")
+                return
+            self.poutput("[+] Done")
+
         self.poutput("[+] Running playbook ...")
         try:
             play.run_playbook(
