@@ -231,12 +231,16 @@ class cis_section_cmd(CommandSet):
             vars_st = SimpleTable(vars_columns)
             vars_data_list = []
             for var_key, var in section["vars"].items():
-                detail = f"{var['description']}\n"
+                detail = f"{var['description']}"
                 if var["value_type"] == "range" and "aide_" not in var_key:
                     if var["range_start"] is not None:
                         detail += f"Possible min value: {var['range_start']}\n"
                     if var["range_end"] is not None:
                         detail += f"Possible max value: {var['range_end']}\n"
+                if "choice" in var["value_type"]:
+                    detail += f"Possible value:\n"
+                    detail += "\n".join(
+                        list(map(lambda v: f"- {v}", var["valid"])))
                 default_val = var["default"]
                 if isinstance(default_val, list):
                     if isinstance(default_val[0], str):

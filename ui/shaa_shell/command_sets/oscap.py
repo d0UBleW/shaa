@@ -170,7 +170,7 @@ class oscap_action_cmd(CommandSet):
             vars_st = SimpleTable(vars_columns)
             vars_data_list = []
             for var_key, var in task["vars"].items():
-                detail = f"{var['description']}\n"
+                detail = f"{var['description']}"
 
                 # add description for range type variable
                 if var["value_type"] == "range":
@@ -178,6 +178,10 @@ class oscap_action_cmd(CommandSet):
                         detail += f"Possible min value: {var['range_start']}\n"
                     if var["range_end"] is not None:
                         detail += f"Possible max value: {var['range_end']}\n"
+                if "choice" in var["value_type"]:
+                    detail += f"Possible value:\n"
+                    detail += "\n".join(
+                        list(map(lambda v: f"- {v}", var["valid"])))
 
                 default_val = var["default"]
                 # format list type default variable
