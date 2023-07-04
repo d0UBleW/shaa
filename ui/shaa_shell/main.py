@@ -301,7 +301,7 @@ class ShaaShell(cmd2.Cmd):
         self.poutput("[+] Done")
 
         tags = None
-        if ns.verbose:
+        if not ns.verbose:
             self.poutput("[+] Generating tags ...")
             try:
                 tags = play.generate_tags(profile, ns.preset)
