@@ -205,8 +205,11 @@ class profile_subcmd(CommandSet):
                 if preset is None:
                     preset = ""
                 presets.append(f"{preset_name}: {preset}")
+            inv_name = profile.inv_name
+            if inv_name is None:
+                inv_name = ""
             data_list.append([profile_name,
-                              profile.inv_name,
+                              inv_name,
                               "\n".join(presets)])
 
         tbl = st.generate_table(data_list, row_spacing=1)
