@@ -133,6 +133,7 @@ class preset_sec_tools_cmd(CommandSet):
             self._cmd._sec_tools_cmd  # type: ignore[attr-defined]
         )
         self._cmd.poutput("[*] sec_tools module unloaded")
+        self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
 
     def preset_sec_tools_load(self, ns: argparse.Namespace,
                               role_sec_tools: Optional[Role] = None):
@@ -143,6 +144,8 @@ class preset_sec_tools_cmd(CommandSet):
 
         if role_sec_tools is not None:
             self._cmd._sec_tools_has_changed = True  # type: ignore
+        else:
+            self._cmd._sec_tools_has_changed = False  # type: ignore
 
         if role_sec_tools is None:
             try:
@@ -361,6 +364,7 @@ class preset_oscap_cmd(CommandSet):
             self._cmd._oscap_cmd  # type: ignore[attr-defined]
         )
         self._cmd.poutput("[*] oscap module unloaded")
+        self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
 
     def preset_oscap_load(self, ns: argparse.Namespace,
                           role_oscap: Optional[Role] = None):
@@ -371,6 +375,8 @@ class preset_oscap_cmd(CommandSet):
 
         if role_oscap is not None:
             self._cmd._oscap_has_changed = True  # type: ignore[attr-defined]
+        else:
+            self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
 
         if role_oscap is None:
             try:
@@ -587,6 +593,7 @@ class preset_util_cmd(CommandSet):
             self._cmd._util_cmd  # type: ignore[attr-defined]
         )
         self._cmd.poutput("[*] util module unloaded")
+        self._cmd._util_has_changed = False  # type: ignore[attr-defined]
 
     def preset_util_load(self, ns: argparse.Namespace,
                          role_util: Optional[Role] = None):
@@ -597,6 +604,8 @@ class preset_util_cmd(CommandSet):
 
         if role_util is not None:
             self._cmd._util_has_changed = True  # type: ignore[attr-defined]
+        else:
+            self._cmd._util_has_changed = False  # type: ignore[attr-defined]
 
         if role_util is None:
             try:
@@ -813,6 +822,7 @@ class preset_cis_cmd(CommandSet):
             self._cmd._cis_cmd  # type: ignore[attr-defined]
         )
         self._cmd.poutput("[*] cis module unloaded")
+        self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
 
     def preset_cis_load(self, ns: argparse.Namespace,
                         cis: Optional[CIS] = None):
@@ -823,6 +833,8 @@ class preset_cis_cmd(CommandSet):
 
         if cis is not None:
             self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
+        else:
+            self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
 
         if cis is None:
             try:

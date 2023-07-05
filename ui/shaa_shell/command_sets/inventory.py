@@ -105,6 +105,8 @@ class inventory_subcmd(CommandSet):
 
         if inv is not None:
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
+        else:
+            self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
 
         if inv is None:
             try:
@@ -152,6 +154,7 @@ class inventory_subcmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._inventory_group_cmd)  # type: ignore[attr-defined]
         self._cmd.poutput("[*] inventory node and group modules unloaded")
+        self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
 
     @as_subcommand_to('inventory', 'save', save_parser,
                       help='save inventory data')
