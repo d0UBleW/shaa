@@ -209,7 +209,7 @@ class ShaaShell(cmd2.Cmd):
         groups = self._inventory.groups
         targets: List[cmd2.CompletionItem] = []
         for group in groups.keys():
-            if group == "ungrouped":
+            if group == "all":
                 continue
             targets.append(cmd2.CompletionItem(group, "group"))
         for group in groups.keys():

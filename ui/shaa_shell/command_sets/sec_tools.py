@@ -299,7 +299,7 @@ class sec_tools_set_cmd(CommandSet):
         if self._cmd is None:
             return []
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
-        group = "ungrouped"
+        group = "all"
         if "group_name" in arg_tokens:
             group = arg_tokens["group_name"][0]
         nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
@@ -472,7 +472,7 @@ better tab completion"""
             gname = ns.group_name
             nname = ns.node_name
             if gname is None:
-                gname = "ungrouped"
+                gname = "all"
             nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
             if nname not in nodes.keys():
                 self._cmd.perror("[!] Node name does not exist")
@@ -506,7 +506,7 @@ better tab completion"""
             if gname not in inv.groups:
                 self._cmd.perror(f"[!] Group name not found: {gname}")
                 return
-            if gname == "ungrouped":
+            if gname == "all":
                 self._cmd.perror(f"[!] {gname} is not settable")
                 return
             group: InventoryGroup = inv.groups[gname]
@@ -577,7 +577,7 @@ better tab completion"""
             gname = ns.group_name
             nname = ns.node_name
             if gname is None:
-                gname = "ungrouped"
+                gname = "all"
             nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
             if nname not in nodes.keys():
                 self._cmd.perror("[!] Node name does not exist")
@@ -617,7 +617,7 @@ better tab completion"""
             if gname not in inv.groups:
                 self._cmd.perror(f"[!] Group name not found: {gname}")
                 return
-            if gname == "ungrouped":
+            if gname == "all":
                 self._cmd.perror(f"[!] {gname} is not unsettable")
                 return
             group: InventoryGroup = inv.groups[gname]

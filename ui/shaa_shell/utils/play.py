@@ -221,7 +221,7 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> None:
         except exception.ShaaInventoryError:
             raise
 
-    if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
+    if len(inv.groups) == 1 and len(inv.groups["all"].nodes) == 0:
         raise exception.ShaaInventoryError(
             "Inventory data is empty, try to save it first if you have not")
 
@@ -247,7 +247,7 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> None:
             print(f"[+] Done converting {role_type} preset variable")
 
     # Generate inventory file with all variables
-    inv.groups["ungrouped"].group_vars = all_vars
+    inv.groups["all"].group_vars = all_vars
 
     for group in inv.groups.values():
         for node in group.nodes.values():

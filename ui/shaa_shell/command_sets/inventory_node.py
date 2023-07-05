@@ -60,7 +60,7 @@ class inventory_node_subcmd(CommandSet):
         if self._cmd is None:
             return []
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
-        group = "ungrouped"
+        group = "all"
         if "node_group" in arg_tokens:
             group = arg_tokens["node_group"][0]
         nodes = list(map(lambda n: n[0].name, inv.list_node(groups=[group])))
@@ -73,7 +73,7 @@ class inventory_node_subcmd(CommandSet):
         if self._cmd is None:
             return []
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
-        group_name = "ungrouped"
+        group_name = "all"
         if "node_group" in arg_tokens:
             group_name = arg_tokens["node_group"][0]
 
@@ -93,10 +93,10 @@ class inventory_node_subcmd(CommandSet):
         '--group',
         dest="node_group",
         nargs='?',
-        default="ungrouped",
+        default="all",
         metavar='group_name',
-        help="""node group name (ungrouped is a reserved group name, \
-leaving it blank defaults to ungrouped)""",
+        help="""node group name (all is a reserved group name, \
+leaving it blank defaults to all)""",
         choices_provider=_choices_group_name,
     )
     rename_parser.add_argument(
@@ -122,11 +122,11 @@ leaving it blank defaults to ungrouped)""",
         "--group",
         dest="node_group",
         nargs='?',
-        default="ungrouped",
+        default="all",
         metavar='group_name',
         choices_provider=_choices_group_name,
-        help="""node group name (ungrouped is a reserved group name, \
-leaving it blank defaults to ungrouped)""",
+        help="""node group name (all is a reserved group name, \
+leaving it blank defaults to all)""",
     )
     edit_parser.add_argument(
         "-i",
@@ -189,11 +189,11 @@ leaving it blank defaults to ungrouped)""",
         '-g',
         '--group',
         dest="node_group",
-        default="ungrouped",
+        default="all",
         metavar='group_name',
         type=str,
-        help="""node group name (ungrouped is a reserved group name, \
-leaving it blank defaults to ungrouped)""",
+        help="""node group name (all is a reserved group name, \
+leaving it blank defaults to all)""",
         choices_provider=_choices_group_name,
     )
 
@@ -211,7 +211,7 @@ leaving it blank defaults to ungrouped)""",
         nargs='*',
         metavar='group_name',
         type=str,
-        help="""node group name (ungrouped is a reserved group name, \
+        help="""node group name (all is a reserved group name, \
 leaving it blank defaults to all groups)""",
         choices_provider=_choices_group_name,
     )
@@ -222,11 +222,11 @@ leaving it blank defaults to all groups)""",
         '--group',
         dest="node_group",
         nargs='?',
-        default="ungrouped",
+        default="all",
         metavar='group_name',
         type=str,
-        help="""node group name (ungrouped is a reserved group name, \
-leaving it blank defaults to ungrouped)""",
+        help="""node group name (all is a reserved group name, \
+leaving it blank defaults to all)""",
         choices_provider=_choices_group_name,
     )
 
@@ -236,7 +236,7 @@ leaving it blank defaults to ungrouped)""",
         metavar="pattern",
         help="""node name regex pattern (if the group flag is set, tab \
 completion would list out nodes from the specified group, otherwise it would \
-just list out ungrouped nodes)""",
+just list out all nodes)""",
         choices_provider=_choices_node_name,
     )
 
@@ -246,11 +246,11 @@ just list out ungrouped nodes)""",
         '--group',
         dest="node_group",
         nargs='?',
-        default="ungrouped",
+        default="all",
         metavar='group_name',
         type=str,
-        help="""node group name (ungrouped is a reserved group name, \
-leaving it blank defaults to ungrouped)""",
+        help="""node group name (all is a reserved group name, \
+leaving it blank defaults to all)""",
         choices_provider=_choices_group_name,
     )
 
@@ -260,7 +260,7 @@ leaving it blank defaults to ungrouped)""",
         metavar="node_name",
         help="""node name (if group flag is set, tab completion would list \
 out nodes from the specified group, otherwise it would just list \
-out ungrouped nodes)""",
+out all nodes)""",
         choices_provider=_choices_node_name,
     )
 
@@ -270,11 +270,11 @@ out ungrouped nodes)""",
         '--group',
         dest="node_group",
         nargs='?',
-        default="ungrouped",
+        default="all",
         metavar='group_name',
         type=str,
-        help="""node group name (ungrouped is a reserved group name, \
-leaving it blank defaults to ungrouped)""",
+        help="""node group name (all is a reserved group name, \
+leaving it blank defaults to all)""",
         choices_provider=_choices_group_name,
     )
     unset_parser.add_argument(

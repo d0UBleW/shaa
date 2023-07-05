@@ -95,7 +95,7 @@ class InventoryGroup:
         """
         Helper function to set `group_vars`
         """
-        if self.name == "ungrouped":
+        if self.name == "all":
             raise exception.InvalidGroupOp(self.name)
         self.group_vars[key] = value
 
@@ -153,7 +153,7 @@ class InventoryGroup:
 class Inventory:
     name: Text
     groups: Dict[Text, InventoryGroup] = field(
-        default_factory=lambda: {"ungrouped": InventoryGroup("ungrouped")}
+        default_factory=lambda: {"all": InventoryGroup("all")}
     )
 
     def add_group(self, group: Optional[InventoryGroup]) -> int:
@@ -178,7 +178,7 @@ class Inventory:
         for node_name in nodes:
             self.delete_node(node_name, group_name)
 
-        if group_name != "ungrouped":
+        if group_name != "all":
             self.groups.pop(group_name)
         return 0
 
@@ -188,7 +188,7 @@ class Inventory:
         """
         if group_name not in self.groups.keys():
             raise exception.GroupNameNotFound(group_name)
-        if group_name == "ungrouped":
+        if group_name == "all":
             raise exception.InvalidGroupOp(group_name)
         if new_group_name in self.groups.keys():
             raise exception.GroupNameExist(group_name)
@@ -205,7 +205,7 @@ class Inventory:
 
     def add_node(self,
                  node: Optional[InventoryNode],
-                 group_name: Text = "ungrouped") -> int:
+                 group_name: Text = "all") -> int:
         """
         Add a node object into an inventory within the specified group name
         """
@@ -222,7 +222,7 @@ class Inventory:
 
     def delete_node(self,
                     node_name: Text,
-                    group_name: Text = "ungrouped") -> int:
+                    group_name: Text = "all") -> int:
         """
         Delete a node object from an inventory
         """
@@ -242,7 +242,7 @@ class Inventory:
                   password: Optional[Text] = None,
                   ssh_priv_key_path: Optional[Text] = None,
                   new_name: Optional[Text] = None,
-                  group_name: Text = "ungrouped") -> int:
+                  group_name: Text = "all") -> int:
         """
         Edit a node object from an inventory
         """
@@ -330,7 +330,7 @@ class Inventory:
             "all": None
         }
 
-        default_group = self.groups["ungrouped"]
+        default_group = self.groups["all"]
 
         if len(default_group.nodes) > 0:
             data["all"] = {"hosts": {}}
@@ -345,7 +345,7 @@ class Inventory:
             data["all"]["children"] = {}
 
         for group in self.groups.values():
-            if group.name == "ungrouped":
+            if group.name == "all":
                 continue
             data["all"]["children"][group.name] = group.raw()
 
@@ -391,7 +391,7 @@ class Inventory:
                     name=group_name, data=raw_group)
                 inv.add_group(group)
 
-        # if len(inv.groups) == 1 and len(inv.groups["ungrouped"].nodes) == 0:
+        # if len(inv.groups) == 1 and len(inv.groups["all"].nodes) == 0:
         #     return None
 
         return inv
