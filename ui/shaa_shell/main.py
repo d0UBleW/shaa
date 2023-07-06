@@ -234,9 +234,17 @@ class ShaaShell(cmd2.Cmd):
             self._profile = None
 
     def _choices_targets(self) -> List[cmd2.CompletionItem]:
-        if self._inventory is None:
-            raise cmd2.CompletionError("[!] No inventory is loaded")
-        groups = self._inventory.groups
+        inv: Optional[Inventory] = None
+        if self._profile is not None:
+            if self._profile.inv_name is None:
+                raise cmd2.CompletionError(
+                    "[!] Current profile has no inventory set")
+            inv = Inventory.load(self._profile.inv_name)
+        else:
+            if self._inventory is None:
+                raise cmd2.CompletionError("[!] No inventory is loaded")
+            inv = self._inventory
+        groups = inv.groups
         targets: List[cmd2.CompletionItem] = []
         for group in groups.keys():
             if group == "all":
