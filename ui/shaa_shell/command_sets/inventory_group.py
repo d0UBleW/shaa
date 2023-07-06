@@ -263,6 +263,11 @@ class inventory_group_subcmd(CommandSet):
         if self._cmd is None:
             return
         inv: Inventory = self._cmd._inventory  # type: ignore
+
+        if ns.name == "all":
+            self._cmd.perror(f"[!] Invalid operation on specified group")
+            return
+
         if ns.name not in inv.groups.keys():
             self._cmd.perror(f"[!] Invalid group name: {ns.name}")
             return
