@@ -217,7 +217,7 @@ class inventory_group_subcmd(CommandSet):
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         columns: List[Column] = [
             Column("Key", width=20),
-            Column("Value", width=64),
+            Column("Value", width=128),
         ]
         st = SimpleTable(columns)
         for group in inv.groups.values():
@@ -237,7 +237,7 @@ class inventory_group_subcmd(CommandSet):
                         val = pprint.pformat(val, sort_dicts=False)
                         node_vars.append(f"{key}: {val}")
                     node_data_list[-1] = (node_data_list[-1]
-                                          [0], "".join(node_vars))
+                                          [0], "\n".join(node_vars))
                     node_tbl = st.generate_table(node_data_list,
                                                  row_spacing=0,
                                                  include_header=False)
