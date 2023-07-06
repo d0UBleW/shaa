@@ -4,11 +4,6 @@ from cmd2 import Cmd2ArgumentParser
 
 from shaa_shell.utils.preset import PRESETS
 
-
-def _choices_presets(_):
-    return PRESETS
-
-
 clear_parser = Cmd2ArgumentParser()
 
 config_parser = Cmd2ArgumentParser()
@@ -63,5 +58,5 @@ play_parser.add_argument("-p",
                          "--preset",
                          nargs="*",
                          default=[],
-                         choices_provider=_choices_presets,
+                         choices=PRESETS,
                          help="preset(s) to be played, default to all")
