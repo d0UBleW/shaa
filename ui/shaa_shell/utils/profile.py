@@ -30,12 +30,12 @@ class Profile:
         return filter_file(PROFILE_PATH, "*.yml", pattern)
 
     @staticmethod
-    def create(name: Text) -> Optional[Profile]:
+    def create(name: Text) -> Profile:
         """
         Function wrapper to create a profile object
         """
         if name in Profile.list_profile():
-            return None
+            raise exception.NameExist("profile", name)
 
         if name == "_shaa_unnamed_profile":
             raise exception.InvalidName("profile", name,
