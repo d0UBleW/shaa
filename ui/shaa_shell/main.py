@@ -341,67 +341,91 @@ class ShaaShell(cmd2.Cmd):
         if self._inv_has_changed:
             prompt = "[*] There are unsaved changes on current inventory.\n"
             prompt += "[+] Do you want to save? [Y/n] "
-            if (_ := self.read_input(prompt).lower()) != "n":
-                if self._inventory is not None:
-                    if not self._inventory.save():
-                        return
-                    self.poutput("[+] Changes have been saved successfully")
-                    self._inv_has_changed = False
+            try:
+                if (_ := self.read_input(prompt).lower()) != "n":
+                    if self._inventory is not None:
+                        if not self._inventory.save():
+                            return
+                        self.poutput(
+                            "[+] Changes have been saved successfully")
+                        self._inv_has_changed = False
+            except (EOFError, KeyboardInterrupt):
+                return
 
     def check_if_cis_changed(self) -> None:
         if self._cis_has_changed:
             prompt = "[*] There are unsaved changes on current CIS preset.\n"
             prompt += "[+] Do you want to save? [Y/n] "
-            if (_ := self.read_input(prompt).lower()) != "n":
-                if self._cis is not None:
-                    if not self._cis.save():
-                        return
-                    self.poutput("[+] Changes have been saved successfully")
-                    self._cis_has_changed = False
+            try:
+                if (_ := self.read_input(prompt).lower()) != "n":
+                    if self._cis is not None:
+                        if not self._cis.save():
+                            return
+                        self.poutput(
+                            "[+] Changes have been saved successfully")
+                        self._cis_has_changed = False
+            except (EOFError, KeyboardInterrupt):
+                return
 
     def check_if_util_changed(self) -> None:
         if self._util_has_changed:
             prompt = "[*] There are unsaved changes on current util preset.\n"
             prompt += "[+] Do you want to save? [Y/n] "
-            if (_ := self.read_input(prompt).lower()) != "n":
-                if self._util is not None:
-                    if not self._util.save():
-                        return
-                    self.poutput("[+] Changes have been saved successfully")
-                    self._util_has_changed = False
+            try:
+                if (_ := self.read_input(prompt).lower()) != "n":
+                    if self._util is not None:
+                        if not self._util.save():
+                            return
+                        self.poutput(
+                            "[+] Changes have been saved successfully")
+                        self._util_has_changed = False
+            except (EOFError, KeyboardInterrupt):
+                return
 
     def check_if_oscap_changed(self) -> None:
         if self._oscap_has_changed:
             prompt = "[*] There are unsaved changes on current oscap preset.\n"
             prompt += "[+] Do you want to save? [Y/n] "
-            if (_ := self.read_input(prompt).lower()) != "n":
-                if self._oscap is not None:
-                    if not self._oscap.save():
-                        return
-                    self.poutput("[+] Changes have been saved successfully")
-                    self._oscap_has_changed = False
+            try:
+                if (_ := self.read_input(prompt).lower()) != "n":
+                    if self._oscap is not None:
+                        if not self._oscap.save():
+                            return
+                        self.poutput(
+                            "[+] Changes have been saved successfully")
+                        self._oscap_has_changed = False
+            except (EOFError, KeyboardInterrupt):
+                return
 
     def check_if_sec_tools_changed(self) -> None:
         if self._sec_tools_has_changed:
             prompt = "[*] There are unsaved changes on current sec_tools "
             prompt += "preset.\n[+] Do you want to save? [Y/n] "
-            if (_ := self.read_input(prompt).lower()) != "n":
-                if self._sec_tools is not None:
-                    if not self._sec_tools.save():
-                        return
-                    self.poutput("[+] Changes have been saved successfully")
-                    self._sec_tools_has_changed = False
+            try:
+                if (_ := self.read_input(prompt).lower()) != "n":
+                    if self._sec_tools is not None:
+                        if not self._sec_tools.save():
+                            return
+                        self.poutput(
+                            "[+] Changes have been saved successfully")
+                        self._sec_tools_has_changed = False
+            except (EOFError, KeyboardInterrupt):
+                return
 
     def check_if_profile_changed(self) -> None:
         if self._profile_has_changed:
             prompt = "[*] There are unsaved changes on current profile.\n"
             prompt += "[+] Do you want to save? [Y/n] "
-            if (_ := self.read_input(prompt).lower()) != "n":
-                if self._profile is not None:
-                    if not self._profile.save():
-                        return
-                    self.poutput("[+] Changes have been saved successfully")
-                    self._profile_has_changed = False
+            try:
+                if (_ := self.read_input(prompt).lower()) != "n":
+                    if self._profile is not None:
+                        if not self._profile.save():
+                            return
+                        self.poutput(
+                            "[+] Changes have been saved successfully")
+                        self._profile_has_changed = False
+            except (EOFError, KeyboardInterrupt):
+                return
 
 
 def main():
