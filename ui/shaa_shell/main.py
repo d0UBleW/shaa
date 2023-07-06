@@ -114,6 +114,8 @@ class ShaaShell(cmd2.Cmd):
                 if self._profile.inv_name != self._inventory.name:
                     diff = "*"
             inv_prompt = f"[{diff}inv: {self._inventory.name}] "
+        elif self._profile is not None and self._profile.inv_name is not None:
+            inv_prompt = "[*inv: ] "
 
         cis_prompt = ""
         if self._cis is not None:
@@ -122,6 +124,8 @@ class ShaaShell(cmd2.Cmd):
                 if self._profile.presets["cis"] != self._cis.name:
                     diff = "*"
             cis_prompt = f"[{diff}cis: {self._cis.name}] "
+        elif self._profile is not None and self._profile.presets["cis"] is not None:  # noqa: E501
+            cis_prompt = "[*cis: ] "
 
         util_prompt = ""
         if self._util is not None:
@@ -130,6 +134,8 @@ class ShaaShell(cmd2.Cmd):
                 if self._profile.presets["util"] != self._util.name:
                     diff = "*"
             util_prompt = f"[{diff}util: {self._util.name}] "
+        elif self._profile is not None and self._profile.presets["util"] is not None:  # noqa: E501
+            util_prompt = "[*util: ] "
 
         oscap_prompt = ""
         if self._oscap is not None:
@@ -138,6 +144,8 @@ class ShaaShell(cmd2.Cmd):
                 if self._profile.presets["oscap"] != self._oscap.name:
                     diff = "*"
             oscap_prompt = f"[{diff}oscap: {self._oscap.name}] "
+        elif self._profile is not None and self._profile.presets["oscap"] is not None:  # noqa: E501
+            oscap_prompt = "[*oscap: ] "
 
         sec_tools_prompt = ""
         if self._sec_tools is not None:
@@ -146,6 +154,8 @@ class ShaaShell(cmd2.Cmd):
                 if self._profile.presets["sec_tools"] != self._sec_tools.name:
                     diff = "*"
             sec_tools_prompt = f"[{diff}sec_tools: {self._sec_tools.name}] "
+        elif self._profile is not None and self._profile.presets["sec_tools"] is not None:  # noqa: E501
+            sec_tools_prompt = "[*sec_tools: ] "
 
         profile_prompt = ""
         if self._profile is not None:
