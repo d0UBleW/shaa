@@ -256,6 +256,10 @@ automatically)""")
         if profile is None:
             self._cmd.perror("[!] Currently, there is no profile loaded")
             return
+        if (_ := self._cmd.read_input(
+                "[+] Are you sure [y/N]? ")) != "y":
+            self._cmd.perror("[!] Deletion aborted")
+            return
         profile.delete()
         self._cmd.poutput("[+] Profile has been deleted successfully")
         self._cmd._profile_has_changed = False  # type: ignore

@@ -105,6 +105,10 @@ class preset_sec_tools_cmd(CommandSet):
             self._cmd.perror(
                 "[!] Currently, there is no sec_tools preset loaded")
             return
+        if (_ := self._cmd.read_input(
+                "[+] Are you sure [y/N]? ")) != "y":
+            self._cmd.perror("[!] Deletion aborted")
+            return
         role_sec_tools.delete()
         self._cmd.poutput("[+] sec_tools preset has been deleted successfully")
         self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
@@ -338,6 +342,10 @@ class preset_oscap_cmd(CommandSet):
         if role_oscap is None:
             self._cmd.perror("[!] Currently, there is no oscap preset loaded")
             return
+        if (_ := self._cmd.read_input(
+                "[+] Are you sure [y/N]? ")) != "y":
+            self._cmd.perror("[!] Deletion aborted")
+            return
         role_oscap.delete()
         self._cmd.poutput("[+] oscap preset has been deleted successfully")
         self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
@@ -569,6 +577,10 @@ class preset_util_cmd(CommandSet):
         if role_util is None:
             self._cmd.perror("[!] Currently, there is no util preset loaded")
             return
+        if (_ := self._cmd.read_input(
+                "[+] Are you sure [y/N]? ")) != "y":
+            self._cmd.perror("[!] Deletion aborted")
+            return
         role_util.delete()
         self._cmd.poutput("[+] util preset has been deleted successfully")
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
@@ -799,6 +811,10 @@ class preset_cis_cmd(CommandSet):
         cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
         if cis is None:
             self._cmd.perror("[!] Currently, there is no CIS preset loaded")
+            return
+        if (_ := self._cmd.read_input(
+                "[+] Are you sure [y/N]? ")) != "y":
+            self._cmd.perror("[!] Deletion aborted")
             return
         cis.delete()
         self._cmd.poutput("[+] CIS preset has been deleted successfully")
