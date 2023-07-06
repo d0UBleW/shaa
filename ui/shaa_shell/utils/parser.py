@@ -27,8 +27,8 @@ inventory_group_parser.add_subparsers(title="action",
                                       help="action on inventory group")
 
 preset_parser = Cmd2ArgumentParser()
-preset_parser.add_subparsers(title="action",
-                             help="action on preset")
+preset_parser.add_subparsers(title="preset type",
+                             help="specify preset type")
 
 cis_parser = Cmd2ArgumentParser()
 cis_parser.add_subparsers(title="subcommands",
