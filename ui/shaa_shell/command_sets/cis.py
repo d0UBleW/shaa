@@ -365,7 +365,10 @@ class cis_set_cmd(CommandSet):
         """
         if self._cmd is None:
             return []
-        inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
+        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+        if inv is None:
+            raise CompletionError(
+                "[!] No inventory is loaded, unable to provide completion")
         group = "all"
         if "group_name" in arg_tokens:
             group = arg_tokens["group_name"][0]
