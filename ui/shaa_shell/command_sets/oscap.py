@@ -471,6 +471,9 @@ better tab completion"""
             nname = ns.node_name
             if gname is None:
                 gname = "all"
+            if gname not in inv.groups.keys():
+                self._cmd.perror("[!] Group name does not exist")
+                return
             nodes: Dict[Text, InventoryNode] = inv.groups[gname].nodes
             if nname not in nodes.keys():
                 self._cmd.perror("[!] Node name does not exist")
