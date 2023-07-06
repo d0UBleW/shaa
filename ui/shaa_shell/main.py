@@ -106,26 +106,46 @@ class ShaaShell(cmd2.Cmd):
         self.register_postloop_hook(self.check_if_sec_tools_changed)
         self.register_postloop_hook(self.check_if_profile_changed)
 
-    def _set_prompt(self):
+    def _set_prompt(self) -> None:
         inv_prompt = ""
         if self._inventory is not None:
-            inv_prompt = f"[inv: {self._inventory.name}] "
+            diff = ""
+            if self._profile is not None:
+                if self._profile.inv_name != self._inventory.name:
+                    diff = "*"
+            inv_prompt = f"[{diff}inv: {self._inventory.name}] "
 
         cis_prompt = ""
         if self._cis is not None:
-            cis_prompt = f"[cis: {self._cis.name}] "
+            diff = ""
+            if self._profile is not None:
+                if self._profile.presets["cis"] != self._cis.name:
+                    diff = "*"
+            cis_prompt = f"[{diff}cis: {self._cis.name}] "
 
         util_prompt = ""
         if self._util is not None:
-            util_prompt = f"[util: {self._util.name}] "
+            diff = ""
+            if self._profile is not None:
+                if self._profile.presets["util"] != self._util.name:
+                    diff = "*"
+            util_prompt = f"[{diff}util: {self._util.name}] "
 
         oscap_prompt = ""
         if self._oscap is not None:
-            oscap_prompt = f"[oscap: {self._oscap.name}] "
+            diff = ""
+            if self._profile is not None:
+                if self._profile.presets["oscap"] != self._oscap.name:
+                    diff = "*"
+            oscap_prompt = f"[{diff}oscap: {self._oscap.name}] "
 
         sec_tools_prompt = ""
         if self._sec_tools is not None:
-            sec_tools_prompt = f"[sec_tools: {self._sec_tools.name}] "
+            diff = ""
+            if self._profile is not None:
+                if self._profile.presets["sec_tools"] != self._sec_tools.name:
+                    diff = "*"
+            sec_tools_prompt = f"[{diff}sec_tools: {self._sec_tools.name}] "
 
         profile_prompt = ""
         if self._profile is not None:
