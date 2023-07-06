@@ -85,14 +85,13 @@ class profile_subcmd(CommandSet):
     def profile_create(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        self._cmd.check_if_profile_changed()  # type: ignore[attr-defined]
         try:
             profile = Profile.create(ns.name)
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
-        if profile is None:
-            self._cmd.perror("[!] profile is None")
-            return
+        self._cmd._profile_has_changed = False  # type: ignore[attr-defined]
         self._cmd._profile = profile  # type: ignore
 
         inv: Optional[Inventory] = self._cmd._inventory  # type: ignore

@@ -49,11 +49,13 @@ class inventory_subcmd(CommandSet):
     def inventory_create(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        self._cmd.check_if_inv_changed()  # type: ignore[attr-defined]
         try:
             inv = Inventory.create_inventory(ns.name)
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
+        self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         self._cmd._inventory = inv  # type: ignore[attr-defined]
         return self.inventory_load(None, inv)  # type: ignore[attr-defined]
 

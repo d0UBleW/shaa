@@ -38,11 +38,13 @@ class preset_sec_tools_cmd(CommandSet):
     def preset_sec_tools_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        self._cmd.check_if_sec_tools_changed()  # type: ignore[attr-defined]
         try:
             role_sec_tools: Optional[Role] = Role.create("sec_tools", ns.name)
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
+        self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
         self._cmd._sec_tools = role_sec_tools  # type: ignore[attr-defined]
         return self.preset_sec_tools_load(argparse.Namespace(), role_sec_tools)
 
@@ -272,11 +274,13 @@ class preset_oscap_cmd(CommandSet):
     def preset_oscap_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        self._cmd.check_if_oscap_changed()  # type: ignore[attr-defined]
         try:
             role_oscap: Optional[Role] = Role.create("oscap", ns.name)
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
+        self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
         self._cmd._oscap = role_oscap  # type: ignore[attr-defined]
         return self.preset_oscap_load(argparse.Namespace(), role_oscap)
 
@@ -502,11 +506,13 @@ class preset_util_cmd(CommandSet):
     def preset_util_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        self._cmd.check_if_util_changed()  # type: ignore[attr-defined]
         try:
             role_util: Optional[Role] = Role.create("util", ns.name)
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
+        self._cmd._util_has_changed = False  # type: ignore[attr-defined]
         self._cmd._util = role_util  # type: ignore[attr-defined]
         return self.preset_util_load(argparse.Namespace(), role_util)
 
@@ -730,11 +736,13 @@ class preset_cis_cmd(CommandSet):
     def preset_cis_create(self, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        self._cmd.check_if_cis_changed()  # type: ignore[attr-defined]
         try:
             cis: Optional[CIS] = CIS.create(ns.name)
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
+        self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
         self._cmd._cis = cis  # type: ignore[attr-defined]
         return self.preset_cis_load(argparse.Namespace(), cis)
 
