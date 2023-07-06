@@ -85,7 +85,10 @@ class inventory_node_subcmd(CommandSet):
             raise CompletionError("[!] Missing node name to be targeted")
 
         node: InventoryNode = inv.groups[group_name].nodes[node_name]
-        return list(node.host_vars.keys())
+        h_vars = list(node.host_vars.keys())
+        if len(h_vars) == 0:
+            raise CompletionError("[!] No host vars to be unset")
+        return h_vars
 
     rename_parser = Cmd2ArgumentParser()
     rename_parser.add_argument(

@@ -58,7 +58,10 @@ class inventory_group_subcmd(CommandSet):
         group_name = arg_tokens["name"][0]
 
         group: InventoryGroup = inv.groups[group_name]
-        return list(group.group_vars.keys())
+        g_vars = list(group.group_vars.keys())
+        if len(g_vars) == 0:
+            raise CompletionError("[!] No group_vars to be unset")
+        return g_vars
 
     rename_parser = Cmd2ArgumentParser()
     rename_parser.add_argument(
