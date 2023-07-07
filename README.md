@@ -26,7 +26,7 @@ Choose **either** one:
     docker build -t d0ublew/shaa .
     ```
 
-After the docker image is ready, use this command to run interact
+After the docker image is ready, use this command to interact
 
 ```sh
 docker run -it \
@@ -81,17 +81,86 @@ shaa-shell
 
 ### Managing Inventory
 
-1. To create inventory named `my/local`
+#### Creating Inventory
+
+```console
+shaa> inventory create my/local
+```
+
+This will caused the shell to automatically load the inventory which could be seen from the shell prompt.
+
+```console
+[inv: my/local]
+shaa>
+```
+
+#### Listing Existing Inventory
+
+```console
+shaa> inventory list
+
+Name
+--------------------------------
+
+
+shaa>
+```
+
+Notice that even though we have created an inventory, it is not listed because it only lists inventories which have been saved.
+
+```console
+shaa> inventory create my/local
+
+[inv: my/local]
+shaa> inventory save
+
+[inv: my/local]
+shaa> inventory list
+
+Name
+--------------------------------
+my/local
+
+
+[inv: my/local]
+shaa>
+```
+
+#### Adding an Inventory Node
+
+1. To add a machine, it is necessary to have an inventory loaded.
 
     ```console
-    shaa> inventory create my/local
+    shaa> inventory load my/local
     ```
 
-2. To list out available inventory
+2. View help page
 
-3. Load inventory
-4. Save inventory
-5. Rename inventory
+    ```console
+    [inv: my/local]
+    shaa> help node create
 
-#### Inventory Node
+    [inv: my/local]
+    shaa> node create --help
+    ```
 
+3. Create a node with password authentication
+
+    ```console
+    [inv: my/local]
+    shaa> node create ubuntu-01 192.168.10.11 root -p P@ssw0rd
+    ```
+
+4. Create a node with SSH private key authentication. The keys should be located under `~/.shaa/data/ssh/`
+
+    ```console
+    [inv: my/local]
+    shaa> node create ubuntu-02 192.168.10.12 root -k ubuntu.key
+    ```
+
+5. Create a node and put it under a group named `webserver`
+
+    ```console
+    [inv: my/local]
+    shaa> node create ubuntu-03 192.168.10.13 root -k ubuntu.key -g webserver
+    ```
