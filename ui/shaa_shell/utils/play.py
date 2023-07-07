@@ -334,6 +334,7 @@ def run_playbook(name: Text,
         "ANSIBLE_FORCE_COLOR": str(color),
         "ANSIBLE_HOST_KEY_CHECKING": "False",
         "ANSIBLE_VAULT_PASSWORD_FILE": str(ANSIBLE_VAULT_PASSWORD),
+        "ANSIBLE_SSH_COMMON_ARGS": "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null",  # noqa: E501
     }
     envs.update(os.environ)
 
