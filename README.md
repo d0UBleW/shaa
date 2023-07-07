@@ -6,6 +6,37 @@
 
 ## Installation
 
+### Docker
+
+Choose **either** one:
+
+- Pull from docker hub registry
+
+    ```sh
+    docker pull d0ublew/shaa
+    ```
+
+- Build from source
+
+    ```sh
+    # Clone the repository
+    git clone https://github.com/d0UBleW/shaa
+    cd shaa
+
+    docker build -t d0ublew/shaa .
+    ```
+
+After the docker image is ready, use this command to run interact
+
+```sh
+docker run -it \
+    --rm \
+    -v ~/.shaa:/home/shaa/.shaa \
+    d0ublew/shaa-shell shaa-shell
+```
+
+### Source
+
 ```sh
 # Clone the repository
 git clone https://github.com/d0UBleW/shaa
@@ -23,6 +54,12 @@ python3 -m venv venv
 . ./venv/bin/activate
 
 pip install ./ui
+```
+
+After the pip installation is done, run the following command to verify if the installation is successful
+
+```sh
+shaa-shell
 ```
 
 ## Usage
