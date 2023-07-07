@@ -4,5 +4,4 @@ supported_os_families:
   - RedHat
 
 supported_debian_distribution:
-  - Debian
   - Ubuntu

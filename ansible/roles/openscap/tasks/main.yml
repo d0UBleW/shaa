@@ -16,13 +16,16 @@
     - name: |
         Check for Debian-based distribution compatibility
         (skip if ok, fail if not)
+      vars:
+        maj_ver: "{{ ansible_distribution_major_version | int }}"
       ansible.builtin.fail:
-        msg: |
-          The distribution ({{ ansible_distribution }}) is currently not
-          supported yet.
+        msg: >-
+          The distribution ({{ ansible_distribution }} {{ maj_ver }}) is
+          currently not supported yet.
       when:
         - ansible_os_family == "Debian"
-        - ansible_distribution not in supported_debian_distribution
+        - ansible_distribution not in supported_debian_distribution or
+          (ansible_distribution == "Debian" and maj_ver | int < 10)
 
     - name: Include OS family specific variables
       when:
@@ -36,13 +39,6 @@
       ansible.builtin.include_vars:
         file: "{{ ansible_distribution }}.yml"
 
-    - name: Add unstable source list for Debian distribution
-      when:
-        - ansible_distribution == "Debian"
-      ansible.builtin.apt_repository:
-        repo: "deb http://deb.debian.org/debian unstable main"
-        state: present
-
     - name: Install OpenSCAP
       ansible.builtin.package:
         name: "{{ pkg }}"
@@ -52,11 +48,18 @@
         loop_var: pkg
         label: "{{ pkg }}"
 
-    - name: Copy xccdf file for Ubuntu distribution
+    - name: Copy xccdf file for Debian OS family
+      vars:
+        ver: >-
+          {%- if ansible_distribution == "Ubuntu" -%}
+            {{ ansible_distribution_major_version }}04
+          {%- else -%}
+            {{ ansible_distribution_major_version }}
+          {%- endif -%}
       when:
-        - ansible_distribution == "Ubuntu"
+        - ansible_os_family == "Debian"
       ansible.builtin.copy:
-        src: "ssg/ssg-ubuntu{{ ansible_distribution_major_version }}04-ds.xml"
+        src: "ssg/ssg-{{ ansible_distribution | lower }}{{ ver }}-ds.xml"
         dest: "/usr/share/xml/scap/ssg/content/"
         owner: root
         group: root
@@ -64,8 +67,9 @@
 
     - name: Run scanner
       vars:
+        ver: "{{ ansible_distribution_major_version }}"
         def_name: >-
-          {{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}
+          {{ ansible_distribution | lower }}{{ ver }}
         final_name: >-
           {{ xccdf_name | default(def_name) }}
         xml_file: >-

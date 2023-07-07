@@ -1,9 +1,6 @@
 ---
 openscap_pkgs:
-  - openscap-scanner
   - ssg-*
-
-xccdf_name: "ubuntu2004"
 
 oscap_profiles:
   - name: cis_level1_server
