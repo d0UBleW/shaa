@@ -1713,7 +1713,6 @@ sections:
         default: yearly
         description: |
           How frequent should log files be rotated
-          Possible values: hourly, daily, weekly, monthly, yearly
         value_type: choice
         valid:
           - hourly
@@ -1864,7 +1863,7 @@ sections:
       sshd_log_level:
         default: "VERBOSE"
         description: |
-          Possible values: VERBOSE, INFO
+          SSH daemon logging level
         value_type: choice
         valid:
           - VERBOSE
@@ -1939,7 +1938,7 @@ sections:
           - aes192-ctr
           - aes128-ctr
         description: |
-          Possible values: aes256-ctr, aes192-ctr, aes128-ctr
+          SSH cipher algorithms
         value_type: list_choice
         valid:
           - aes256-ctr
@@ -1957,7 +1956,7 @@ sections:
           - hmac-sha2-256
           - hmac-sha2-512
         description: |
-          Possible values: hmac-sha2-256, hmac-sha2-512
+          SSH MAC algorithms
         value_type: list_choice
         valid:
           - hmac-sha2-256
@@ -1979,10 +1978,7 @@ sections:
           - diffie-hellman-group18-sha512
           - diffie-hellman-group14-sha256
         description: |
-          Possible values: ecdh-sha2-nistp256, ecdh-sha2-nistp384,
-            ecdh-sha2-nistp521, diffie-hellman-group-exchange-sha256,
-            diffie-hellman-group16-sha512, diffie-hellman-group18-sha512,
-            diffie-hellman-group14-sha256
+          SSH KeX algorithms
         value_type: list_choice
         valid:
           - ecdh-sha2-nistp256
