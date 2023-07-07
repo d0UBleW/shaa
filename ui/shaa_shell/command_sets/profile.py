@@ -79,6 +79,43 @@ class profile_subcmd(CommandSet):
                               choices=["inventory"] + PRESETS,
                               help="config selection")
 
+    info_parser = Cmd2ArgumentParser()
+
+    @as_subcommand_to("profile", "info", info_parser,
+                      help="show current profile info")
+    def profile_info(self: CommandSet, ns: argparse.Namespace):
+        if self._cmd is None:
+            return
+
+        profile: Optional[Profile] = self._cmd._profile  # type: ignore
+        if profile is None:
+            self._cmd.perror("[!] No profile is loaded")
+            return
+
+        columns = [
+            Column("Key", width=16),
+            Column("Sep", width=1),
+            Column("Value", width=64),
+        ]
+
+        st = SimpleTable(columns)
+        data_list = []
+        data_list.append(["profile name", ":", profile.name])
+        inv_name = profile.inv_name
+        if inv_name is None:
+            inv_name = ""
+
+        data_list.append(["inventory", ":", inv_name])
+
+        for key, val in profile.presets.items():
+            if val is None:
+                val = ""
+
+            data_list.append([key, ":", val])
+
+        tbl = st.generate_table(data_list, row_spacing=0, include_header=False)
+        self._cmd.poutput(f"\n{tbl}\n")
+
     @as_subcommand_to("profile", "create", create_parser,
                       aliases=["add"],
                       help="create profile")
