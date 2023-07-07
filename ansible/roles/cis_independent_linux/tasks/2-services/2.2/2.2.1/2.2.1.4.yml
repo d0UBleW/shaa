@@ -89,6 +89,8 @@
         timedatectl status | grep -q 'NTP service: active'
       register: timedatectl_ntp
       changed_when: false
+      failed_when:
+        - timedatectl_ntp.rc > 1
 
     - name: |
         ---
