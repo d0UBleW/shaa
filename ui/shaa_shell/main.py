@@ -37,8 +37,8 @@ banner = r"""
 """
 
 metadata = f"""\
-v{__import__("importlib").metadata.version("shaa_shell")}
-by: William Wijaya (d0UBleW)\
+[*] v{__import__("importlib").metadata.version("shaa_shell")}
+[*] by: William Wijaya (d0UBleW)\
 """
 
 
@@ -470,6 +470,7 @@ def main():
     print(banner)
     print()
     print(metadata)
+    print("\n[*] Run `help -v` to get started")
     shaa_shell = ShaaShell(command_sets=[
         inv_cs.inventory_subcmd(),
         pre_cs.preset_cis_cmd(),
