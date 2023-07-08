@@ -328,14 +328,13 @@ class oscap_set_cmd(CommandSet):
             raise CompletionError(
                 "[!] Please specify an action first with `--action`")
 
+        if action not in role_oscap.actions.keys():
+            raise CompletionError(f"[!] Invalid action: {action}")
+
         if not role_oscap.has_settable_vars(action):
             raise CompletionError(f"[!] {action} has no settable variable")
 
-        try:
-            task_vars = role_oscap.actions[action]["vars"]
-        except KeyError:
-            raise CompletionError(f"[!] Invalid action: {action}")
-
+        task_vars = role_oscap.actions[action]["vars"]
         cmp: List[CompletionItem] = []
         for var_key, var in task_vars.items():
             detail = f"{var['description']}"
@@ -357,7 +356,8 @@ class oscap_set_cmd(CommandSet):
             action = arg_tokens["action"][0]
 
         if action is None:
-            return []
+            raise CompletionError(
+                "[!] Please specify an action first with `--action`")
 
         option_key = None
         if "option_key" in arg_tokens:
@@ -365,6 +365,12 @@ class oscap_set_cmd(CommandSet):
 
         if option_key is None:
             return []
+
+        if action not in role_oscap.actions.keys():
+            raise CompletionError(f"[!] Invalid action: {action}")
+
+        if not role_oscap.has_settable_vars(action):
+            raise CompletionError(f"[!] {action} has no settable variable")
 
         task_vars = role_oscap.actions[action]["vars"]
         for var_key, var in task_vars.items():

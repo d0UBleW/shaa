@@ -402,16 +402,16 @@ class cis_set_cmd(CommandSet):
             section_id = arg_tokens["section_id"][0]
 
         if section_id is None:
-            return []
+            raise CompletionError(
+                "[!] Please specify a section id first with `-s`")
+
+        if section_id not in cis.sections.keys():
+            raise CompletionError(f"[!] Invalid section: {section_id}")
 
         if not cis.has_settable_vars(section_id):
             raise CompletionError(f"[!] {section_id} has no settable variable")
 
-        try:
-            section_vars = cis.sections[section_id]["vars"]
-        except KeyError:
-            raise CompletionError(f"[!] Invalid section: {section_id}")
-
+        section_vars = cis.sections[section_id]["vars"]
         cmp: List[CompletionItem] = []
         for var_key, var in section_vars.items():
             detail = f"{var['description']}"
@@ -436,7 +436,8 @@ class cis_set_cmd(CommandSet):
             section_id = arg_tokens["section_id"][0]
 
         if section_id is None:
-            return []
+            raise CompletionError(
+                "[!] Please specify a section id first with `-s`")
 
         option_key = None
         if "option_key" in arg_tokens:
@@ -444,6 +445,12 @@ class cis_set_cmd(CommandSet):
 
         if option_key is None:
             return []
+
+        if section_id not in cis.sections.keys():
+            raise CompletionError(f"[!] Invalid section: {section_id}")
+
+        if not cis.has_settable_vars(section_id):
+            raise CompletionError(f"[!] {section_id} has no settable variable")
 
         section_vars = cis.sections[section_id]["vars"]
         for var_key, var in section_vars.items():
