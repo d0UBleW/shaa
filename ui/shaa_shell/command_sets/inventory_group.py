@@ -262,7 +262,7 @@ class inventory_group_subcmd(CommandSet):
 
     @as_subcommand_to("group", "unset", unset_parser,
                       help="unset group's group var")
-    def inv_node_unset(self: CommandSet, ns: argparse.Namespace):
+    def inv_group_unset(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
         inv: Inventory = self._cmd._inventory  # type: ignore
