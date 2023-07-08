@@ -13,5 +13,5 @@
         > Get list of wireless adapters
         ---
       ansible.builtin.shell: >
-        iwconfig
+        ifconfig
       changed_when: false
