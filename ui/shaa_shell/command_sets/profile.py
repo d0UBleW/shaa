@@ -161,9 +161,6 @@ class profile_subcmd(CommandSet):
         if self._cmd is None:
             return
 
-        if profile is None:
-            self._cmd.do_unload("")  # type: ignore
-
         self._cmd.check_if_profile_changed()  # type: ignore
 
         if profile is not None:
@@ -178,10 +175,11 @@ class profile_subcmd(CommandSet):
             except exception.ShaaNameError as ex:
                 self._cmd.perror(f"[!] {ex}")
                 return
-            self._cmd._profile = profile  # type: ignore
 
-        if profile is None:
-            return
+        if arg_profile is None:
+            self._cmd.do_unload("")  # type: ignore
+
+        self._cmd._profile = profile  # type: ignore
 
         _profile: Profile = self._cmd._profile  # type: ignore
         inv_name = _profile.inv_name
