@@ -453,15 +453,16 @@ class cis_set_cmd(CommandSet):
             raise CompletionError(f"[!] {section_id} has no settable variable")
 
         section_vars = cis.sections[section_id]["vars"]
-        for var_key, var in section_vars.items():
-            if var_key != option_key:
-                continue
-            if var["value_type"] == "choice":
-                return var["valid"]
-            if var["value_type"] == "list_choice":
-                return var["valid"]
-            if var["value_type"] == "bool":
-                return ["True", "False"]
+        if option_key not in section_vars.keys():
+            raise CompletionError(f"[!] Invalid option key: {option_key}")
+
+        var = section_vars[option_key]
+        if var["value_type"] == "choice":
+            return var["valid"]
+        if var["value_type"] == "list_choice":
+            return var["valid"]
+        if var["value_type"] == "bool":
+            return ["True", "False"]
         return []
 
     set_parser = Cmd2ArgumentParser()
