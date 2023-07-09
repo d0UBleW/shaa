@@ -787,6 +787,12 @@ pip install ./ui
     shaa> set allow_style never
     ```
 
+7. Run script
+
+    ```console
+    shaa> run_script /path/to/script
+    ```
+
 ### Script Examples
 
 - Example script to initialize inventory
@@ -833,3 +839,5 @@ docker run -it \
     d0ublew/shaa-shell \
     shaa-shell /home/shaa/.shaa/scripts/init-inv.shaa
 ```
+
+## Screenshots
