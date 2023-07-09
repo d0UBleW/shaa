@@ -14,8 +14,12 @@ RUN python3 -m venv /opt/venv
 
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY ./ui/ /shaa
-RUN pip install /shaa
+WORKDIR /shaa
+# COPY ./ui/ /shaa
+RUN \
+    --mount=type=bind,target=.,source=./ui/,rw \
+    --mount=type=cache,target=/root/.cache/pip \
+    pip install .
 
 FROM python:3.9-alpine AS final
 COPY --from=builder /opt/venv /opt/venv
