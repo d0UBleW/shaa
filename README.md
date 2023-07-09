@@ -17,7 +17,10 @@
   - [Managing Inventory Node](#managing-inventory-node)
   - [Managing Inventory Group](#managing-inventory-group)
   - [Managing Preset](#managing-preset)
-    - [CIS Preset](#cis-preset)
+  - [Managing Profile](#managing-profile)
+  - [Running Automation](#running-automation)
+  - [General](#general)
+  - [Script Examples](#script-examples)
 
 ## Features
 
@@ -95,7 +98,7 @@ After the docker image is ready, use this command to interact
 docker run -it \
     --rm \
     -v ~/.shaa:/home/shaa/.shaa \
-    d0ublew/shaa-shell shaa-shell
+    d0ublew/shaa-shell
 ```
 
 ### Source
@@ -131,7 +134,7 @@ pip install ./ui
     $ shaa-shell -h
     ```
 
-3. Run a `shaa-shell` script. Read more about [`shaa-shell` script](#abcd)
+3. Run a `shaa-shell` script. Read more about [`shaa-shell` script](#script-examples)
 
     ```console
     $ shaa-shell /path/to/shaa-shell-script
@@ -179,7 +182,7 @@ pip install ./ui
 
     ```console
     [inv: my/local]
-    shaa> unload
+    shaa> inventory unload
 
     shaa>
     ```
@@ -222,21 +225,21 @@ pip install ./ui
 
 8. To delete an inventory
 
-- If an inventory is currently loaded
+    - If an inventory is currently loaded
 
-  ```console
-  [inv: my/local]
-  shaa> inventory delete
+      ```console
+      [inv: my/local]
+      shaa> inventory delete
 
-  shaa>
-  ```
+      shaa>
+      ```
 
-- Otherwise
+    - Otherwise
 
-  ```console
-  [inv: my/local]
-  shaa> inventory delete my/local-dup
-  ```
+      ```console
+      [inv: my/local]
+      shaa> inventory delete my/local-dup
+      ```
 
 ### Managing Inventory Node
 
@@ -373,9 +376,7 @@ pip install ./ui
 
 ### Managing Preset
 
-#### CIS Preset
-
-1. To create a CIS preset
+1. To create a preset, specify the preset type: `cis`, `oscap`, `sec_tools`, `util`
 
     ```console
     shaa> preset cis create part-1
@@ -384,13 +385,13 @@ pip install ./ui
     shaa>
     ```
 
-2. To list available CIS preset
+2. To list out available presets
 
     ```console
     shaa> preset cis list
     ```
 
-3. To unload current CIS preset
+3. To unload current preset
 
     ```console
     [cis: part-1]
@@ -399,7 +400,7 @@ pip install ./ui
     shaa>
     ```
 
-4. To load an existing CIS preset
+4. To load an existing preset
 
     ```console
     shaa> preset cis load part-1 
@@ -408,35 +409,68 @@ pip install ./ui
     shaa>
     ```
 
-5. To list out available sections on CIS preset
+5. To list out available tasks on a preset
 
-    ```console
-    [cis: part-1]
-    shaa> cis section list
+    - CIS preset
 
-    [cis: part-1]
-    shaa> cis section list 3.2
-    ```
+        ```console
+        [cis: part-1]
+        shaa> cis section list
 
-6. To enable or disable a section and its subsections
+        [cis: part-1]
+        shaa> cis section list 3.2
+        ```
 
-    ```console
-    [cis: part-1]
-    shaa> cis section enable 3.5
+    - Other preset, e.g., `oscap`
 
-    [cis: part-1]
-    shaa> cis section disable 3.5.1
-    ```
+        ```console
+        [oscap: pre_hardened]
+        shaa> oscap action list
+        ```
+
+6. To enable or disable tasks
+
+    - CIS preset
+
+        ```console
+        [cis: part-1]
+        shaa> cis section enable 3.5 5.2.5
+
+        [cis: part-1]
+        shaa> cis section disable 3.5.1 3.5.2.2
+        ```
+
+    - Other preset, e.g., `sec_tools`
+
+        ```console
+        [sec_tools: example]
+        shaa> sec_tools action enable all
+
+        [sec_tools: example]
+        shaa> sec_tools action disable all
+        ```
 
 7. To list out enabled or disabled sections
 
-    ```console
-    [cis: part-1]
-    shaa> cis section list --status enabled
+    - CIS preset
 
-    [cis: part-1]
-    shaa> cis section list --status disabled
-    ```
+        ```console
+        [cis: part-1]
+        shaa> cis section list --status enabled
+
+        [cis: part-1]
+        shaa> cis section list --status disabled
+        ```
+
+    - Other preset, e.g., `util`
+
+        ```console
+        [util: example]
+        shaa> util action list --status enabled
+
+        [util: example]
+        shaa> util action list --status disabled
+        ```
 
 8. To search sections with matching title
 
@@ -450,20 +484,41 @@ pip install ./ui
 
 9. To view a section information on settable variables
 
-    ```console
-    [cis: part-1]
-    shaa> cis section info 5.2.15
-    ```
+    - CIS preset
+
+        ```console
+        [cis: part-1]
+        shaa> cis section info 5.2.15
+        ```
+
+    - Other preset, e.g., `oscap`
+
+        ```console
+        [oscap: pre_hardened]
+        shaa> oscap action info scan
+        ```
 
 10. To set or unset a variable value globally
 
-    ```console
-    [cis: part-1]
-    shaa> cis set -s 5.2.15 sshd_kex_algs ecdh-sha2-nistp521
+    - CIS preset
 
-    [cis: part-1]
-    shaa> cis unset -s 5.2.5 sshd_log_level
-    ```
+        ```console
+        [cis: part-1]
+        shaa> cis set -s 5.2.15 sshd_kex_algs ecdh-sha2-nistp521
+
+        [cis: part-1]
+        shaa> cis unset -s 5.2.5 sshd_log_level
+        ```
+
+    - Other preset
+
+        ```console
+        [oscap: pre_hardened]
+        shaa> oscap set -a scan scan_profiles level_1_server level_1_workstation
+
+        [oscap: pre_hardened]
+        shaa> oscap unset -a scan report_output_prefix
+        ```
 
 11. To set or unset a variable value on a node under a certain group
 
@@ -520,18 +575,261 @@ pip install ./ui
 
 16. To delete a CIS preset
 
-- If a CIS preset is currently loaded
+    - If a CIS preset is currently loaded
 
-  ```console
-  [cis: part-1]
-  shaa> preset cis delete
+      ```console
+      [cis: part-1]
+      shaa> preset cis delete
 
-  shaa>
-  ```
+      shaa>
+      ```
 
-- Otherwise
+    - Otherwise
 
-  ```console
-  [cis: part-1]
-  shaa> preset cis dup-part-1
-  ```
+      ```console
+      [cis: part-1]
+      shaa> preset cis dup-part-1
+      ```
+
+### Managing Profile
+
+1. To list out existing profiles
+
+    ```console
+    shaa> profile list
+    ```
+
+2. To create a profile
+
+    - No inventory and presets loaded
+
+        ```console
+        shaa> profile create empty
+
+        [pro: empty]
+        shaa> profile info
+
+        profile name      :  empty
+        inventory         :
+        cis               :
+        oscap             :
+        sec_tools         :
+        util              :
+        ```
+
+    - With inventory or preset loaded
+
+        ```console
+        [inv: my/local] [cis: part-1]
+        shaa> profile create example-1
+
+        [pro: example-1] [inv: my/local] [cis: part-1]
+        shaa> profile info
+
+        profile name      :  example-1
+        inventory         :  my/local
+        cis               :  part-1
+        oscap             :
+        sec_tools         :
+        util              :
+        ```
+
+3. To unload current profile
+
+    ```console
+    [pro: example-1] [inv: my/local] [cis: part-1]
+    shaa> profile unload
+
+    [inv: my/local] [cis: part-1]
+    shaa>
+    ```
+
+4. To load an existing profile
+
+    ```console
+    [inv: idk] [cis: idk] [oscap: idk]
+    shaa> profile load example-1
+
+    [pro: example-1] [inv: my/local] [cis: part-1]
+    shaa>
+    ```
+
+5. To configure profile
+
+    ```console
+    [pro: example-1] [inv: my/local] [cis: part-1]
+    shaa> profile set inventory idk
+
+    [pro: example-1] [inv: idk] [cis: part-1]
+    shaa> profile set oscap pre_hardened
+
+    [pro: example-1] [inv: idk] [cis: part-1] [oscap: pre_hardened]
+    shaa> profile unset cis
+
+    [pro: example-1] [inv: idk] [*cis: part-1] [oscap: pre_hardened]
+    shaa>
+    ```
+
+    Notice the asterisk `*` in `[*cis: part-1]`. This is to indicate that the loaded object differs from the loaded profile configuration
+
+6. To save current profile
+
+    ```console
+    [pro: example-1] [inv: my/local] [oscap: pre_hardened]
+    shaa> profile save
+    ```
+
+7. To save current profile as another name
+
+    ```console
+    [pro: example-1] [inv: my/local] [oscap: pre_hardened]
+    shaa> profile save example-1-dup
+    ```
+
+8. To rename current profile (saves changes internally)
+
+    ```console
+    [pro: example-1] [inv: my/local] [oscap: pre_hardened]
+    shaa> profile rename example-2
+
+    [pro: example-2] [inv: my/local] [oscap: pre_hardened]
+    shaa> inventory rename example-1
+
+    [pro: example-1] [inv: my/local] [oscap: pre_hardened]
+    shaa>
+    ```
+
+9. To delete a profile
+
+    - If a profile is currently loaded
+
+        ```console
+        [pro: example-1] [inv: my/local] [oscap: pre_hardened]
+        shaa> profile delete
+
+        [inv: my/local] [oscap: pre_hardened]
+        shaa>
+        ```
+
+    - Otherwise
+
+        ```console
+        [pro: example-1] [inv: my/local] [oscap: pre_hardened]
+        shaa> profile delete example-1-dup
+        ```
+
+### Running Automation
+
+1. Run according to currently loaded inventory and presets (`-c` to enable colorized output)
+
+    ```console
+    [inv: my/local] [cis: part-1]
+    shaa> play -c
+    ```
+
+2. Run on specific target
+
+    ```console
+    [inv: my/local] [cis: part-1]
+    shaa> play -c --target production ubuntu-focal-01
+    ```
+
+3. Run specific presets
+
+    ```console
+    [inv: my/local] [cis: part-1] [oscap: pre_hardened] [sec_tools: idk]
+    shaa> play -c -p oscap sec_tools
+    ```
+
+### General
+
+1. Unload everything, i.e., profile, inventory, and presets
+
+    ```console
+    [pro: example-1] [inv: my/local] [oscap: pre_hardened] [sec_tools: idk]
+    shaa> unload
+
+    shaa>
+    ```
+
+2. Clear screen
+
+    ```console
+    shaa> clear
+    ```
+
+3. Create alias
+
+    ```console
+    shaa> alias create c clear
+    shaa> alias create inv inventory
+    shaa> alias create pre preset
+    shaa> alias create pro profile
+    ```
+
+4. Edit startup script
+
+    ```console
+    shaa> config
+    ```
+
+    Alternative: edit the file directly on `~/.shaa/shaashrc`
+
+5. Suppress output that starts with `[*]` or `[+]`
+
+    ```console
+    shaa> set quiet true
+    ```
+
+6. Disable error message red highlight
+
+    ```console
+    shaa> set allow_style never
+    ```
+
+### Script Examples
+
+- Example script to initialize inventory
+
+    ```sh
+    # file: /tmp/init-inv.shaa
+
+    set quiet true
+    inventory delete -f abcdef
+    inventory create abcdef
+    node create ubuntu-01 192.168.10.101 vagrant -p vagrant
+    node create rhel-01 192.168.11.101 vagrant -k rhel.key -g prod
+    inventory save
+    ```
+
+- Example script to run automation
+
+    ```sh
+    # file: /tmp/run-example.shaa
+
+    profile load example
+    play -c
+    ```
+
+If shaa-shell is installed locally
+
+```console
+$ shaa-shell /tmp/init-inv.shaa
+```
+
+If shaa-shell is run via docker, copy the script to the directory which is mounted to the docker container
+
+```sh
+# Prepare the directory
+mkdir -p ~/.shaa/scripts
+
+# Copy the scripts
+cp /tmp/init-inv.shaa ~/.shaa/scripts
+
+# Run the docker container
+docker run -it \
+    --rm \
+    -v ~/.shaa:/home/shaa/.shaa \
+    d0ublew/shaa-shell \
+    shaa-shell /home/shaa/.shaa/scripts/init-inv.shaa
+```
