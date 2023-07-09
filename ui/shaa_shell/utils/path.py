@@ -30,7 +30,7 @@ SEC_TOOLS_TEMPLATE_FILE = ROOT_PATH.joinpath("data/template/sec_tools.yml")
 
 PLAYBOOK_PATH = TEMP_PATH.joinpath("data/ansible/playbook")
 ANSIBLE_INV_PATH = TEMP_PATH.joinpath("data/ansible/inventory/")
-ANSIBLE_VAULT_PASSWORD = ROOT_PATH.joinpath("vault-password.py")
+ANSIBLE_VAULT_PASSWORD = Path("/opt/shaa").joinpath("vault-password.py")
 ANSIBLE_CFG_PATH = USER_DATA_PATH.joinpath("data/ansible/ansible.cfg")
 LOG_PATH = USER_DATA_PATH.joinpath("log/")
 

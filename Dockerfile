@@ -15,7 +15,7 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /shaa
-# COPY ./ui/ /shaa
+
 RUN \
     --mount=type=bind,target=.,source=./ui/,rw \
     --mount=type=cache,target=/root/.cache/pip \
@@ -40,6 +40,12 @@ RUN adduser -D shaa
 COPY ./ansible/roles /home/shaa/.ansible/roles
 
 RUN chown -R shaa:shaa /home/shaa/
+
+COPY ./ansible/vault-password.py /opt/shaa/
+
+RUN chown -R shaa:shaa /opt/shaa/
+
+RUN chmod +x /opt/shaa/vault-password.py
 
 USER shaa
 
