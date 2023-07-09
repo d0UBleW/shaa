@@ -36,6 +36,7 @@
     - name: Include distribution specific variables
       when:
         - ansible_os_family != "Suse"
+        - ansible_distribution != "AlmaLinux"
       ansible.builtin.include_vars:
         file: "{{ ansible_distribution }}.yml"
 
