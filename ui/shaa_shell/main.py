@@ -1,7 +1,9 @@
 import argparse
+import importlib
 from typing import List, Optional
 
-import cmd2
+from cmd2 import (COMMAND_NAME, Cmd, Cmd2ArgumentParser, CompletionError,
+                  CompletionItem, with_argparser, with_category)
 
 from shaa_shell.command_sets import cis as cis_cs
 from shaa_shell.command_sets import inventory as inv_cs
@@ -37,12 +39,12 @@ banner = r"""
 """
 
 metadata = f"""\
-[*] v{__import__("importlib").metadata.version("shaa_shell")}
+[*] v{importlib.metadata.version("shaa_shell")}
 [*] by: William Wijaya (d0UBleW)\
 """
 
 
-class ShaaShell(cmd2.Cmd):
+class ShaaShell(Cmd):
     _inventory: Optional[Inventory] = None
     _inv_has_changed: bool = False
 
@@ -68,6 +70,7 @@ class ShaaShell(cmd2.Cmd):
             startup_script=str(STARTUP_SCRIPT),
             silence_startup_script=True,
             auto_load_commands=False,
+            allow_cli_args=False,
             **kwargs,
         )
         self.prompt = "shaa> "
@@ -174,8 +177,8 @@ class ShaaShell(cmd2.Cmd):
         self._set_prompt()
         return stop
 
-    @cmd2.with_argparser(inventory_parser)
-    @cmd2.with_category('inventory')
+    @with_argparser(inventory_parser)
+    @with_category('inventory')
     def do_inventory(self, ns: argparse.Namespace):
         """
         Manage inventory
@@ -187,8 +190,8 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("No subcommand was provided")
             self.do_help('inventory')
 
-    @cmd2.with_argparser(preset_parser)
-    @cmd2.with_category("preset")
+    @with_argparser(preset_parser)
+    @with_category("preset")
     def do_preset(self, ns: argparse.Namespace):
         """
         Manage preset
@@ -200,8 +203,8 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("No subcommand was provided")
             self.do_help("preset")
 
-    @cmd2.with_argparser(profile_parser)
-    @cmd2.with_category("profile")
+    @with_argparser(profile_parser)
+    @with_category("profile")
     def do_profile(self, ns: argparse.Namespace):
         """
         Manage profile
@@ -213,8 +216,8 @@ class ShaaShell(cmd2.Cmd):
             self.poutput("No subcommand was provided")
             self.do_help("profile")
 
-    @cmd2.with_argparser(unload_parser)
-    @cmd2.with_category("general")
+    @with_argparser(unload_parser)
+    @with_category("general")
     def do_unload(self, ns: argparse.Namespace):
         """
         Unload inventory, all presets, and profile
@@ -233,25 +236,25 @@ class ShaaShell(cmd2.Cmd):
             self.check_if_profile_changed()
             self._profile = None
 
-    def _choices_targets(self) -> List[cmd2.CompletionItem]:
+    def _choices_targets(self) -> List[CompletionItem]:
         inv: Optional[Inventory] = None
         if self._profile is not None:
             if self._profile.inv_name is None:
-                raise cmd2.CompletionError(
+                raise CompletionError(
                     "[!] Current profile has no inventory set")
             inv = Inventory.load(self._profile.inv_name)
         else:
             if self._inventory is None:
-                raise cmd2.CompletionError("[!] No inventory is loaded")
+                raise CompletionError("[!] No inventory is loaded")
             inv = self._inventory
         groups = inv.groups
-        targets: List[cmd2.CompletionItem] = []
+        targets: List[CompletionItem] = []
         for group in groups.keys():
             if group == "all":
                 continue
-            targets.append(cmd2.CompletionItem(group, "group"))
+            targets.append(CompletionItem(group, "group"))
         for group in groups.keys():
-            targets += list(map(lambda n: cmd2.CompletionItem(n, "node"),
+            targets += list(map(lambda n: CompletionItem(n, "node"),
                                 groups[group].nodes.keys()))
         return targets
 
@@ -264,8 +267,8 @@ class ShaaShell(cmd2.Cmd):
         choices_provider=_choices_targets,
     )
 
-    @cmd2.with_argparser(play_parser)
-    @cmd2.with_category("play")
+    @with_argparser(play_parser)
+    @with_category("play")
     def do_play(self, ns: argparse.Namespace):
         """
         Start hardening based on current loaded profile
@@ -359,16 +362,16 @@ class ShaaShell(cmd2.Cmd):
             self.perror(f"[!] {ex}")
             return
 
-    @cmd2.with_argparser(clear_parser)
-    @cmd2.with_category("general")
+    @with_argparser(clear_parser)
+    @with_category("general")
     def do_clear(self, ns: argparse.Namespace):
         """
         Clear screen
         """
         self.do_shell("clear -x")
 
-    @cmd2.with_argparser(config_parser)
-    @cmd2.with_category("general")
+    @with_argparser(config_parser)
+    @with_category("general")
     def do_config(self, ns: argparse.Namespace):
         """
         Configure startup script
@@ -466,11 +469,29 @@ class ShaaShell(cmd2.Cmd):
                 return
 
 
-def main():
+def main() -> None:
+    parser = Cmd2ArgumentParser()
+    parser.add_argument("-v",
+                        "-V",
+                        "--version",
+                        action="store_true",
+                        help="print shaa-shell version")
+    parser.add_argument("-s",
+                        "--script",
+                        help="run shaa-shell script")
+    parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        help="go to interactive mode after running shaa-shell script")
+    args: argparse.Namespace = parser.parse_args()
+    if args.version:
+        print(f'v{importlib.metadata.version("shaa_shell")}')
+        return
     print(banner)
     print()
     print(metadata)
-    print("\n[*] Run `help -v` to get started")
+    print()
     shaa_shell = ShaaShell(command_sets=[
         inv_cs.inventory_subcmd(),
         pre_cs.preset_cis_cmd(),
@@ -481,8 +502,14 @@ def main():
     ])
     shaa_shell.disable_command(
         "run_pyscript",
-        message_to_print=f"{cmd2.COMMAND_NAME} is currently disabled"
+        message_to_print=f"{COMMAND_NAME} is currently disabled"
     )
+    if args.script is not None:
+        shaa_shell.do_run_script(args.script)
+        if not args.interactive:
+            return
+    else:
+        print("[*] Run `help -v` to get started")
     shaa_shell.cmdloop()
 
 
