@@ -22,6 +22,10 @@ class inventory_subcmd(CommandSet):
     create_parser.add_argument('name', help='name of inventory')
 
     delete_parser = Cmd2ArgumentParser()
+    delete_parser.add_argument('name',
+                               choices_provider=_choices_inventory_name,
+                               nargs="?",
+                               help='name of inventory')
 
     list_parser = Cmd2ArgumentParser()
     list_parser.add_argument('pattern', nargs='?', default='.*',
@@ -65,10 +69,17 @@ class inventory_subcmd(CommandSet):
     def inventory_delete(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
-        inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
-        if inv is None:
-            self._cmd.perror("[!] Currently, there is no inventory loaded")
-            return
+
+        inv_name = ns.name
+        if inv_name is None:
+            inv: Optional[Inventory] = self._cmd._inventory  # type: ignore
+            if inv is None:
+                err_msg = "[!] Unable to delete as no inventory is loaded\n"
+                err_msg += "    Provide an inventory name instead"
+                self._cmd.perror(err_msg)
+                return
+            inv_name = inv.name
+
         warning_text = "[!] Deleting this inventory would also delete all of "
         warning_text += "its corresponding groups and nodes"
         self._cmd.perror(warning_text)
@@ -76,10 +87,17 @@ class inventory_subcmd(CommandSet):
                 "[+] Do you want to proceed [y/N]? ")) != "y":
             self._cmd.perror("[!] Deletion aborted")
             return
-        inv.delete_inventory()
+
+        try:
+            Inventory.delete_inventory(inv_name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
+
         self._cmd.pfeedback("[+] Inventory has been deleted successfully")
-        self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
-        self.inventory_unload(None)  # type: ignore[attr-defined]
+        if ns.name is None:
+            self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
+            self.inventory_unload(None)  # type: ignore[attr-defined]
 
     @as_subcommand_to('inventory', 'list', list_parser,
                       aliases=["ls"],

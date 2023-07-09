@@ -275,11 +275,17 @@ class CIS:
 
         return True
 
-    def delete(self) -> None:
+    @staticmethod
+    def delete(name: Text) -> None:
         """
         Delete CIS preset file
         """
-        file_path = CIS_PRESET_PATH.joinpath(f"{self.name}.yml").resolve()
+        try:
+            cis: CIS = CIS.load(name)
+        except exception.ShaaNameError as ex:
+            raise
+
+        file_path = CIS_PRESET_PATH.joinpath(f"{cis.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
@@ -292,13 +298,14 @@ class CIS:
         except exception.ShaaNameError:
             raise
 
-        self.delete()
+        file_path = CIS_PRESET_PATH.joinpath(f"{self.name}.yml").resolve()
+        Path.unlink(file_path, missing_ok=True)
         new_name = resolve_path(new_name, CIS_PRESET_PATH)
         self.name = new_name
         return True
 
     @staticmethod
-    def load(name: Text) -> Optional[CIS]:
+    def load(name: Text) -> CIS:
         """
         Load CIS preset from YAML file to Python object
         """

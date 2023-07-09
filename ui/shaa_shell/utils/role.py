@@ -235,11 +235,17 @@ class Role:
 
         return True
 
-    def delete(self) -> None:
+    @staticmethod
+    def delete(role_type: Text, name: Text) -> None:
         """
         Delete role
         """
-        file_path = self.preset_path.joinpath(f"{self.name}.yml").resolve()
+        try:
+            role: Role = Role.load(role_type, name)
+        except exception.ShaaNameError as ex:
+            raise
+
+        file_path = role.preset_path.joinpath(f"{role.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:
@@ -252,13 +258,14 @@ class Role:
         except exception.ShaaNameError:
             raise
 
-        self.delete()
+        file_path = self.preset_path.joinpath(f"{self.name}.yml").resolve()
+        Path.unlink(file_path, missing_ok=True)
         new_name = resolve_path(new_name, self.preset_path)
         self.name = new_name
         return True
 
     @staticmethod
-    def load(role_type: Text, name: Text) -> Optional[Role]:
+    def load(role_type: Text, name: Text) -> Role:
         """
         Load role preset from YAML file to Python object
         """

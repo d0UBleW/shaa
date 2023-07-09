@@ -100,11 +100,17 @@ class Profile:
 
         return True
 
-    def delete(self) -> None:
+    @staticmethod
+    def delete(name: Text) -> None:
         """
         Delete profile
         """
-        file_path = PROFILE_PATH.joinpath(f"{self.name}.yml").resolve()
+        try:
+            profile: Profile = Profile.load(name)
+        except exception.ShaaNameError as ex:
+            raise
+
+        file_path = PROFILE_PATH.joinpath(f"{profile.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
 
     def rename(self, new_name: Text) -> bool:

@@ -419,15 +419,21 @@ class Inventory:
         inv = Inventory(name)
         return inv
 
-    def delete_inventory(self) -> None:
+    @staticmethod
+    def delete_inventory(name: Text) -> None:
         """
         Delete inventory
         """
-        groups: List[Text] = [group_name for group_name in self.groups.keys()]
-        for group in groups:
-            self.delete_group(group)
+        try:
+            inv: Inventory = Inventory.load(name)
+        except exception.ShaaNameError as ex:
+            raise
 
-        file_path = INVENTORY_PATH.joinpath(f"{self.name}.yml").resolve()
+        groups: List[Text] = [group_name for group_name in inv.groups.keys()]
+        for group in groups:
+            inv.delete_group(group)
+
+        file_path = INVENTORY_PATH.joinpath(f"{inv.name}.yml").resolve()
         Path.unlink(file_path, missing_ok=True)
         return
 

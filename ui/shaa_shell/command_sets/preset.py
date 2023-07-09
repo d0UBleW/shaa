@@ -101,20 +101,32 @@ class preset_sec_tools_cmd(CommandSet):
         if self._cmd is None:
             return
 
-        role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore
-        if role_sec_tools is None:
-            self._cmd.perror(
-                "[!] Currently, there is no sec_tools preset loaded")
-            return
+        role_name = ns.name
+        if role_name is None:
+            role_sec_tools: Optional[Role] = self._cmd._sec_tools  # type: ignore  # noqa: E501
+            if role_sec_tools is None:
+                err_msg = "[!] Unable to delete as no sec_tools preset is "
+                err_msg += "loaded\n    Provide a preset name instead"
+                self._cmd.perror(err_msg)
+                return
+            role_name = role_sec_tools.name
+
         if (_ := self._cmd.read_input(
                 "[+] Are you sure [y/N]? ")) != "y":
             self._cmd.perror("[!] Deletion aborted")
             return
-        role_sec_tools.delete()
+
+        try:
+            Role.delete("sec_tools", role_name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
+
         self._cmd.pfeedback(
             "[+] sec_tools preset has been deleted successfully")
-        self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
-        self.preset_sec_tools_unload(None)
+        if ns.name is None:
+            self._cmd._sec_tools_has_changed = False  # type: ignore
+            self.preset_sec_tools_unload(None)
 
     def preset_sec_tools_unload(self, _):
         if self._cmd is None:
@@ -247,6 +259,10 @@ class preset_sec_tools_cmd(CommandSet):
 
     delete_parser = pre_sec_tools_subparser.add_parser(
         "delete", help="delete sec_tools preset")
+    delete_parser.add_argument("name",
+                               choices_provider=_choices_preset_sec_tools,
+                               nargs="?",
+                               help="name of sec_tools preset")
     delete_parser.set_defaults(func=preset_sec_tools_delete)
 
     rename_parser = pre_sec_tools_subparser.add_parser(
@@ -341,18 +357,31 @@ class preset_oscap_cmd(CommandSet):
         if self._cmd is None:
             return
 
-        role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
-        if role_oscap is None:
-            self._cmd.perror("[!] Currently, there is no oscap preset loaded")
-            return
+        role_name = ns.name
+        if role_name is None:
+            role_oscap: Optional[Role] = self._cmd._oscap  # type: ignore
+            if role_oscap is None:
+                err_msg = "[!] Unable to delete as no oscap preset is "
+                err_msg += "loaded\n    Provide a preset name instead"
+                self._cmd.perror(err_msg)
+                return
+            role_name = role_oscap.name
+
         if (_ := self._cmd.read_input(
                 "[+] Are you sure [y/N]? ")) != "y":
             self._cmd.perror("[!] Deletion aborted")
             return
-        role_oscap.delete()
+
+        try:
+            Role.delete("oscap", role_name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
+
         self._cmd.pfeedback("[+] oscap preset has been deleted successfully")
-        self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
-        self.preset_oscap_unload(None)
+        if ns.name is None:
+            self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
+            self.preset_oscap_unload(None)
 
     def preset_oscap_unload(self, _):
         if self._cmd is None:
@@ -484,6 +513,10 @@ class preset_oscap_cmd(CommandSet):
 
     delete_parser = pre_oscap_subparser.add_parser(
         "delete", help="delete oscap preset")
+    delete_parser.add_argument("name",
+                               choices_provider=_choices_preset_oscap,
+                               nargs="?",
+                               help="name of oscap preset")
     delete_parser.set_defaults(func=preset_oscap_delete)
 
     rename_parser = pre_oscap_subparser.add_parser(
@@ -578,18 +611,31 @@ class preset_util_cmd(CommandSet):
         if self._cmd is None:
             return
 
-        role_util: Optional[Role] = self._cmd._util  # type: ignore
-        if role_util is None:
-            self._cmd.perror("[!] Currently, there is no util preset loaded")
-            return
+        role_name = ns.name
+        if role_name is None:
+            role_util: Optional[Role] = self._cmd._util  # type: ignore
+            if role_util is None:
+                err_msg = "[!] Unable to delete as no util preset is "
+                err_msg += "loaded\n    Provide a preset name instead"
+                self._cmd.perror(err_msg)
+                return
+            role_name = role_util.name
+
         if (_ := self._cmd.read_input(
                 "[+] Are you sure [y/N]? ")) != "y":
             self._cmd.perror("[!] Deletion aborted")
             return
-        role_util.delete()
+
+        try:
+            Role.delete("util", role_name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
+
         self._cmd.pfeedback("[+] util preset has been deleted successfully")
-        self._cmd._util_has_changed = False  # type: ignore[attr-defined]
-        self.preset_util_unload(None)
+        if ns.name is None:
+            self._cmd._util_has_changed = False  # type: ignore[attr-defined]
+            self.preset_util_unload(None)
 
     def preset_util_unload(self, _):
         if self._cmd is None:
@@ -721,6 +767,10 @@ class preset_util_cmd(CommandSet):
 
     delete_parser = pre_util_subparser.add_parser(
         "delete", help="delete util preset")
+    delete_parser.add_argument("name",
+                               choices_provider=_choices_preset_util,
+                               nargs="?",
+                               help="name of util preset")
     delete_parser.set_defaults(func=preset_util_delete)
 
     rename_parser = pre_util_subparser.add_parser(
@@ -814,18 +864,31 @@ class preset_cis_cmd(CommandSet):
         if self._cmd is None:
             return
 
-        cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
-        if cis is None:
-            self._cmd.perror("[!] Currently, there is no CIS preset loaded")
-            return
+        cis_name = ns.name
+        if cis_name is None:
+            cis: Optional[CIS] = self._cmd._cis  # type: ignore[attr-defined]
+            if cis is None:
+                err_msg = "[!] Unable to delete as no CIS preset is "
+                err_msg += "loaded\n    Provide a preset name instead"
+                self._cmd.perror(err_msg)
+                return
+            cis_name = cis.name
+
         if (_ := self._cmd.read_input(
                 "[+] Are you sure [y/N]? ")) != "y":
             self._cmd.perror("[!] Deletion aborted")
             return
-        cis.delete()
+
+        try:
+            CIS.delete(cis_name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
+
         self._cmd.pfeedback("[+] CIS preset has been deleted successfully")
-        self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
-        self.preset_cis_unload(None)
+        if ns.name is None:
+            self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
+            self.preset_cis_unload(None)
 
     def preset_cis_unload(self, _):
         if self._cmd is None:
@@ -955,6 +1018,10 @@ class preset_cis_cmd(CommandSet):
 
     delete_parser = pre_cis_subparser.add_parser(
         "delete", help="delete CIS preset")
+    delete_parser.add_argument("name",
+                               choices_provider=_choices_preset_cis,
+                               nargs="?",
+                               help="name of CIS preset")
     delete_parser.set_defaults(func=preset_cis_delete)
 
     rename_parser = pre_cis_subparser.add_parser(

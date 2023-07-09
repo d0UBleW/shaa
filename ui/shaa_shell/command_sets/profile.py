@@ -45,6 +45,10 @@ class profile_subcmd(CommandSet):
     create_parser.add_argument("name", help="name of profile")
 
     delete_parser = Cmd2ArgumentParser()
+    delete_parser.add_argument("name",
+                               choices_provider=_choices_profile_name,
+                               nargs="?",
+                               help="name of profile")
 
     save_parser = Cmd2ArgumentParser()
     save_parser.add_argument("name",
@@ -288,18 +292,31 @@ automatically)""")
         if self._cmd is None:
             return
 
-        profile: Optional[Profile] = self._cmd._profile  # type: ignore
-        if profile is None:
-            self._cmd.perror("[!] Currently, there is no profile loaded")
-            return
+        profile_name = ns.name
+        if profile_name is None:
+            profile: Optional[Profile] = self._cmd._profile  # type: ignore
+            if profile is None:
+                err_msg = "[!] Unable to delete as no profile is loaded\n"
+                err_msg += "    Provide a profile name instead"
+                self._cmd.perror(err_msg)
+                return
+            profile_name = profile.name
+
         if (_ := self._cmd.read_input(
                 "[+] Are you sure [y/N]? ")) != "y":
             self._cmd.perror("[!] Deletion aborted")
             return
-        profile.delete()
+
+        try:
+            Profile.delete(profile_name)
+        except exception.ShaaNameError as ex:
+            self._cmd.perror(f"[!] {ex}")
+            return
+
         self._cmd.pfeedback("[+] Profile has been deleted successfully")
-        self._cmd._profile_has_changed = False  # type: ignore
-        self.profile_unload(None)  # type: ignore[attr-defined]
+        if ns.name is None:
+            self._cmd._profile_has_changed = False  # type: ignore
+            self.profile_unload(None)  # type: ignore[attr-defined]
 
     @as_subcommand_to("profile", "unset", unset_parser,
                       help="unset profile config")
