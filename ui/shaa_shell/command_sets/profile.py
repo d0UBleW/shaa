@@ -255,7 +255,7 @@ class profile_subcmd(CommandSet):
             return
 
         self._cmd._profile_has_changed = False  # type: ignore
-        self._cmd.poutput("[+] Profile has been saved")
+        self._cmd.pfeedback("[+] Profile has been saved")
 
     @as_subcommand_to("profile", "rename", rename_parser,
                       help="""rename profile name (save current changes \
@@ -276,9 +276,9 @@ automatically)""")
             self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._profile_has_changed = False  # type: ignore
-        self._cmd.poutput("[+] Profile has been renamed")
-        self._cmd.poutput(f"    old: {old_name}")
-        self._cmd.poutput(f"    new: {profile.name}")
+        self._cmd.pfeedback("[+] Profile has been renamed")
+        self._cmd.pfeedback(f"    old: {old_name}")
+        self._cmd.pfeedback(f"    new: {profile.name}")
 
     @as_subcommand_to("profile", "delete", delete_parser,
                       aliases=["del", "rm"],
@@ -296,7 +296,7 @@ automatically)""")
             self._cmd.perror("[!] Deletion aborted")
             return
         profile.delete()
-        self._cmd.poutput("[+] Profile has been deleted successfully")
+        self._cmd.pfeedback("[+] Profile has been deleted successfully")
         self._cmd._profile_has_changed = False  # type: ignore
         self.profile_unload(None)  # type: ignore[attr-defined]
 

@@ -228,10 +228,10 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> None:
     all_vars = {}
     # Convert CIS variables
     if "cis" in presets.keys() and presets["cis"] is not None:
-        print("[+] Converting CIS preset variables")
+        # print("[+] Converting CIS preset variables")
         cis_vars = convert_cis_to_ansible_vars(presets["cis"])
         all_vars.update(cis_vars)
-        print("[+] Done converting CIS preset variable")
+        # print("[+] Done converting CIS preset variable")
 
     # Convert role presets variables aside from CIS
     for role_type in presets.keys():
@@ -239,12 +239,12 @@ def generate_inventory(profile: Profile, arg_presets: List[Text]) -> None:
             continue
         role_name = presets[role_type]
         if role_type in presets.keys() and role_name is not None:
-            print(f"[+] Converting {role_type} preset variables")
+            # print(f"[+] Converting {role_type} preset variables")
             role_vars = convert_role_vars_to_ansible_vars(role_type, role_name)
             all_vars.update(role_vars)
             if role_type == "oscap":
                 all_vars["oscap_report_dir"] = str(OSCAP_REPORT_PATH)
-            print(f"[+] Done converting {role_type} preset variable")
+            # print(f"[+] Done converting {role_type} preset variable")
 
     # Generate inventory file with all variables
     inv.groups["all"].group_vars = all_vars

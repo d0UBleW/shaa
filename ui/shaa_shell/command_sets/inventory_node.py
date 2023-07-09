@@ -300,7 +300,7 @@ leaving it blank defaults to all)""",
         if inv.edit_node(node_name=ns.name,
                          new_name=ns.new_name,
                          group_name=ns.node_group) == 0:
-            self._cmd.poutput("[+] Node has been renamed successfully")
+            self._cmd.pfeedback("[+] Node has been renamed successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
 
     @as_subcommand_to("node", "edit", edit_parser,
@@ -316,7 +316,7 @@ leaving it blank defaults to all)""",
                              password=ns.password,
                              ssh_priv_key_path=ns.key,
                              group_name=ns.node_group) == 0:
-                self._cmd.poutput("[+] Node has been edited successfully")
+                self._cmd.pfeedback("[+] Node has been edited successfully")
                 self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         except exception.ShaaInventoryError as ex:
             self._cmd.perror(f"[!] {ex}")
@@ -341,7 +341,7 @@ leaving it blank defaults to all)""",
             ssh_priv_key_path=ns.node_ssh_priv_key_path,
         )
         if inv.add_node(node, ns.node_group) == 0:
-            self._cmd.poutput("[+] Node has been created successfully")
+            self._cmd.pfeedback("[+] Node has been created successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
             self._cmd.perror("[!] Specified node name already exists")
@@ -355,7 +355,7 @@ leaving it blank defaults to all)""",
             return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         if inv.delete_node(ns.name, group_name=ns.node_group) == 0:
-            self._cmd.poutput("[+] Node has been deleted successfully")
+            self._cmd.pfeedback("[+] Node has been deleted successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
             self._cmd.perror("[!] Specified node name does not exist")
@@ -440,6 +440,6 @@ leaving it blank defaults to all)""",
         if isinstance(old_value, TaggedScalar):
             old_value = vault.load(old_value)
 
-        self._cmd.poutput(f"[+] {ns.host_var}:")
-        self._cmd.poutput(f"    old: {old_value}")
+        self._cmd.pfeedback(f"[+] {ns.host_var}:")
+        self._cmd.pfeedback(f"    old: {old_value}")
         self._cmd._inv_has_changed = True  # type: ignore[attr-defined]

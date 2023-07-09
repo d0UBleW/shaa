@@ -160,14 +160,14 @@ class cis_section_cmd(CommandSet):
                         continue
                     cis.set_enabled(s_id, True)
                     if ns.verbose:
-                        self._cmd.poutput(f"[+] {s_id} enabled successfully")
+                        self._cmd.pfeedback(f"[+] {s_id} enabled successfully")
                 else:
                     # Handle `all` and valid subsection
                     cis.set_enabled(s_id, True)
                     if ns.verbose:
-                        self._cmd.poutput(f"[+] {s_id} enabled successfully")
+                        self._cmd.pfeedback(f"[+] {s_id} enabled successfully")
         self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] Enabled successfully")
+        self._cmd.pfeedback("[+] Enabled successfully")
 
     def cis_section_disable(self: CommandSet, ns: argparse.Namespace):
         """
@@ -188,9 +188,10 @@ class cis_section_cmd(CommandSet):
                 if CIS.is_subsection(arg_s_id, s_id) or arg_s_id == "all":
                     cis.set_enabled(s_id, False)
                     if ns.verbose:
-                        self._cmd.poutput(f"[+] {s_id} disabled successfully")
+                        self._cmd.pfeedback(
+                            f"[+] {s_id} disabled successfully")
         self._cmd._cis_has_changed = True  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] Disabled successfully")
+        self._cmd.pfeedback("[+] Disabled successfully")
 
     def cis_section_info(self: CommandSet, ns: argparse.Namespace):
         """
@@ -580,10 +581,10 @@ better tab completion"""
                 old_value = ""
             if val is None:
                 val = ""
-            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    new: {val}")
+            self._cmd.pfeedback(f"[+] Node: {nname} ({gname})")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    new: {val}")
             return
         # group-level setting
         elif ns.group_name is not None:
@@ -613,10 +614,10 @@ better tab completion"""
                 old_value = ""
             if val is None:
                 val = ""
-            self._cmd.poutput(f"[+] Group: {gname}")
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    new: {val}")
+            self._cmd.pfeedback(f"[+] Group: {gname}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    new: {val}")
             return
         # global-level setting
         else:
@@ -631,9 +632,9 @@ better tab completion"""
                 old_value = ""
             if val is None:
                 val = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    new: {val}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    new: {val}")
             return
 
     @as_subcommand_to("cis", "unset", unset_parser,
@@ -677,7 +678,7 @@ better tab completion"""
             if nname not in nodes.keys():
                 self._cmd.perror("[!] Node name does not exist")
                 return
-            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
+            self._cmd.pfeedback(f"[+] Node: {nname} ({gname})")
             node = nodes[nname]
             old_value = None
             if opt_key in node.host_vars:
@@ -696,9 +697,9 @@ better tab completion"""
                 old_value = ""
             if default is None:
                 default = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    default: {default}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    default: {default}")
             return
         # group-level setting
         elif ns.group_name is not None:
@@ -717,7 +718,7 @@ better tab completion"""
                 self._cmd.perror(f"[!] {gname} is not unsettable")
                 return
             group: InventoryGroup = inv.groups[gname]
-            self._cmd.poutput(f"[+] Group: {gname}")
+            self._cmd.pfeedback(f"[+] Group: {gname}")
             if opt_key in group.group_vars:
                 old_value = group.group_vars[opt_key]
                 del group.group_vars[opt_key]
@@ -734,9 +735,9 @@ better tab completion"""
                 old_value = ""
             if default is None:
                 default = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    default: {default}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    default: {default}")
             return
         # global-level setting
         else:
@@ -753,9 +754,9 @@ better tab completion"""
                 old_value = ""
             if default is None:
                 default = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    default: {default}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    default: {default}")
             return
 
 

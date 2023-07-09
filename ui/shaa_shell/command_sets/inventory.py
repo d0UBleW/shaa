@@ -77,7 +77,7 @@ class inventory_subcmd(CommandSet):
             self._cmd.perror("[!] Deletion aborted")
             return
         inv.delete_inventory()
-        self._cmd.poutput("[+] Inventory has been deleted successfully")
+        self._cmd.pfeedback("[+] Inventory has been deleted successfully")
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         self.inventory_unload(None)  # type: ignore[attr-defined]
 
@@ -134,8 +134,8 @@ class inventory_subcmd(CommandSet):
             self._cmd.register_command_set(
                 self._cmd._inventory_group_subcmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] inventory node and group modules loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] inventory node and group modules loaded")
+            self._cmd.pfeedback(
                 "[*] check `help (node|group)` for usage information")
         except CommandSetRegistrationError:
             pass
@@ -155,7 +155,7 @@ class inventory_subcmd(CommandSet):
             self._cmd._inventory_group_subcmd)  # type: ignore[attr-defined]
         self._cmd.unregister_command_set(
             self._cmd._inventory_group_cmd)  # type: ignore[attr-defined]
-        self._cmd.poutput("[*] inventory node and group modules unloaded")
+        self._cmd.pfeedback("[*] inventory node and group modules unloaded")
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
 
     @as_subcommand_to('inventory', 'save', save_parser,
@@ -175,7 +175,7 @@ class inventory_subcmd(CommandSet):
             self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] inventory has been saved")
+        self._cmd.pfeedback("[+] inventory has been saved")
 
     @as_subcommand_to('inventory', 'rename', rename_parser,
                       help="""rename inventory name (save current changes \
@@ -201,6 +201,6 @@ automatically)""")
             profile.inv_name = inv.name
             self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
 
-        self._cmd.poutput("[+] inventory has been renamed")
-        self._cmd.poutput(f"    old: {old_name}")
-        self._cmd.poutput(f"    new: {inv.name}")
+        self._cmd.pfeedback("[+] inventory has been renamed")
+        self._cmd.pfeedback(f"    old: {old_name}")
+        self._cmd.pfeedback(f"    new: {inv.name}")

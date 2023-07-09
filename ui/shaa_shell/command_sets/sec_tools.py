@@ -98,13 +98,13 @@ class sec_tools_action_cmd(CommandSet):
                 for act in role_sec_tools.actions.keys():
                     role_sec_tools.set_enabled(act, True)
                     if ns.verbose:
-                        self._cmd.poutput(f"[+] {act} enabled successfully")
+                        self._cmd.pfeedback(f"[+] {act} enabled successfully")
             else:
                 role_sec_tools.set_enabled(arg_act, True)
                 if ns.verbose:
-                    self._cmd.poutput(f"[+] {arg_act} enabled successfully")
+                    self._cmd.pfeedback(f"[+] {arg_act} enabled successfully")
         self._cmd._sec_tools_has_changed = True  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] Enabled successfully")
+        self._cmd.pfeedback("[+] Enabled successfully")
 
     def sec_tools_action_disable(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -123,13 +123,13 @@ class sec_tools_action_cmd(CommandSet):
                 for act in role_sec_tools.actions.keys():
                     role_sec_tools.set_enabled(act, False)
                     if ns.verbose:
-                        self._cmd.poutput(f"[+] {act} disabled successfully")
+                        self._cmd.pfeedback(f"[+] {act} disabled successfully")
             else:
                 role_sec_tools.set_enabled(arg_act, False)
                 if ns.verbose:
-                    self._cmd.poutput(f"[+] {act} disabled successfully")
+                    self._cmd.pfeedback(f"[+] {act} disabled successfully")
         self._cmd._sec_tools_has_changed = True  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] Disabled successfully")
+        self._cmd.pfeedback("[+] Disabled successfully")
 
     def sec_tools_action_info(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
@@ -501,10 +501,10 @@ better tab completion"""
                 old_value = ""
             if val is None:
                 val = ""
-            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    new: {val}")
+            self._cmd.pfeedback(f"[+] Node: {nname} ({gname})")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    new: {val}")
             return
         elif ns.group_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
@@ -533,10 +533,10 @@ better tab completion"""
                 old_value = ""
             if val is None:
                 val = ""
-            self._cmd.poutput(f"[+] Group: {gname}")
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    new: {val}")
+            self._cmd.pfeedback(f"[+] Group: {gname}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    new: {val}")
             return
         else:
             old_value = role_sec_tools.get_var(action, opt_key)
@@ -550,9 +550,9 @@ better tab completion"""
                 old_value = ""
             if val is None:
                 val = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    new: {val}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    new: {val}")
             return
 
     @as_subcommand_to("sec_tools", "unset", unset_parser,
@@ -592,7 +592,7 @@ better tab completion"""
             if nname not in nodes.keys():
                 self._cmd.perror("[!] Node name does not exist")
                 return
-            self._cmd.poutput(f"[+] Node: {nname} ({gname})")
+            self._cmd.pfeedback(f"[+] Node: {nname} ({gname})")
             node = nodes[nname]
             old_value = None
             if opt_key in node.host_vars:
@@ -611,9 +611,9 @@ better tab completion"""
                 old_value = ""
             if default is None:
                 default = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    default: {default}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    default: {default}")
             return
         elif ns.group_name is not None:
             inv: Inventory = self._cmd._inventory  # type: ignore
@@ -631,7 +631,7 @@ better tab completion"""
                 self._cmd.perror(f"[!] {gname} is not unsettable")
                 return
             group: InventoryGroup = inv.groups[gname]
-            self._cmd.poutput(f"[+] Group: {gname}")
+            self._cmd.pfeedback(f"[+] Group: {gname}")
             if opt_key in group.group_vars:
                 old_value = group.group_vars[opt_key]
                 del group.group_vars[opt_key]
@@ -648,9 +648,9 @@ better tab completion"""
                 old_value = ""
             if default is None:
                 default = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    default: {default}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    default: {default}")
             return
         else:
             old_value = role_sec_tools.get_var(action, opt_key)
@@ -666,9 +666,9 @@ better tab completion"""
                 old_value = ""
             if default is None:
                 default = ""
-            self._cmd.poutput(f"[+] {opt_key}:")
-            self._cmd.poutput(f"    old: {old_value}")
-            self._cmd.poutput(f"    default: {default}")
+            self._cmd.pfeedback(f"[+] {opt_key}:")
+            self._cmd.pfeedback(f"    old: {old_value}")
+            self._cmd.pfeedback(f"    default: {default}")
             return
 
 

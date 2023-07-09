@@ -326,32 +326,32 @@ class ShaaShell(Cmd):
                 "sec_tools" in ns.preset and sec_tools is not None):
             self.check_if_sec_tools_changed()
 
-        self.poutput("[+] Generating final inventory file ...")
+        self.pfeedback("[+] Generating final inventory file ...")
         try:
             play.generate_inventory(profile, ns.preset)
         except exception.ShaaInventoryError as ex:
             self.perror(f"[!] {ex}")
             return
 
-        self.poutput("[+] Generating playbook ...")
+        self.pfeedback("[+] Generating playbook ...")
         try:
             play.generate_playbook(profile, ns.preset, targets=ns.target)
         except exception.ShaaNameError as ex:
             self.perror(f"[!] {ex}")
             return
-        self.poutput("[+] Done")
+        self.pfeedback("[+] Done")
 
         tags = None
         if not ns.verbose:
-            self.poutput("[+] Generating tags ...")
+            self.pfeedback("[+] Generating tags ...")
             try:
                 tags = play.generate_tags(profile, ns.preset)
             except exception.ShaaNameError as ex:
                 self.perror(f"[!] {ex}")
                 return
-            self.poutput("[+] Done")
+            self.pfeedback("[+] Done")
 
-        self.poutput("[+] Running playbook ...")
+        self.pfeedback("[+] Running playbook ...")
         try:
             play.run_playbook(
                 profile.name,
@@ -387,7 +387,7 @@ class ShaaShell(Cmd):
                     if self._inventory is not None:
                         if not self._inventory.save():
                             return
-                        self.poutput(
+                        self.pfeedback(
                             "[+] Changes have been saved successfully")
                         self._inv_has_changed = False
             except (EOFError, KeyboardInterrupt):
@@ -402,7 +402,7 @@ class ShaaShell(Cmd):
                     if self._cis is not None:
                         if not self._cis.save():
                             return
-                        self.poutput(
+                        self.pfeedback(
                             "[+] Changes have been saved successfully")
                         self._cis_has_changed = False
             except (EOFError, KeyboardInterrupt):
@@ -417,7 +417,7 @@ class ShaaShell(Cmd):
                     if self._util is not None:
                         if not self._util.save():
                             return
-                        self.poutput(
+                        self.pfeedback(
                             "[+] Changes have been saved successfully")
                         self._util_has_changed = False
             except (EOFError, KeyboardInterrupt):
@@ -432,7 +432,7 @@ class ShaaShell(Cmd):
                     if self._oscap is not None:
                         if not self._oscap.save():
                             return
-                        self.poutput(
+                        self.pfeedback(
                             "[+] Changes have been saved successfully")
                         self._oscap_has_changed = False
             except (EOFError, KeyboardInterrupt):
@@ -447,7 +447,7 @@ class ShaaShell(Cmd):
                     if self._sec_tools is not None:
                         if not self._sec_tools.save():
                             return
-                        self.poutput(
+                        self.pfeedback(
                             "[+] Changes have been saved successfully")
                         self._sec_tools_has_changed = False
             except (EOFError, KeyboardInterrupt):
@@ -462,7 +462,7 @@ class ShaaShell(Cmd):
                     if self._profile is not None:
                         if not self._profile.save():
                             return
-                        self.poutput(
+                        self.pfeedback(
                             "[+] Changes have been saved successfully")
                         self._profile_has_changed = False
             except (EOFError, KeyboardInterrupt):
@@ -476,14 +476,15 @@ def main() -> None:
                         "--version",
                         action="store_true",
                         help="print shaa-shell version")
-    parser.add_argument("-s",
-                        "--script",
-                        help="run shaa-shell script")
     parser.add_argument(
         "-i",
         "--interactive",
         action="store_true",
         help="go to interactive mode after running shaa-shell script")
+    parser.add_argument("script",
+                        metavar="script_file",
+                        nargs="?",
+                        help="shaa-shell script to be run")
     args: argparse.Namespace = parser.parse_args()
     if args.version:
         print(f'v{importlib.metadata.version("shaa_shell")}')
@@ -509,7 +510,7 @@ def main() -> None:
         if not args.interactive:
             return
     else:
-        print("[*] Run `help -v` to get started")
+        shaa_shell.pfeedback("[*] Run `help -v` to get started")
     shaa_shell.cmdloop()
 
 

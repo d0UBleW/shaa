@@ -137,7 +137,7 @@ class inventory_group_subcmd(CommandSet):
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         try:
             if inv.rename_group(ns.name, ns.new_name) == 0:
-                self._cmd.poutput("[+] Group has been renamed successfully")
+                self._cmd.pfeedback("[+] Group has been renamed successfully")
                 self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         except exception.ShaaInventoryError as ex:
             self._cmd.perror(f"[!] {ex}")
@@ -152,7 +152,7 @@ class inventory_group_subcmd(CommandSet):
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         group = InventoryGroup(ns.name)
         if inv.add_group(group) == 0:
-            self._cmd.poutput("[+] Group has been created successfully")
+            self._cmd.pfeedback("[+] Group has been created successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
             self._cmd.perror("[!] Specified group name already existed")
@@ -166,14 +166,14 @@ class inventory_group_subcmd(CommandSet):
         if not ns.force:
             self._cmd.perror("[!] Deleting this group would also delete all")
             self._cmd.perror("    the nodes within this group.")
-            self._cmd.poutput("[*] Use -f/--force to skip this prompt")
+            self._cmd.pfeedback("[*] Use -f/--force to skip this prompt")
             if (_ := self._cmd.read_input(
                     "[+] Do you want to proceed [y/N]? ")) != "y":
                 self._cmd.perror("[!] Deletion aborted")
                 return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         if inv.delete_group(ns.name) == 0:
-            self._cmd.poutput("[+] Group has been deleted successfully")
+            self._cmd.pfeedback("[+] Group has been deleted successfully")
             self._cmd._inv_has_changed = True  # type: ignore[attr-defined]
         else:
             self._cmd.perror("[!] Specified group name does not exist")
@@ -286,6 +286,6 @@ class inventory_group_subcmd(CommandSet):
         if isinstance(old_value, TaggedScalar):
             old_value = vault.load(old_value)
 
-        self._cmd.poutput(f"[+] {ns.group_var}:")
-        self._cmd.poutput(f"    old: {old_value}")
+        self._cmd.pfeedback(f"[+] {ns.group_var}:")
+        self._cmd.pfeedback(f"    old: {old_value}")
         self._cmd._inv_has_changed = True  # type: ignore[attr-defined]

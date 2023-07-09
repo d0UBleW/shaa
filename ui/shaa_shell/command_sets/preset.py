@@ -66,7 +66,7 @@ class preset_sec_tools_cmd(CommandSet):
             return
 
         self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] sec_tools preset has been saved")
+        self._cmd.pfeedback("[+] sec_tools preset has been saved")
 
     def preset_sec_tools_rename(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -92,9 +92,9 @@ class preset_sec_tools_cmd(CommandSet):
             profile.presets["sec_tools"] = role_sec_tools.name
             self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
 
-        self._cmd.poutput("[+] sec_tools preset has been renamed")
-        self._cmd.poutput(f"    old: {old_name}")
-        self._cmd.poutput(f"    new: {role_sec_tools.name}")
+        self._cmd.pfeedback("[+] sec_tools preset has been renamed")
+        self._cmd.pfeedback(f"    old: {old_name}")
+        self._cmd.pfeedback(f"    new: {role_sec_tools.name}")
 
     def preset_sec_tools_delete(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -110,7 +110,8 @@ class preset_sec_tools_cmd(CommandSet):
             self._cmd.perror("[!] Deletion aborted")
             return
         role_sec_tools.delete()
-        self._cmd.poutput("[+] sec_tools preset has been deleted successfully")
+        self._cmd.pfeedback(
+            "[+] sec_tools preset has been deleted successfully")
         self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
         self.preset_sec_tools_unload(None)
 
@@ -123,22 +124,22 @@ class preset_sec_tools_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_action_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] sec_tools action module unloaded")
+        self._cmd.pfeedback("[*] sec_tools action module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] sec_tools set module unloaded")
+        self._cmd.pfeedback("[*] sec_tools set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] sec_tools search module unloaded")
+        self._cmd.pfeedback("[*] sec_tools search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._sec_tools_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] sec_tools module unloaded")
+        self._cmd.pfeedback("[*] sec_tools module unloaded")
         self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
 
     def preset_sec_tools_load(self, ns: argparse.Namespace,
@@ -168,29 +169,29 @@ class preset_sec_tools_cmd(CommandSet):
             self._cmd.register_command_set(
                 self._cmd._sec_tools_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] sec_tools module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] sec_tools module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help sec_tools` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._sec_tools_action_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] sec_tools action module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] sec_tools action module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help sec_tools action` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._sec_tools_set_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] sec_tools set module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] sec_tools set module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help sec_tools set` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._sec_tools_search_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] sec_tools search module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] sec_tools search module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help sec_tools search` for usage information")
 
         except CommandSetRegistrationError:
@@ -305,7 +306,7 @@ class preset_oscap_cmd(CommandSet):
             return
 
         self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] oscap preset has been saved")
+        self._cmd.pfeedback("[+] oscap preset has been saved")
 
     def preset_oscap_rename(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -330,9 +331,9 @@ class preset_oscap_cmd(CommandSet):
             profile.presets["oscap"] = role_oscap.name
             self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
 
-        self._cmd.poutput("[+] oscap preset has been renamed")
-        self._cmd.poutput(f"    old: {old_name}")
-        self._cmd.poutput(f"    new: {role_oscap.name}")
+        self._cmd.pfeedback("[+] oscap preset has been renamed")
+        self._cmd.pfeedback(f"    old: {old_name}")
+        self._cmd.pfeedback(f"    new: {role_oscap.name}")
 
     def preset_oscap_delete(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -347,7 +348,7 @@ class preset_oscap_cmd(CommandSet):
             self._cmd.perror("[!] Deletion aborted")
             return
         role_oscap.delete()
-        self._cmd.poutput("[+] oscap preset has been deleted successfully")
+        self._cmd.pfeedback("[+] oscap preset has been deleted successfully")
         self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
         self.preset_oscap_unload(None)
 
@@ -360,22 +361,22 @@ class preset_oscap_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._oscap_action_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] oscap action module unloaded")
+        self._cmd.pfeedback("[*] oscap action module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._oscap_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] oscap set module unloaded")
+        self._cmd.pfeedback("[*] oscap set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._oscap_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] oscap search module unloaded")
+        self._cmd.pfeedback("[*] oscap search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._oscap_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] oscap module unloaded")
+        self._cmd.pfeedback("[*] oscap module unloaded")
         self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
 
     def preset_oscap_load(self, ns: argparse.Namespace,
@@ -405,28 +406,28 @@ class preset_oscap_cmd(CommandSet):
             self._cmd.register_command_set(
                 self._cmd._oscap_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] oscap module loaded")
-            self._cmd.poutput("[*] check `help oscap` for usage information")
+            self._cmd.pfeedback("[*] oscap module loaded")
+            self._cmd.pfeedback("[*] check `help oscap` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._oscap_action_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] oscap action module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] oscap action module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help oscap action` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._oscap_set_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] oscap set module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] oscap set module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help oscap set` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._oscap_search_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] oscap search module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] oscap search module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help oscap search` for usage information")
 
         except CommandSetRegistrationError:
@@ -540,7 +541,7 @@ class preset_util_cmd(CommandSet):
             self._cmd.perror(f"[!] {ex}")
             return
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] util preset has been saved")
+        self._cmd.pfeedback("[+] util preset has been saved")
 
     def preset_util_rename(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -565,9 +566,9 @@ class preset_util_cmd(CommandSet):
             profile.presets["util"] = role_util.name
             self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
 
-        self._cmd.poutput("[+] util preset has been renamed")
-        self._cmd.poutput(f"    old: {old_name}")
-        self._cmd.poutput(f"    new: {role_util.name}")
+        self._cmd.pfeedback("[+] util preset has been renamed")
+        self._cmd.pfeedback(f"    old: {old_name}")
+        self._cmd.pfeedback(f"    new: {role_util.name}")
 
     def preset_util_delete(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -582,7 +583,7 @@ class preset_util_cmd(CommandSet):
             self._cmd.perror("[!] Deletion aborted")
             return
         role_util.delete()
-        self._cmd.poutput("[+] util preset has been deleted successfully")
+        self._cmd.pfeedback("[+] util preset has been deleted successfully")
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
         self.preset_util_unload(None)
 
@@ -595,22 +596,22 @@ class preset_util_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._util_action_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] util action module unloaded")
+        self._cmd.pfeedback("[*] util action module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._util_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] util set module unloaded")
+        self._cmd.pfeedback("[*] util set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._util_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] util search module unloaded")
+        self._cmd.pfeedback("[*] util search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._util_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] util module unloaded")
+        self._cmd.pfeedback("[*] util module unloaded")
         self._cmd._util_has_changed = False  # type: ignore[attr-defined]
 
     def preset_util_load(self, ns: argparse.Namespace,
@@ -640,28 +641,28 @@ class preset_util_cmd(CommandSet):
             self._cmd.register_command_set(
                 self._cmd._util_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] util module loaded")
-            self._cmd.poutput("[*] check `help util` for usage information")
+            self._cmd.pfeedback("[*] util module loaded")
+            self._cmd.pfeedback("[*] check `help util` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._util_action_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] util action module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] util action module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help util action` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._util_set_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] util set module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] util set module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help util set` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._util_search_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] util search module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] util search module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help util search` for usage information")
 
         except CommandSetRegistrationError:
@@ -775,7 +776,7 @@ class preset_cis_cmd(CommandSet):
             return
 
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
-        self._cmd.poutput("[+] CIS preset has been saved")
+        self._cmd.pfeedback("[+] CIS preset has been saved")
 
     def preset_cis_rename(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -800,9 +801,9 @@ class preset_cis_cmd(CommandSet):
             profile.presets["cis"] = cis.name
             self._cmd._profile_has_changed = True  # type: ignore[attr-defined]
 
-        self._cmd.poutput("[+] CIS preset has been renamed")
-        self._cmd.poutput(f"    old: {old_name}")
-        self._cmd.poutput(f"    new: {cis.name}")
+        self._cmd.pfeedback("[+] CIS preset has been renamed")
+        self._cmd.pfeedback(f"    old: {old_name}")
+        self._cmd.pfeedback(f"    new: {cis.name}")
 
     def preset_cis_delete(self, ns: argparse.Namespace):
         if self._cmd is None:
@@ -817,7 +818,7 @@ class preset_cis_cmd(CommandSet):
             self._cmd.perror("[!] Deletion aborted")
             return
         cis.delete()
-        self._cmd.poutput("[+] CIS preset has been deleted successfully")
+        self._cmd.pfeedback("[+] CIS preset has been deleted successfully")
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
         self.preset_cis_unload(None)
 
@@ -830,22 +831,22 @@ class preset_cis_cmd(CommandSet):
         self._cmd.unregister_command_set(
             self._cmd._cis_section_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] cis section module unloaded")
+        self._cmd.pfeedback("[*] cis section module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._cis_set_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] cis set module unloaded")
+        self._cmd.pfeedback("[*] cis set module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._cis_search_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] cis search module unloaded")
+        self._cmd.pfeedback("[*] cis search module unloaded")
 
         self._cmd.unregister_command_set(
             self._cmd._cis_cmd  # type: ignore[attr-defined]
         )
-        self._cmd.poutput("[*] cis module unloaded")
+        self._cmd.pfeedback("[*] cis module unloaded")
         self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
 
     def preset_cis_load(self, ns: argparse.Namespace,
@@ -875,27 +876,28 @@ class preset_cis_cmd(CommandSet):
             self._cmd.register_command_set(
                 self._cmd._cis_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] cis module loaded")
-            self._cmd.poutput("[*] check `help cis` for usage information")
+            self._cmd.pfeedback("[*] cis module loaded")
+            self._cmd.pfeedback("[*] check `help cis` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._cis_section_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] cis section module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] cis section module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help cis section` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._cis_set_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] cis set module loaded")
-            self._cmd.poutput("[*] check `help cis set` for usage information")
+            self._cmd.pfeedback("[*] cis set module loaded")
+            self._cmd.pfeedback(
+                "[*] check `help cis set` for usage information")
 
             self._cmd.register_command_set(
                 self._cmd._cis_search_cmd  # type: ignore[attr-defined]
             )
-            self._cmd.poutput("[*] cis search module loaded")
-            self._cmd.poutput(
+            self._cmd.pfeedback("[*] cis search module loaded")
+            self._cmd.pfeedback(
                 "[*] check `help cis search` for usage information")
 
         except CommandSetRegistrationError:
