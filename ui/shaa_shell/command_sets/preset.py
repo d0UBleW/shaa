@@ -111,10 +111,11 @@ class preset_sec_tools_cmd(CommandSet):
                 return
             role_name = role_sec_tools.name
 
-        if (_ := self._cmd.read_input(
-                "[+] Are you sure [y/N]? ")) != "y":
-            self._cmd.perror("[!] Deletion aborted")
-            return
+        if not ns.force:
+            if (_ := self._cmd.read_input(
+                    "[+] Are you sure [y/N]? ")) != "y":
+                self._cmd.perror("[!] Deletion aborted")
+                return
 
         try:
             Role.delete("sec_tools", role_name)
@@ -263,6 +264,10 @@ class preset_sec_tools_cmd(CommandSet):
                                choices_provider=_choices_preset_sec_tools,
                                nargs="?",
                                help="name of sec_tools preset")
+    delete_parser.add_argument("-f",
+                               "--force",
+                               action="store_true",
+                               help="force deletion")
     delete_parser.set_defaults(func=preset_sec_tools_delete)
 
     rename_parser = pre_sec_tools_subparser.add_parser(
@@ -367,10 +372,11 @@ class preset_oscap_cmd(CommandSet):
                 return
             role_name = role_oscap.name
 
-        if (_ := self._cmd.read_input(
-                "[+] Are you sure [y/N]? ")) != "y":
-            self._cmd.perror("[!] Deletion aborted")
-            return
+        if not ns.force:
+            if (_ := self._cmd.read_input(
+                    "[+] Are you sure [y/N]? ")) != "y":
+                self._cmd.perror("[!] Deletion aborted")
+                return
 
         try:
             Role.delete("oscap", role_name)
@@ -517,6 +523,10 @@ class preset_oscap_cmd(CommandSet):
                                choices_provider=_choices_preset_oscap,
                                nargs="?",
                                help="name of oscap preset")
+    delete_parser.add_argument("-f",
+                               "--force",
+                               action="store_true",
+                               help="force deletion")
     delete_parser.set_defaults(func=preset_oscap_delete)
 
     rename_parser = pre_oscap_subparser.add_parser(
@@ -621,10 +631,11 @@ class preset_util_cmd(CommandSet):
                 return
             role_name = role_util.name
 
-        if (_ := self._cmd.read_input(
-                "[+] Are you sure [y/N]? ")) != "y":
-            self._cmd.perror("[!] Deletion aborted")
-            return
+        if not ns.force:
+            if (_ := self._cmd.read_input(
+                    "[+] Are you sure [y/N]? ")) != "y":
+                self._cmd.perror("[!] Deletion aborted")
+                return
 
         try:
             Role.delete("util", role_name)
@@ -771,6 +782,10 @@ class preset_util_cmd(CommandSet):
                                choices_provider=_choices_preset_util,
                                nargs="?",
                                help="name of util preset")
+    delete_parser.add_argument("-f",
+                               "--force",
+                               action="store_true",
+                               help="force deletion")
     delete_parser.set_defaults(func=preset_util_delete)
 
     rename_parser = pre_util_subparser.add_parser(
@@ -874,10 +889,11 @@ class preset_cis_cmd(CommandSet):
                 return
             cis_name = cis.name
 
-        if (_ := self._cmd.read_input(
-                "[+] Are you sure [y/N]? ")) != "y":
-            self._cmd.perror("[!] Deletion aborted")
-            return
+        if not ns.force:
+            if (_ := self._cmd.read_input(
+                    "[+] Are you sure [y/N]? ")) != "y":
+                self._cmd.perror("[!] Deletion aborted")
+                return
 
         try:
             CIS.delete(cis_name)
@@ -1022,6 +1038,10 @@ class preset_cis_cmd(CommandSet):
                                choices_provider=_choices_preset_cis,
                                nargs="?",
                                help="name of CIS preset")
+    delete_parser.add_argument("-f",
+                               "--force",
+                               action="store_true",
+                               help="force deletion")
     delete_parser.set_defaults(func=preset_cis_delete)
 
     rename_parser = pre_cis_subparser.add_parser(

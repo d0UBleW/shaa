@@ -26,6 +26,10 @@ class inventory_subcmd(CommandSet):
                                choices_provider=_choices_inventory_name,
                                nargs="?",
                                help='name of inventory')
+    delete_parser.add_argument("-f",
+                               "--force",
+                               action="store_true",
+                               help="force deletion")
 
     list_parser = Cmd2ArgumentParser()
     list_parser.add_argument('pattern', nargs='?', default='.*',
@@ -80,13 +84,14 @@ class inventory_subcmd(CommandSet):
                 return
             inv_name = inv.name
 
-        warning_text = "[!] Deleting this inventory would also delete all of "
-        warning_text += "its corresponding groups and nodes"
-        self._cmd.perror(warning_text)
-        if (_ := self._cmd.read_input(
-                "[+] Do you want to proceed [y/N]? ")) != "y":
-            self._cmd.perror("[!] Deletion aborted")
-            return
+        if not ns.force:
+            warning_text = "[!] Deleting this inventory would also delete all "
+            warning_text += "of its corresponding groups and nodes"
+            self._cmd.perror(warning_text)
+            if (_ := self._cmd.read_input(
+                    "[+] Do you want to proceed [y/N]? ")) != "y":
+                self._cmd.perror("[!] Deletion aborted")
+                return
 
         try:
             Inventory.delete_inventory(inv_name)

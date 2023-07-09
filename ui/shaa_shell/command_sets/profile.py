@@ -49,6 +49,10 @@ class profile_subcmd(CommandSet):
                                choices_provider=_choices_profile_name,
                                nargs="?",
                                help="name of profile")
+    delete_parser.add_argument("-f",
+                               "--force",
+                               action="store_true",
+                               help="force deletion")
 
     save_parser = Cmd2ArgumentParser()
     save_parser.add_argument("name",
@@ -303,10 +307,11 @@ automatically)""")
                 return
             profile_name = profile.name
 
-        if (_ := self._cmd.read_input(
-                "[+] Are you sure [y/N]? ")) != "y":
-            self._cmd.perror("[!] Deletion aborted")
-            return
+        if not ns.force:
+            if (_ := self._cmd.read_input(
+                    "[+] Are you sure [y/N]? ")) != "y":
+                self._cmd.perror("[!] Deletion aborted")
+                return
 
         try:
             Profile.delete(profile_name)
@@ -341,7 +346,7 @@ automatically)""")
                 return
             old_name = profile.presets[ns.config]
             profile.presets[ns.config] = None
-            self._cmd.do_preset(f"{ns.config} unload")  # type: ignore
+            # self._cmd.do_preset(f"{ns.config} unload")  # type: ignore
 
         self._cmd.poutput(f"\n[+] {ns.config} unset successfully")
         self._cmd._profile_has_changed = True  # type: ignore

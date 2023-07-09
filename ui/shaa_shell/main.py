@@ -468,7 +468,7 @@ class ShaaShell(Cmd):
                 return
 
 
-def main() -> None:
+def main() -> int:
     parser = Cmd2ArgumentParser()
     parser.add_argument("-v",
                         "-V",
@@ -487,7 +487,7 @@ def main() -> None:
     args: argparse.Namespace = parser.parse_args()
     if args.version:
         print(f'v{importlib.metadata.version("shaa_shell")}')
-        return
+        return 0
     print(banner)
     print()
     print(metadata)
@@ -507,10 +507,11 @@ def main() -> None:
     if args.script is not None:
         shaa_shell.do_run_script(args.script)
         if not args.interactive:
-            return
+            return 0
     else:
         shaa_shell.pfeedback("[*] Run `help -v` to get started")
     shaa_shell.cmdloop()
+    return 0
 
 
 if __name__ == "__main__":
