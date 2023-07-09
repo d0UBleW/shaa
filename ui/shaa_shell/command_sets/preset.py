@@ -65,7 +65,8 @@ class preset_sec_tools_cmd(CommandSet):
             self._cmd.perror(f"[!] {ex}")
             return
 
-        self._cmd._sec_tools_has_changed = False  # type: ignore[attr-defined]
+        if ns.name is None:
+            self._cmd._sec_tools_has_changed = False  # type: ignore
         self._cmd.pfeedback("[+] sec_tools preset has been saved")
 
     def preset_sec_tools_rename(self, ns: argparse.Namespace):
@@ -305,7 +306,8 @@ class preset_oscap_cmd(CommandSet):
             self._cmd.perror(f"[!] {ex}")
             return
 
-        self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
+        if ns.name is None:
+            self._cmd._oscap_has_changed = False  # type: ignore[attr-defined]
         self._cmd.pfeedback("[+] oscap preset has been saved")
 
     def preset_oscap_rename(self, ns: argparse.Namespace):
@@ -540,7 +542,9 @@ class preset_util_cmd(CommandSet):
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
-        self._cmd._util_has_changed = False  # type: ignore[attr-defined]
+
+        if ns.name is None:
+            self._cmd._util_has_changed = False  # type: ignore[attr-defined]
         self._cmd.pfeedback("[+] util preset has been saved")
 
     def preset_util_rename(self, ns: argparse.Namespace):
@@ -775,7 +779,8 @@ class preset_cis_cmd(CommandSet):
             self._cmd.perror(f"[!] {ex}")
             return
 
-        self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
+        if ns.name is None:
+            self._cmd._cis_has_changed = False  # type: ignore[attr-defined]
         self._cmd.pfeedback("[+] CIS preset has been saved")
 
     def preset_cis_rename(self, ns: argparse.Namespace):

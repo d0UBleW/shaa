@@ -174,7 +174,8 @@ class inventory_subcmd(CommandSet):
         except exception.ShaaNameError as ex:
             self._cmd.perror(f"[!] {ex}")
             return
-        self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
+        if ns.name is None:
+            self._cmd._inv_has_changed = False  # type: ignore[attr-defined]
         self._cmd.pfeedback("[+] inventory has been saved")
 
     @as_subcommand_to('inventory', 'rename', rename_parser,

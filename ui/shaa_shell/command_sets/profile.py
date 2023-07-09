@@ -254,7 +254,8 @@ class profile_subcmd(CommandSet):
             self._cmd.perror(f"[!] {ex}")
             return
 
-        self._cmd._profile_has_changed = False  # type: ignore
+        if ns.name is None:
+            self._cmd._profile_has_changed = False  # type: ignore
         self._cmd.pfeedback("[+] Profile has been saved")
 
     @as_subcommand_to("profile", "rename", rename_parser,
