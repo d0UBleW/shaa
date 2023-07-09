@@ -233,8 +233,7 @@ class ShaaShell(Cmd):
         if self._sec_tools is not None:
             self.do_preset("sec_tools unload")
         if self._profile is not None:
-            self.check_if_profile_changed()
-            self._profile = None
+            self.do_profile("unload")
 
     def _choices_targets(self) -> List[CompletionItem]:
         inv: Optional[Inventory] = None

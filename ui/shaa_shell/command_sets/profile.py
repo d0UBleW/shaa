@@ -202,6 +202,7 @@ class profile_subcmd(CommandSet):
     def profile_unload(self: CommandSet, _):
         if self._cmd is None:
             return
+        self._cmd.check_if_profile_changed()  # type: ignore[attr-defined]
         self._cmd._profile = None  # type: ignore[attr-defined]
         self._cmd._profile_has_changed = False  # type: ignore
 
