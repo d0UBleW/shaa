@@ -21,6 +21,9 @@
   - [Running Automation](#running-automation)
   - [General](#general)
   - [Script Examples](#script-examples)
+- [Screenshots](#screenshots)
+- [License](#license)
+- [Feedback](#feedbcak)
 
 ## Features
 
