@@ -111,6 +111,12 @@ cd shaa
 # Copy roles to ansible default role search path
 cp -r ./ansible/roles ~/.ansible/roles
 
+# Install Ansible vault password file
+sudo mkdir -p /opt/shaa
+sudo chown -R $USER:$USER /opt/shaa
+cp ./ansible/vault-password.py /opt/shaa
+chmod +x /opt/shaa/vault-password.py
+
 ##########
 # Install the interactive shell
 ##########
