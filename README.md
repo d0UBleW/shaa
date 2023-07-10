@@ -823,13 +823,13 @@ pip install ./ui
     play -c
     ```
 
-If shaa-shell is installed locally
+If `shaa-shell` is installed locally
 
 ```console
 $ shaa-shell /tmp/init-inv.shaa
 ```
 
-If shaa-shell is run via docker, copy the script to the directory which is mounted to the docker container
+If `shaa-shell` is run via docker, copy the script to the directory which is mounted to the docker container
 
 ```sh
 # Prepare the directory
@@ -847,3 +847,13 @@ docker run -it \
 ```
 
 ## Screenshots
+
+TODO
+
+## License
+
+This project is licensed under the terms of the MIT license. For more information, see [LICENSE](./LICENSE) file in this repository.
+
+## Feedback
+
+If you have any feedback or run into issues, feel free to open an issue on this repository.
