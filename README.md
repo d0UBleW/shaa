@@ -851,7 +851,21 @@ docker run -it \
 
 ## Screenshots
 
-TODO
+- [AlmaLinux 8 box from Vagrant](https://app.vagrantup.com/almalinux/boxes/8) pre-hardening with compliance score of 77.4%
+
+    ![OpenSCAP report for AlmaLinux 8 pre-hardening](./examples/img/alma-before.png)
+
+- [AlmaLinux 8 box from Vagrant](https://app.vagrantup.com/almalinux/boxes/8) post-hardening with compliance score of 92.2%
+
+    ![OpenSCAP report for AlmaLinux 8 post-hardening](./examples/img/alma-after.png)
+
+- [Ubuntu 20.04 box from Vagrant](https://app.vagrantup.com/ubuntu/boxes/focal64) pre-hardening with compliance score of 66.5%
+
+    ![OpenSCAP report for Ubuntu 20.04 pre-hardening](./examples/img/ubuntu-before.png)
+
+- [Ubuntu 20.04 box from Vagrant](https://app.vagrantup.com/ubuntu/boxes/focal64) post-hardening with compliance score of 89.4%
+
+    ![OpenSCAP report for Ubuntu 20.04 post-hardening](./examples/img/ubuntu-after.png)
 
 ## License
 
