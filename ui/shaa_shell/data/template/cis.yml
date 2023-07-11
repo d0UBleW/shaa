@@ -837,7 +837,7 @@ sections:
       - Level 1 - Server
       - Level 1 - Workstation
     vars:
-      systemd_timesyncd.main_ntp:
+      systemd_timesyncd_main_ntp:
         default:
           - time1.google.com
           - time2.google.com
@@ -845,7 +845,7 @@ sections:
           Main NTP remote servers to sync with
         value_type: list
         valid:
-      systemd_timesyncd.fallback_ntp:
+      systemd_timesyncd_fallback_ntp:
         default:
           - time3.google.com
           - time4.google.com
@@ -854,7 +854,7 @@ sections:
           Fallback NTP remote servers to sync with
         value_type: list
         valid:
-      systemd_timesyncd.root_distance_max:
+      systemd_timesyncd_root_distance_max:
         default: "1"
         description: |
           Maximum acceptable root distance, i.e. the maximum estimated time

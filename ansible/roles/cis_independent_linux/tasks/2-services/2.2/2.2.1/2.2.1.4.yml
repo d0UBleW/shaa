@@ -32,9 +32,9 @@
           vars:
             confs:
               - key: NTP
-                value: "{{ systemd_timesyncd.main_ntp }}"
+                value: "{{ systemd_timesyncd_main_ntp }}"
               - key: FallbackNTP
-                value: "{{ systemd_timesyncd.fallback_ntp }}"
+                value: "{{ systemd_timesyncd_fallback_ntp }}"
           ansible.builtin.lineinfile:
             path: /etc/systemd/timesyncd.conf
             regexp: >-
@@ -55,7 +55,7 @@
           vars:
             confs:
               - key: RootDistanceMaxSec
-                value: "{{ systemd_timesyncd.root_distance_max }}"
+                value: "{{ systemd_timesyncd_root_distance_max }}"
           ansible.builtin.lineinfile:
             path: /etc/systemd/timesyncd.conf
             regexp: >-

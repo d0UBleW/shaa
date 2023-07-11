@@ -57,15 +57,16 @@ configure_chrony: "{{ section_2_2_1_3 }}"
 # 2.2.1.4
 configure_systemd_timesyncd: "{{ section_2_2_1_4 }}"
 
-systemd_timesyncd:
-  main_ntp:
-    - time1.google.com
-    - time2.google.com
-  fallback_ntp:
-    - time3.google.com
-    - time4.google.com
-    - time.cloudflare.com
-  root_distance_max: 1
+systemd_timesyncd_main_ntp:
+  - time1.google.com
+  - time2.google.com
+
+systemd_timesyncd_fallback_ntp:
+  - time3.google.com
+  - time4.google.com
+  - time.cloudflare.com
+
+systemd_timesyncd_root_distance_max: 1
 
 # 2.2.2
 uninstall_x_window_system: "{{ section_2_2_2 }}"
