@@ -1,0 +1,7 @@
+set quiet true > /dev/null
+preset cis delete -f example/part-a > /dev/null
+preset cis create example/part-a
+cis section enable all
+cis section disable 1.4.2 1.4.3 3.6 3.7 5.3 5.4.1
+preset cis save
+set quiet false > /dev/null

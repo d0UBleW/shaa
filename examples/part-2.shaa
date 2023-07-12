@@ -1,0 +1,14 @@
+set quiet true > /dev/null
+preset cis delete -f example/part-b > /dev/null
+preset cis create example/part-b
+cis section disable all
+cis section enable 1.4.2 1.5.1 2.2.1.4 2.2.15 5.3 5.4.1
+# cis set -s 1.4.2 bootloader_password changeme
+preset cis save
+
+preset util delete -f example/part-b > /dev/null
+preset util create example/part-b
+util action enable chpasswd
+# util set -a chpasswd new_passwd changeme
+preset util save
+set quiet false > /dev/null

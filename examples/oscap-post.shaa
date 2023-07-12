@@ -1,0 +1,7 @@
+set quiet true > /dev/null
+preset oscap delete -f post-hardened
+preset oscap create post-hardened
+oscap action enable scan
+oscap set --action scan report_output_prefix post
+preset oscap save
+set quiet false > /dev/null
