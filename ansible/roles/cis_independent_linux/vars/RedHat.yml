@@ -1,6 +1,7 @@
 ---
 bootstrap_pkgs:
   - epel-release
+  - python3-pip
   - iproute
   - iputils
   - kmod

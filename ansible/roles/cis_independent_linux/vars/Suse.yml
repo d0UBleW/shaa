@@ -1,5 +1,6 @@
 ---
 bootstrap_pkgs:
+  - python3-pip
   - iproute
   - iputils
   - kmod
