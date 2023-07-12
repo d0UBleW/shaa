@@ -28,7 +28,9 @@
         ip_addr: "{{ _host['ansible_host'] }}"
         conn: "{{ username }}@{{ ip_addr }}"
       ansible.builtin.expect:
-        command: ssh -o StrictHostKeyChecking=no {{ conn }}
+        command: >-
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+          {{ conn }}
         timeout: 10
         responses:
           '(?i)password:': "{{ curr_passwd }}"
