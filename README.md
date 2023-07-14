@@ -73,6 +73,11 @@ Additional features:
 - GNU/Linux
 - Windows with Docker
 
+### Managed Machine
+
+- SSH service running
+- Python3 installed
+
 ## Installation
 
 ### Docker
