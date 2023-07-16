@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from typing import Dict, List, Optional, Text
+from typing import Any, Dict, List, Optional, Text
 
 from cmd2 import (Cmd2ArgumentParser, CommandSet,  # type: ignore[import]
                   CompletionError, CompletionItem, as_subcommand_to,
@@ -14,6 +14,19 @@ from shaa_shell.utils.cis import CIS
 from shaa_shell.utils.inventory import Inventory, InventoryGroup, InventoryNode
 from shaa_shell.utils.parser import cis_parser
 from shaa_shell.utils.vault import vault
+
+
+def filter_section_level(section_id: Text, data: List[Any]) -> List[Any]:
+    def _filter(s, lvl):
+        return s.count(".") == lvl and s.startswith(section_id)
+
+    level = section_id.count(".")
+    filtered = list(filter(lambda s: _filter(s[0], level), data))
+    if len(filtered) == 1:
+        deeper = list(filter(lambda s: _filter(s[0], level + 1), data))
+        if len(deeper) > 0:
+            return deeper
+    return filtered
 
 
 @with_default_category("cis")
@@ -35,13 +48,25 @@ class cis_cmd(CommandSet):
 
 @with_default_category("cis")
 class cis_section_cmd(CommandSet):
-    def _choices_cis_section_title(self) -> List[CompletionItem]:
+    def _choices_cis_section_title(
+        self,
+        arg_tokens: Dict[Text, List[Text]],
+    ) -> List[CompletionItem]:
         """
         Provide completion on section id while showing its title
         """
         if self._cmd is None:
             return []
+
+        section_id = ""
+        if "section_id" in arg_tokens:
+            section_id = arg_tokens["section_id"][0]
+
         data = self._cmd._cis.list_section_and_details()  # type: ignore
+
+        if "incremental" in arg_tokens:
+            data = filter_section_level(section_id, data)
+
         return [CompletionItem(s_id, s["title"]) for s_id, s in data]
 
     def _choices_cis_section_enable(self) -> List[CompletionItem]:
@@ -287,6 +312,10 @@ class cis_section_cmd(CommandSet):
 
     list_parser = section_subparser.add_parser(
         "list", help="list available section ids")
+    list_parser.add_argument("-i",
+                             "--incremental",
+                             action="store_true",
+                             help="incremental tab completion")
     list_parser.add_argument(
         "--status",
         nargs="?",
@@ -337,6 +366,10 @@ has subsections)""")
 
     info_parser = section_subparser.add_parser(
         "info", help="info section id")
+    info_parser.add_argument("-i",
+                             "--incremental",
+                             action="store_true",
+                             help="incremental tab completion")
     info_parser.add_argument("section_id",
                              choices_provider=_choices_cis_section_title,
                              descriptive_header="Title",
