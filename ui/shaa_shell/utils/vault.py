@@ -10,10 +10,10 @@ from shaa_shell.utils.path import USER_DATA_PATH
 VAR_NAME = "VAULT_PASSWORD"
 dotenv_file = USER_DATA_PATH.joinpath(".env")
 
-if dotenv_file.is_file():
-    envs = dotenv_values(dotenv_file)
-else:
-    envs = os.environ  # type: ignore[assignment]
+envs = os.environ
+if VAR_NAME not in envs.keys():
+    if dotenv_file.is_file():
+        envs = dotenv_values(dotenv_file)
 
 if VAR_NAME not in envs.keys():
     print("[!] Missing ansible vault password!")
