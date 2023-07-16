@@ -22,7 +22,6 @@ RUN \
     pip install .
 
 FROM python:3.9-alpine AS final
-COPY --from=builder /opt/venv /opt/venv
 
 RUN : \
     && apk update \
@@ -31,9 +30,6 @@ RUN : \
         sshpass \
     && apk cache clean \
     && :
-
-
-RUN ln -s /opt/venv/lib/python3.9/site-packages/shaa_shell /shaa_shell
 
 RUN adduser -D shaa
 
@@ -46,6 +42,8 @@ COPY ./ansible/vault-password.py /opt/shaa/
 RUN chown -R shaa:shaa /opt/shaa/
 
 RUN chmod +x /opt/shaa/vault-password.py
+
+COPY --from=builder /opt/venv /opt/venv
 
 USER shaa
 
