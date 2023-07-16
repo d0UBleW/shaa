@@ -135,7 +135,7 @@ class cis_section_cmd(CommandSet):
             # Validate passed arguments
             if arg_s_id not in special_id:
                 if not cis.is_valid_section_id(arg_s_id):
-                    self._cmd.perror("[!] Invalid section id")
+                    self._cmd.perror(f"[!] Invalid section id: {arg_s_id}")
                     return
 
             """
