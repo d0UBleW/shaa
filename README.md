@@ -142,6 +142,16 @@ pip install ./ui
 
 1. Set an environment variable called `VAULT_PASSWORD` to encrypt sensitive data
 
+    - `shaa` using Docker (`~/.shaa` is mounted to `/home/shaa/.shaa`)
+
+        ```console
+        $ cat ~/.shaa/.env
+        VAULT_PASSWORD=password
+        ```
+
+    - `shaa` without Docker: Use `.env` file as above or `export VAULT_PASSWORD=password`
+
+
 2. View help page
 
     ```console
@@ -733,6 +743,8 @@ pip install ./ui
         ```
 
 ### Running Automation
+
+Result of playbook is logged into a file under `~/.shaa/log` with file name in this format: `<profile name>-<timestamp>`
 
 1. Run according to currently loaded inventory and presets (`-c` to enable colorized output)
 
