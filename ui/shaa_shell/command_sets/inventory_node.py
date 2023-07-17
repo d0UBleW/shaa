@@ -244,6 +244,10 @@ just list out all nodes)""",
     )
 
     delete_parser = Cmd2ArgumentParser()
+    delete_parser.add_argument("-f",
+                               "--force",
+                               action="store_true",
+                               help="force deletion")
     delete_parser.add_argument(
         '-g',
         '--group',
@@ -353,6 +357,11 @@ leaving it blank defaults to all)""",
     def inv_node_delete(self: CommandSet, ns: argparse.Namespace):
         if self._cmd is None:
             return
+        if not ns.force:
+            if (_ := self._cmd.read_input(
+                    "[+] Are you sure [y/N]? ")) != "y":
+                self._cmd.perror("[!] Deletion aborted")
+                return
         inv: Inventory = self._cmd._inventory  # type: ignore[attr-defined]
         if inv.delete_node(ns.name, group_name=ns.node_group) == 0:
             self._cmd.pfeedback("[+] Node has been deleted successfully")
