@@ -22,6 +22,7 @@
   - [General](#general)
   - [Script Examples](#script-examples)
 - [Screenshots](#screenshots)
+- [Demo](#demo)
 - [License](#license)
 - [Feedback](#feedbcak)
 
@@ -883,6 +884,28 @@ docker run -it \
 - [Ubuntu 20.04 box from Vagrant](https://app.vagrantup.com/ubuntu/boxes/focal64) post-hardening with compliance score of 89.4%
 
     ![OpenSCAP report for Ubuntu 20.04 post-hardening](./examples/img/ubuntu-after.png)
+
+## Demo
+
+### Managing Inventory Video
+
+[![Managing inventory demo](https://asciinema.org/a/597222.svg)](https://asciinema.org/a/597222?autoplay=1)
+
+### Managing CIS Preset Video
+
+[![Managing CIS preset demo](https://asciinema.org/a/597223.svg)](https://asciinema.org/a/597223?autoplay=1)
+
+### Managing OSCAP Preset Video
+
+[![Managing OSCAP preset demo](https://asciinema.org/a/597224.svg)](https://asciinema.org/a/597224?autoplay=1)
+
+### Managing Profile Video
+
+[![Managing profile demo](https://asciinema.org/a/597226.svg)](https://asciinema.org/a/597226?autoplay=1)
+
+### Playing Automation Video
+
+[![Playing automation demo](https://asciinema.org/a/597228.svg)](https://asciinema.org/a/597228?autoplay=1)
 
 ## License
 
