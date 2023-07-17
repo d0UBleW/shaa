@@ -366,3 +366,4 @@ def run_playbook(name: Text,
                     f.write(data)
     end_time = time.time()
     print(f"[*] Time taken: {timedelta(seconds=end_time-start_time)}")
+    print(f"[*] Output is saved to: {log_file}")
