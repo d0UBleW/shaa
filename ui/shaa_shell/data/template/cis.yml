@@ -1325,6 +1325,13 @@ sections:
         value_type: bool
         valid:
 
+  3.5.2.1:
+    title: Ensure IPv4 default deny firewall policy
+    profile:
+      - Level 1 Server
+      - Level 1 Workstation
+    vars:
+
   3.5.2.2:
     title: Ensure IPv4 loopback traffic is configured
     profile:
