@@ -195,7 +195,7 @@ class util_action_cmd(CommandSet):
                 if isinstance(user_val, list):
                     if isinstance(user_val[0], str):
                         user_val = "\n".join(
-                            list(map(lambda v: f"- {v}", var["value"])))
+                            list(map(lambda v: f"- {v}", user_val)))
 
                 # format sensitive type variable
                 if isinstance(user_val, TaggedScalar):

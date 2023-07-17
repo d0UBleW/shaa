@@ -276,7 +276,7 @@ class cis_section_cmd(CommandSet):
                 if isinstance(user_val, list):
                     if isinstance(user_val[0], str):
                         user_val = "\n".join(
-                            list(map(lambda v: f"- {v}", var["value"])))
+                            list(map(lambda v: f"- {v}", user_val)))
                 if isinstance(user_val, TaggedScalar):
                     user_val = vault.load(user_val)
 
