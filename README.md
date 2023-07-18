@@ -905,7 +905,7 @@ docker run -it \
 
 ### Playing Automation Video
 
-[![Playing automation demo](https://asciinema.org/a/597228.svg)](https://asciinema.org/a/597228?autoplay=1)
+[![Playing automation demo](https://asciinema.org/a/597321.svg)](https://asciinema.org/a/597321?autoplay=1)
 
 ## License
 
