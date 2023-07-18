@@ -6,7 +6,7 @@
     - level_1_workstation
   when:
     # section_3_5_1_4
-    - ip6tables_loopback | bool
+    - ip6tables_open_ports | bool
     - 'ansible_os_family != "Suse"'
   block:
     - name: |

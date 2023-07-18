@@ -6,7 +6,7 @@
     - level_1_workstation
   when:
     # section_3_5_2_4
-    - iptables_loopback | bool
+    - iptables_open_ports | bool
     - 'ansible_os_family != "Suse"'
   block:
     - name: |
