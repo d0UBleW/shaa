@@ -118,6 +118,7 @@ git clone https://github.com/d0UBleW/shaa
 cd shaa
 
 # Copy roles to ansible default role search path
+mkdir -p ~/.ansible/roles
 cp -r ./ansible/roles ~/.ansible/roles
 
 # Install Ansible vault password file
