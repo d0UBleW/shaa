@@ -1,4 +1,4 @@
-FROM python:3.9-alpine AS builder
+FROM python:3.13.0a4-alpine AS builder
 
 RUN : \
     && apk update \
@@ -21,7 +21,7 @@ RUN \
     --mount=type=cache,target=/root/.cache/pip \
     pip install .
 
-FROM python:3.9-alpine AS final
+FROM python:3.13.0a4-alpine AS final
 
 RUN : \
     && apk update \
